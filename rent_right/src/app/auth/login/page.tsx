@@ -1,5 +1,5 @@
 "use client"
-import UserAuthForm from "../../authform";
+import UserAuthForm from "../../../../layout/authform";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 
