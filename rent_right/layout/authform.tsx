@@ -10,20 +10,26 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 export default function UserAuthForm({title, role, ...props}: React.HTMLAttributes<HTMLDivElement>) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false); // Loading state
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   const handleLogin = async () => {
-    // Handle login
     console.log("Logging in as " + role);
     setLoading(true);
-    console.log(email, password);
-    // Simulate login
-    setTimeout(() => {
-      setLoading(false);
-      router.push("/" + role + "/home");
+    const res = await fetch('/api/auth/login', {
+      method: 'POST',
+      body: JSON.stringify({ email, password, role }),
+      headers: { 'Content-Type': 'application/json' },
+    });
+    const data = await res.json();
+    if (data.error) {
+      console.error(data.error);
+    } else {
+      localStorage.setItem('token', data.token);
+      console.log('Login successful');
     }
-    , 1000);
+    setLoading(false);
+    router.push("/" + role?.toLowerCase() + "/home");
   };
 
   return (

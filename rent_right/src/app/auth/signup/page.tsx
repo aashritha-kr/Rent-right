@@ -1,9 +1,9 @@
 "use client"
-import UserAuthForm from "../../authform";
+import UserAuthForm from "../../../../layout/signupform";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 
-export default function Login() {
+export default function SignUp() {
   const [Role, setRole] = useState("Tenant");
 
   return (
@@ -36,8 +36,7 @@ export default function Login() {
         </div>
         <br />
         <div className="w-full max-w-md mx-auto bg-white rounded-lg shadow-md p-6 border border-gray-300">
-          
-          <UserAuthForm title={"Login as " + Role} role={Role}/>
+          <UserAuthForm title={"SignUp as " + Role} role={Role}/>
         </div>
       </div>
     </>
