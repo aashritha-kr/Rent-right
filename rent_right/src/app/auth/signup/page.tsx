@@ -1,5 +1,7 @@
 "use client"
-import UserAuthForm from "../../../../layout/signupform";
+import TenantForm from "../../../../layout/tenantSignup";
+import AdminForm from "../../../../layout/adminSignup";
+import StaffForm from "../../../../layout/staffSignup";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 
@@ -36,7 +38,13 @@ export default function SignUp() {
         </div>
         <br />
         <div className="w-full max-w-md mx-auto bg-white rounded-lg shadow-md p-6 border border-gray-300">
-          <UserAuthForm title={"SignUp as " + Role} role={Role}/>
+          {
+            Role === "Admin" 
+            ? <AdminForm title={"SignUp as " + Role} role={Role} />
+            :  Role === "Staff" 
+            ? <StaffForm title={"SignUp as " + Role} role={Role} />
+            : <TenantForm title={"SignUp as " + Role} role={Role} />
+          }
         </div>
       </div>
     </>
