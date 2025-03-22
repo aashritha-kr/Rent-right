@@ -1,58 +1,63 @@
 import { NextResponse } from 'next/server';
 import pool from '@/lib/db';
 import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+
+const SECRET_KEY = process.env.JWT_SECRET_KEY || 'your-secret-key';
 
 export async function POST(request: Request) {
-  const res = await request.json();
-  if (!res.first_name || !res.last_name || !res.email || !res.password || !res.phone || !res.role) {
+  const req = await request.json();
+  if (!req.first_name || !req.last_name || !req.email || !req.password || !req.phone || !req.role) {
     return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
   }  
 
-  const hashedPassword = await bcrypt.hash(res.password, 10);
-  if(res.role==="Tenant"){
+  const hashedPassword = await bcrypt.hash(req.password, 10);
+  if(req.role==="Tenant"){
     try {
       await pool.query('BEGIN');
 
       const result = await pool.query(
         'INSERT INTO Users (First_name, Middle_name, Last_name, Email, Phone, Password_hash, Location) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING User_ID',
-        [res.first_name, res.middle_name, res.last_name, res.email, res.phone, hashedPassword, res.location]
+        [req.first_name, req.middle_name, req.last_name, req.email, req.phone, hashedPassword, req.location]
       );
 
       const userId = result.rows[0].user_id;
 
       await pool.query(
         'INSERT INTO Roles (User_ID, Role) VALUES ($1, $2)',
-        [userId, res.role]
+        [userId, req.role]
       );
 
       await pool.query('COMMIT');
 
-      return NextResponse.json({ message: 'User registered successfully', userId }, { status: 201 });
+      const token = jwt.sign({ userId: userId, email: req.email, role: req.role }, SECRET_KEY, { expiresIn: '1h' });
+
+      return NextResponse.json({ message: 'User registered successfully', token, role:req.role }, { status: 201 });
     } catch (err) {
       await pool.query('ROLLBACK');
       console.error(err);
       return NextResponse.json({ error: 'Error registering user' }, { status: 500 });
     }
   }
-  else if(res.role==="Admin"){
+  else if(req.role==="Admin"){
     try {
       await pool.query('BEGIN');
 
       const result = await pool.query(
         'INSERT INTO Users (First_name, Middle_name, Last_name, Email, Phone, Password_hash, Location) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING User_ID',
-        [res.first_name, res.middle_name, res.last_name, res.email, res.phone, hashedPassword, res.location]
+        [req.first_name, req.middle_name, req.last_name, req.email, req.phone, hashedPassword, req.location]
       );
 
       const userId = result.rows[0].user_id;
 
       await pool.query(
         'INSERT INTO Roles (User_ID, Role) VALUES ($1, $2)',
-        [userId, res.role]
+        [userId, req.role]
       );
 
       await pool.query(
         'INSERT INTO Admins (User_ID, UPI_ID, Account_no, IFSC_code, Bank_name, Bank_Branch, Account_holder_name) VALUES ($1, $2, $3, $4, $5, $6, $7)',
-        [userId, res.upi_id, res.account_no, res.ifsc_code, res.bank_name, res.bank_branch, res.account_holder_name]
+        [userId, req.upi_id, req.account_no, req.ifsc_code, req.bank_name, req.bank_branch, req.account_holder_name]
       );
 
       await pool.query('COMMIT');
@@ -64,25 +69,25 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Error registering user' }, { status: 500 });
     }
   }
-  else if(res.role==="Staff"){
+  else if(req.role==="Staff"){
     try {
       await pool.query('BEGIN');
 
       const result = await pool.query(
         'INSERT INTO Users (First_name, Middle_name, Last_name, Email, Phone, Password_hash, Location) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING User_ID',
-        [res.first_name, res.middle_name, res.last_name, res.email, res.phone, hashedPassword, res.location]
+        [req.first_name, req.middle_name, req.last_name, req.email, req.phone, hashedPassword, req.location]
       );
 
       const userId = result.rows[0].user_id;
 
       await pool.query(
         'INSERT INTO Roles (User_ID, Role) VALUES ($1, $2)',
-        [userId, res.role]
+        [userId, req.role]
       );
 
       await pool.query(
         'INSERT INTO Staff (User_ID, Service, UPI_ID, Account_no, IFSC_code, Bank_name, Bank_Branch, Account_holder_name) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)',
-        [userId, res.service, res.upi_id, res.account_no, res.ifsc_code, res.bank_name, res.bank_branch, res.account_holder_name]
+        [userId, req.service, req.upi_id, req.account_no, req.ifsc_code, req.bank_name, req.bank_branch, req.account_holder_name]
       );
 
       await pool.query('COMMIT');

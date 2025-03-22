@@ -26,12 +26,10 @@ export default function UserAuthForm({title, role, ...props}: React.HTMLAttribut
 
   const handleSignUp = async () => {
     console.log("Sign Up as " + role);
-    console.log(email, password);
     if (!first_name || !last_name || !email || !password || !phone || !role) {
         console.error("All fields are required");
         return;  // Don't proceed if any field is missing
     }
-    console.log(first_name, middle_name, last_name)
     setLoading(true);
     const res = await fetch('/api/auth/signup', {
       method: 'POST',
@@ -61,8 +59,10 @@ export default function UserAuthForm({title, role, ...props}: React.HTMLAttribut
         console.log('Signup successful', data);
       }
       setLoading(false);
-      if(res.status===201)
+      if(res.status===201){
+        localStorage.setItem('token', data.token);
         router.push("/" + role.toLowerCase() + "/home");
+      }
   };
 
   return (

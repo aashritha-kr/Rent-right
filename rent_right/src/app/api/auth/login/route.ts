@@ -28,7 +28,7 @@ export async function POST(request: Request) {
     if (!passwordMatch) {
       return NextResponse.json({ error: 'Invalid password' }, { status: 401 });
     }
-    const token = jwt.sign({ userId: user.User_ID, email: user.Email, role }, SECRET_KEY, { expiresIn: '1h' });
+    const token = jwt.sign({ userId: user.user_id, email: user.email, role }, SECRET_KEY, { expiresIn: '1h' });
 
     return NextResponse.json({ message: 'Login successful', token, role }, { status: 200 });
   } catch (err) {

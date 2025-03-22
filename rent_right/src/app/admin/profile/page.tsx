@@ -1,24 +1,65 @@
 "use client"
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import {jwtDecode} from "jwt-decode";
 
 export default function sprofile() {
     const [editstatus, seteditstatus] = useState(false);
     const [admindetails, setadmindetails] = useState({
-        firstName: "Kuk",
-        middleName: "Aashritha",
-        lastName: "Reddy",
-        phone: "9347457764",
-        emailId: "a@gmail.com",
-        AccNo:"3284209",
-        IFSCcode:"234082",
-        BankName:"ICICI",
-        BankBranch:"Kandi",
-        AccHolderName:"aash",
-        UPIid:"3427099"
+        firstName: "",
+        middleName: "",
+        lastName: "",
+        phone: "",
+        emailId: "",
+        AccNo:"",
+        IFSCcode:"",
+        BankName:"",
+        BankBranch:"",
+        AccHolderName:"",
+        UPIid:""
     });
+
+    const fetchProfile = async () => {
+            try {
+                const token = localStorage.getItem('token');
+                if (token) {
+                    try {
+                        const decodedToken = jwtDecode(token);
+                        var userId = decodedToken.userId;
+                        console.log("User ID:", userId);
+                    } catch (error) {
+                        console.error("Invalid token", error);
+                    }
+                }
+                const response = await fetch('/api/profile', { method: 'GET' , headers:{'User_ID': userId}});
+                if (!response.ok) {
+                    throw new Error('Failed to fetch profile');
+                }
+        
+                const data = await response.json();
+                setadmindetails({
+                    firstName: data.user.first_name,
+                    middleName: data.user.middle_name,
+                    lastName: data.user.last_name,
+                    phone: data.user.phone,
+                    emailId: data.user.email,
+                    AccNo:data.adminDetails.account_no, 
+                    IFSCcode:data.adminDetails.ifsc_code,
+                    BankName:data.adminDetails.bank_name,
+                    BankBranch:data.adminDetails.bank_branch,
+                    AccHolderName:data.adminDetails.account_holder_name,
+                    UPIid:data.adminDetails.upi_id
+                });
+        
+            } catch (error) {
+                console.error('Error fetching profile:', error);
+            }
+        };
+        useEffect(() => {
+            fetchProfile();
+        }, []);
 
     const handleEdit = (e: React.ChangeEvent<HTMLInputElement>) => {
         setadmindetails({ ...admindetails, [e.target.name]: e.target.value });

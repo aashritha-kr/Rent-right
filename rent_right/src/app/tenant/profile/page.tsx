@@ -1,18 +1,53 @@
 "use client"
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import {jwtDecode} from "jwt-decode";
 
 export default function tprofile() {
     const [editstatus, seteditstatus] = useState(false);
     const [tenantdetails, settenantdetails] = useState({
-        firstName: "Kuk",
-        middleName: "Aashritha",
-        lastName: "Reddy",
-        phone: "9347457764",
-        emailId: "a@gmail.com",
+        firstName: "",
+        middleName: "",
+        lastName: "",
+        phone: "",
+        emailId: "",
     });
+
+    const fetchProfile = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            if (token) {
+                try {
+                    const decodedToken = jwtDecode(token);
+                    var userId = decodedToken.userId;
+                    console.log("User ID:", userId);
+                } catch (error) {
+                    console.error("Invalid token", error);
+                }
+            }
+            const response = await fetch('/api/profile', { method: 'GET' , headers:{'User_ID': userId}});
+            if (!response.ok) {
+                throw new Error('Failed to fetch profile');
+            }
+    
+            const data = await response.json();
+            settenantdetails({
+                firstName: data.user.first_name,
+                middleName: data.user.middle_name,
+                lastName: data.user.last_name,
+                phone: data.user.phone,
+                emailId: data.user.email,
+            });
+    
+        } catch (error) {
+            console.error('Error fetching profile:', error);
+        }
+    };
+    useEffect(() => {
+        fetchProfile();
+    }, []);
 
     const handleEdit = (e: React.ChangeEvent<HTMLInputElement>) => {
         settenantdetails({ ...tenantdetails, [e.target.name]: e.target.value });

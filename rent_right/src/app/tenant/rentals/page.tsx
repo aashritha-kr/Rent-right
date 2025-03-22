@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
 export default function YourRentalsPage() {
+  const [current, setCurrent]=useState([]);
+  const [Past, setPast]=useState([]);
   const current_rentals = [
     {
       address: "a-406,has apt",
