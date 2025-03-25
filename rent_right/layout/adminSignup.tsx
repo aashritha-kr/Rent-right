@@ -13,7 +13,6 @@ export default function UserAuthForm({title, role, ...props}: React.HTMLAttribut
   const [first_name, setFirstName] = useState("");
   const [middle_name, setMiddleName] = useState("");
   const [last_name, setLastName] = useState("");
-  const [loc, setLoc] = useState("");
   const [phone, setPhone] = useState("");
   const [accNo, setAccNo] = useState("");
   const [ifsc, setIFSC] = useState("");
@@ -40,7 +39,6 @@ export default function UserAuthForm({title, role, ...props}: React.HTMLAttribut
         email,
         phone,
         password,
-        location: loc,
         role,
         account_no: accNo,
         ifsc_code: ifsc,

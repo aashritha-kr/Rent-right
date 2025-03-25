@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {jwtDecode} from "jwt-decode";
+import Header from "../../../../layout/staffHeader"
 
 export default function sprofile() {
     const [editstatus, seteditstatus] = useState(false);
@@ -97,172 +98,174 @@ export default function sprofile() {
     };
 
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen p-6">
-            <Card className="w-full max-w-md shadow-lg">
-                <CardContent className="text-center space-y-4">
-                    <CardTitle className="text-2xl font-bold">{"Your profile"}</CardTitle>
+        <Header>
+            <div className="flex flex-col items-center justify-center min-h-screen p-6">
+                <Card className="w-full max-w-md shadow-lg">
+                    <CardContent className="text-center space-y-4">
+                        <CardTitle className="text-2xl font-bold">{"Your profile"}</CardTitle>
 
-                    <p className="text-gray-600">
-                        <strong>First Name:</strong>
-                        {editstatus ? (
-                            <Input
-                                type="text"
-                                name="first_name"
-                                value={staffdetails.first_name}
-                                onChange={handleEdit}
-                            />
-                        ) : (
-                            staffdetails.first_name
-                        )}
-                    </p>
+                        <p className="text-gray-600">
+                            <strong>First Name:</strong>
+                            {editstatus ? (
+                                <Input
+                                    type="text"
+                                    name="first_name"
+                                    value={staffdetails.first_name}
+                                    onChange={handleEdit}
+                                />
+                            ) : (
+                                staffdetails.first_name
+                            )}
+                        </p>
 
-                    <p className="text-gray-600">
-                        <strong>Middle Name:</strong>
-                        {editstatus ? (
-                            <Input
-                                type="text"
-                                name="middle_name"
-                                value={staffdetails.middle_name}
-                                onChange={handleEdit}
-                            />
-                        ) : (
-                            staffdetails.middle_name
-                        )}
-                    </p>
+                        <p className="text-gray-600">
+                            <strong>Middle Name:</strong>
+                            {editstatus ? (
+                                <Input
+                                    type="text"
+                                    name="middle_name"
+                                    value={staffdetails.middle_name}
+                                    onChange={handleEdit}
+                                />
+                            ) : (
+                                staffdetails.middle_name
+                            )}
+                        </p>
 
-                    <p className="text-gray-600">
-                        <strong>Last Name:</strong>
-                        {editstatus ? (
-                            <Input
-                                type="text"
-                                name="last_name"
-                                value={staffdetails.last_name}
-                                onChange={handleEdit}
-                            />
-                        ) : (
-                            staffdetails.last_name
-                        )}
-                    </p>
+                        <p className="text-gray-600">
+                            <strong>Last Name:</strong>
+                            {editstatus ? (
+                                <Input
+                                    type="text"
+                                    name="last_name"
+                                    value={staffdetails.last_name}
+                                    onChange={handleEdit}
+                                />
+                            ) : (
+                                staffdetails.last_name
+                            )}
+                        </p>
 
-                    <p className="text-gray-600">
-                        <strong>Phone:</strong>
-                        {editstatus ? (
-                            <Input
-                                type="text"
-                                name="phone"
-                                value={staffdetails.phone}
-                                onChange={handleEdit}
-                            />
-                        ) : (
-                            staffdetails.phone
-                        )}
-                    </p>
+                        <p className="text-gray-600">
+                            <strong>Phone:</strong>
+                            {editstatus ? (
+                                <Input
+                                    type="text"
+                                    name="phone"
+                                    value={staffdetails.phone}
+                                    onChange={handleEdit}
+                                />
+                            ) : (
+                                staffdetails.phone
+                            )}
+                        </p>
 
-                    <p className="text-gray-600">
-                        <strong>Email:</strong>
-                            {staffdetails.email}
-                    </p>
+                        <p className="text-gray-600">
+                            <strong>Email:</strong>
+                                {staffdetails.email}
+                        </p>
 
-                    <p className="text-gray-600">
-                        <strong>Service: </strong>
-                            {staffdetails.service}
-                    </p>
+                        <p className="text-gray-600">
+                            <strong>Service: </strong>
+                                {staffdetails.service}
+                        </p>
 
-                    <p className="text-gray-600">
-                        <strong>Account number:</strong>
-                        {editstatus ? (
-                            <Input
-                                type="text"
-                                name="account_no"
-                                value={staffdetails.account_no}
-                                onChange={handleEdit}
-                            />
-                        ) : (
-                            staffdetails.account_no
-                        )}
-                    </p>
+                        <p className="text-gray-600">
+                            <strong>Account number:</strong>
+                            {editstatus ? (
+                                <Input
+                                    type="text"
+                                    name="account_no"
+                                    value={staffdetails.account_no}
+                                    onChange={handleEdit}
+                                />
+                            ) : (
+                                staffdetails.account_no
+                            )}
+                        </p>
 
-                    <p className="text-gray-600">
-                        <strong>IFSC Code:</strong>
-                        {editstatus ? (
-                            <Input
-                                type="text"
-                                name="ifsc_code"
-                                value={staffdetails.ifsc_code}
-                                onChange={handleEdit}
-                            />
-                        ) : (
-                            staffdetails.ifsc_code
-                        )}
-                    </p>
+                        <p className="text-gray-600">
+                            <strong>IFSC Code:</strong>
+                            {editstatus ? (
+                                <Input
+                                    type="text"
+                                    name="ifsc_code"
+                                    value={staffdetails.ifsc_code}
+                                    onChange={handleEdit}
+                                />
+                            ) : (
+                                staffdetails.ifsc_code
+                            )}
+                        </p>
 
-                    <p className="text-gray-600">
-                        <strong>Bank Name:</strong>
-                        {editstatus ? (
-                            <Input
-                                type="text"
-                                name="bank_name"
-                                value={staffdetails.bank_name}
-                                onChange={handleEdit}
-                            />
-                        ) : (
-                            staffdetails.bank_name
-                        )}
-                    </p>
+                        <p className="text-gray-600">
+                            <strong>Bank Name:</strong>
+                            {editstatus ? (
+                                <Input
+                                    type="text"
+                                    name="bank_name"
+                                    value={staffdetails.bank_name}
+                                    onChange={handleEdit}
+                                />
+                            ) : (
+                                staffdetails.bank_name
+                            )}
+                        </p>
 
-                    <p className="text-gray-600">
-                        <strong>Bank Branch :</strong>
-                        {editstatus ? (
-                            <Input
-                                type="text"
-                                name="bank_branch"
-                                value={staffdetails.bank_branch}
-                                onChange={handleEdit}
-                            />
-                        ) : (
-                            staffdetails.bank_branch
-                        )}
-                    </p>
+                        <p className="text-gray-600">
+                            <strong>Bank Branch :</strong>
+                            {editstatus ? (
+                                <Input
+                                    type="text"
+                                    name="bank_branch"
+                                    value={staffdetails.bank_branch}
+                                    onChange={handleEdit}
+                                />
+                            ) : (
+                                staffdetails.bank_branch
+                            )}
+                        </p>
 
-                    <p className="text-gray-600">
-                        <strong>Account holder name:</strong>
-                        {editstatus ? (
-                            <Input
-                                type="text"
-                                name="account_holder_name"
-                                value={staffdetails.account_holder_name}
-                                onChange={handleEdit}
-                            />
-                        ) : (
-                            staffdetails.account_holder_name
-                        )}
-                    </p>
+                        <p className="text-gray-600">
+                            <strong>Account holder name:</strong>
+                            {editstatus ? (
+                                <Input
+                                    type="text"
+                                    name="account_holder_name"
+                                    value={staffdetails.account_holder_name}
+                                    onChange={handleEdit}
+                                />
+                            ) : (
+                                staffdetails.account_holder_name
+                            )}
+                        </p>
 
-                    <p className="text-gray-600">
-                        <strong>UPI ID:</strong>
-                        {editstatus ? (
-                            <Input
-                                type="text"
-                                name="upi_id"
-                                value={staffdetails.upi_id}
-                                onChange={handleEdit}
-                            />
-                        ) : (
-                            staffdetails.upi_id
-                        )}
-                    </p>
+                        <p className="text-gray-600">
+                            <strong>UPI ID:</strong>
+                            {editstatus ? (
+                                <Input
+                                    type="text"
+                                    name="upi_id"
+                                    value={staffdetails.upi_id}
+                                    onChange={handleEdit}
+                                />
+                            ) : (
+                                staffdetails.upi_id
+                            )}
+                        </p>
 
 
-                    <Button onClick={() => {
-                        seteditstatus(!editstatus);
-                        if(editstatus){
-                            updateProfile();
-                        }
-                    }}>
-                        {editstatus ? "Save" : "Edit"}
-                    </Button>
-                </CardContent>
-            </Card>
-        </div>
+                        <Button onClick={() => {
+                            seteditstatus(!editstatus);
+                            if(editstatus){
+                                updateProfile();
+                            }
+                        }}>
+                            {editstatus ? "Save" : "Edit"}
+                        </Button>
+                    </CardContent>
+                </Card>
+            </div>
+        </Header>
     );
 }
