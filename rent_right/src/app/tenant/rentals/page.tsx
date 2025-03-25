@@ -17,18 +17,22 @@ interface Rental {
 export default function YourRentalsPage() {
   const [currentRentals, setCurrentRentals] = useState<Rental[]>([]);
   const [pastRentals, setPastRentals] = useState<Rental[]>([]);
+
+  const Service = ["Plumbing", "Electrical", "Carpentry", "Pest Control"];
+  const [currentservice, setcurrentservice] = useState<string | null>(null);
+  
   const [current_index, setcurrent_index] = useState<number | null>(null);
   const [description, setDescription] = useState("");
 
   useEffect(() => {
     async function fetchRentals() {
       try {
-        const response = await fetch('/api/rentals');
+        const response = await fetch("/api/rentals");
         const data = await response.json();
         setCurrentRentals(data.currentRentals);
         setPastRentals(data.pastRentals);
       } catch (error) {
-        console.error('Error fetching rental data:', error);
+        console.error("Error fetching rental data:", error);
       }
     }
 
@@ -79,7 +83,32 @@ export default function YourRentalsPage() {
                       value={description}
                       onChange={(e) => setDescription(e.target.value)}
                     />
-                    <Button type="submit" className="mt-2 bg-blue-800 text-white">
+                    <label className="block text-gray-700 mb-2 mt-4">
+                      Select type of service:
+                    </label>
+                    <div className="flex flex-col gap-2">
+                      {Service.map((service) => (
+                        <label
+                          key={service}
+                          className="flex items-center gap-2 text-gray-700"
+                        >
+                          <input
+                            type="radio"
+                            name="service"
+                            value={service}
+                            checked={currentservice === service}
+                            onChange={(e) => setcurrentservice(e.target.value)}
+                            className="w-4 h-4"
+                          />
+                          {service}
+                        </label>
+                      ))}
+                    </div>
+
+                    <Button
+                      type="submit"
+                      className="mt-2 bg-blue-800 text-white"
+                    >
                       Submit Request
                     </Button>
                   </form>
