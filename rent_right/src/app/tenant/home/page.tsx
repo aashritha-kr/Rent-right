@@ -1,7 +1,11 @@
+import Header from "../../../../layout/tenantHeader";
+
 export default function Home() {
     return (
       <div>
-        <h1>Tenant Home</h1>
+        <Header>
+          <h1>Tenant Home</h1>
+        </Header>
       </div>
     );
 }

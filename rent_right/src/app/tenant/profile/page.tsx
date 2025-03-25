@@ -1,4 +1,6 @@
 "use client"
+
+import Header from "../../../../layout/tenantHeader";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
@@ -83,82 +85,84 @@ export default function tprofile() {
     };
 
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen p-6">
-            <Card className="w-full max-w-md shadow-lg">
-                <CardContent className="text-center space-y-4">
-                    <CardTitle className="text-2xl font-bold">{"Your profile"}</CardTitle>
+        <Header>
+            <div className="flex flex-col items-center justify-center min-h-screen p-6">
+                <Card className="w-full max-w-md shadow-lg">
+                    <CardContent className="text-center space-y-4">
+                        <CardTitle className="text-2xl font-bold">{"Your profile"}</CardTitle>
 
-                    <p className="text-gray-600">
-                        <strong>First Name:</strong>
-                        {editstatus ? (
-                            <Input
-                                type="text"
-                                name="first_name"
-                                value={tenantdetails.first_name}
-                                onChange={handleEdit}
-                            />
-                        ) : (
-                            tenantdetails.first_name
-                        )}
-                    </p>
+                        <p className="text-gray-600">
+                            <strong>First Name:</strong>
+                            {editstatus ? (
+                                <Input
+                                    type="text"
+                                    name="first_name"
+                                    value={tenantdetails.first_name}
+                                    onChange={handleEdit}
+                                />
+                            ) : (
+                                tenantdetails.first_name
+                            )}
+                        </p>
 
-                    <p className="text-gray-600">
-                        <strong>Middle Name:</strong>
-                        {editstatus ? (
-                            <Input
-                                type="text"
-                                name="middleName"
-                                value={tenantdetails.middle_name}
-                                onChange={handleEdit}
-                            />
-                        ) : (
-                            tenantdetails.middle_name
-                        )}
-                    </p>
+                        <p className="text-gray-600">
+                            <strong>Middle Name:</strong>
+                            {editstatus ? (
+                                <Input
+                                    type="text"
+                                    name="middleName"
+                                    value={tenantdetails.middle_name}
+                                    onChange={handleEdit}
+                                />
+                            ) : (
+                                tenantdetails.middle_name
+                            )}
+                        </p>
 
-                    <p className="text-gray-600">
-                        <strong>Last Name:</strong>
-                        {editstatus ? (
-                            <Input
-                                type="text"
-                                name="last_name"
-                                value={tenantdetails.last_name}
-                                onChange={handleEdit}
-                            />
-                        ) : (
-                            tenantdetails.last_name
-                        )}
-                    </p>
+                        <p className="text-gray-600">
+                            <strong>Last Name:</strong>
+                            {editstatus ? (
+                                <Input
+                                    type="text"
+                                    name="last_name"
+                                    value={tenantdetails.last_name}
+                                    onChange={handleEdit}
+                                />
+                            ) : (
+                                tenantdetails.last_name
+                            )}
+                        </p>
 
-                    <p className="text-gray-600">
-                        <strong>Phone:</strong>
-                        {editstatus ? (
-                            <Input
-                                type="text"
-                                name="phone"
-                                value={tenantdetails.phone}
-                                onChange={handleEdit}
-                            />
-                        ) : (
-                            tenantdetails.phone
-                        )}
-                    </p>
+                        <p className="text-gray-600">
+                            <strong>Phone:</strong>
+                            {editstatus ? (
+                                <Input
+                                    type="text"
+                                    name="phone"
+                                    value={tenantdetails.phone}
+                                    onChange={handleEdit}
+                                />
+                            ) : (
+                                tenantdetails.phone
+                            )}
+                        </p>
 
-                    <p className="text-gray-600">
-                        <strong>Email:</strong>
-                        {tenantdetails.email}
-                    </p>
+                        <p className="text-gray-600">
+                            <strong>Email:</strong>
+                            {tenantdetails.email}
+                        </p>
 
-                    <Button onClick={() => {
-                        seteditstatus(!editstatus);
-                        if(editstatus){
-                            updateProfile();
-                        }
-                    }}>
-                        {editstatus ? "Save" : "Edit"}
-                    </Button>
-                </CardContent>
-            </Card>
-        </div>
+                        <Button onClick={() => {
+                            seteditstatus(!editstatus);
+                            if(editstatus){
+                                updateProfile();
+                            }
+                        }}>
+                            {editstatus ? "Save" : "Edit"}
+                        </Button>
+                    </CardContent>
+                </Card>
+            </div>
+        </Header>
     );
 }

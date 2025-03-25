@@ -1,7 +1,11 @@
+import Header from "../../../../layout/staffHeader"
+
 export default function Home() {
     return (
       <div>
-        <h1>Staff Home</h1>
+        <Header>
+          <h1>Staff Home</h1>
+        </Header>
       </div>
     );
 }
