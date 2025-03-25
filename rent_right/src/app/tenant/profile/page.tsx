@@ -8,11 +8,11 @@ import {jwtDecode} from "jwt-decode";
 export default function tprofile() {
     const [editstatus, seteditstatus] = useState(false);
     const [tenantdetails, settenantdetails] = useState({
-        firstName: "",
-        middleName: "",
-        lastName: "",
+        first_name: "",
+        middle_name: "",
+        last_name: "",
         phone: "",
-        emailId: "",
+        email: "",
     });
 
     const fetchProfile = async () => {
@@ -34,11 +34,11 @@ export default function tprofile() {
     
             const data = await response.json();
             settenantdetails({
-                firstName: data.user.first_name,
-                middleName: data.user.middle_name,
-                lastName: data.user.last_name,
+                first_name: data.user.first_name,
+                middle_name: data.user.middle_name,
+                last_name: data.user.last_name,
                 phone: data.user.phone,
-                emailId: data.user.email,
+                email: data.user.email,
             });
     
         } catch (error) {
@@ -48,6 +48,35 @@ export default function tprofile() {
     useEffect(() => {
         fetchProfile();
     }, []);
+
+    const updateProfile = async () => {
+            try {
+                const token = localStorage.getItem('token');
+                if (token) {
+                    try {
+                        const decodedToken = jwtDecode(token);
+                        var userId = decodedToken.userId;
+                        console.log("User ID:", userId);
+                    } catch (error) {
+                        console.error("Invalid token", error);
+                    }
+                }
+                const response = await fetch('/api/profile', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'User_ID': userId
+                    },
+                    body: JSON.stringify(tenantdetails)
+                });
+                if (!response.ok) {
+                    throw new Error('Failed to update profile');
+                }
+                console.log('Profile updated successfully');
+            } catch (error) {
+                console.error('Error updating profile:', error);
+            }
+        };
 
     const handleEdit = (e: React.ChangeEvent<HTMLInputElement>) => {
         settenantdetails({ ...tenantdetails, [e.target.name]: e.target.value });
@@ -65,11 +94,11 @@ export default function tprofile() {
                             <Input
                                 type="text"
                                 name="firstName"
-                                value={tenantdetails.firstName}
+                                value={tenantdetails.first_name}
                                 onChange={handleEdit}
                             />
                         ) : (
-                            tenantdetails.firstName
+                            tenantdetails.first_name
                         )}
                     </p>
 
@@ -79,11 +108,11 @@ export default function tprofile() {
                             <Input
                                 type="text"
                                 name="middleName"
-                                value={tenantdetails.middleName}
+                                value={tenantdetails.middle_name}
                                 onChange={handleEdit}
                             />
                         ) : (
-                            tenantdetails.middleName
+                            tenantdetails.middle_name
                         )}
                     </p>
 
@@ -93,11 +122,11 @@ export default function tprofile() {
                             <Input
                                 type="text"
                                 name="lastName"
-                                value={tenantdetails.lastName}
+                                value={tenantdetails.last_name}
                                 onChange={handleEdit}
                             />
                         ) : (
-                            tenantdetails.lastName
+                            tenantdetails.last_name
                         )}
                     </p>
 
@@ -121,15 +150,20 @@ export default function tprofile() {
                             <Input
                                 type="email"
                                 name="emailId"
-                                value={tenantdetails.emailId}
+                                value={tenantdetails.email}
                                 onChange={handleEdit}
                             />
                         ) : (
-                            tenantdetails.emailId
+                            tenantdetails.email
                         )}
                     </p>
 
-                    <Button onClick={() => seteditstatus(!editstatus)}>
+                    <Button onClick={() => {
+                        seteditstatus(!editstatus);
+                        if(editstatus){
+                            updateProfile();
+                        }
+                    }}>
                         {editstatus ? "Save" : "Edit"}
                     </Button>
                 </CardContent>

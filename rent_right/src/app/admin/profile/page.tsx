@@ -8,17 +8,17 @@ import {jwtDecode} from "jwt-decode";
 export default function sprofile() {
     const [editstatus, seteditstatus] = useState(false);
     const [admindetails, setadmindetails] = useState({
-        firstName: "",
-        middleName: "",
-        lastName: "",
+        first_name: "",
+        middle_name: "",
+        last_name: "",
         phone: "",
-        emailId: "",
-        AccNo:"",
-        IFSCcode:"",
-        BankName:"",
-        BankBranch:"",
-        AccHolderName:"",
-        UPIid:""
+        email: "",
+        account_no:"",
+        ifsc_code:"",
+        bank_name:"",
+        bank_branch:"",
+        account_holder_name:"",
+        upi_id:""
     });
 
     const fetchProfile = async () => {
@@ -40,17 +40,17 @@ export default function sprofile() {
         
                 const data = await response.json();
                 setadmindetails({
-                    firstName: data.user.first_name,
-                    middleName: data.user.middle_name,
-                    lastName: data.user.last_name,
+                    first_name: data.user.first_name,
+                    middle_name: data.user.middle_name,
+                    last_name: data.user.last_name,
                     phone: data.user.phone,
-                    emailId: data.user.email,
-                    AccNo:data.adminDetails.account_no, 
-                    IFSCcode:data.adminDetails.ifsc_code,
-                    BankName:data.adminDetails.bank_name,
-                    BankBranch:data.adminDetails.bank_branch,
-                    AccHolderName:data.adminDetails.account_holder_name,
-                    UPIid:data.adminDetails.upi_id
+                    email: data.user.email,
+                    account_no:data.adminDetails.account_no, 
+                    ifsc_code:data.adminDetails.ifsc_code,
+                    bank_name:data.adminDetails.bank_name,
+                    bank_branch:data.adminDetails.bank_branch,
+                    account_holder_name:data.adminDetails.account_holder_name,
+                    upi_id:data.adminDetails.upi_id
                 });
         
             } catch (error) {
@@ -60,6 +60,35 @@ export default function sprofile() {
         useEffect(() => {
             fetchProfile();
         }, []);
+
+        const updateProfile = async () => {
+            try {
+                const token = localStorage.getItem('token');
+                if (token) {
+                    try {
+                        const decodedToken = jwtDecode(token);
+                        var userId = decodedToken.userId;
+                        console.log("User ID:", userId);
+                    } catch (error) {
+                        console.error("Invalid token", error);
+                    }
+                }
+                const response = await fetch('/api/profile', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'User_ID': userId
+                    },
+                    body: JSON.stringify(admindetails)
+                });
+                if (!response.ok) {
+                    throw new Error('Failed to update profile');
+                }
+                console.log('Profile updated successfully');
+            } catch (error) {
+                console.error('Error updating profile:', error);
+            }
+        };
 
     const handleEdit = (e: React.ChangeEvent<HTMLInputElement>) => {
         setadmindetails({ ...admindetails, [e.target.name]: e.target.value });
@@ -77,11 +106,11 @@ export default function sprofile() {
                             <Input
                                 type="text"
                                 name="firstName"
-                                value={admindetails.firstName}
+                                value={admindetails.first_name}
                                 onChange={handleEdit}
                             />
                         ) : (
-                            admindetails.firstName
+                            admindetails.first_name
                         )}
                     </p>
 
@@ -91,11 +120,11 @@ export default function sprofile() {
                             <Input
                                 type="text"
                                 name="middleName"
-                                value={admindetails.middleName}
+                                value={admindetails.middle_name}
                                 onChange={handleEdit}
                             />
                         ) : (
-                            admindetails.middleName
+                            admindetails.middle_name
                         )}
                     </p>
 
@@ -105,11 +134,11 @@ export default function sprofile() {
                             <Input
                                 type="text"
                                 name="lastName"
-                                value={admindetails.lastName}
+                                value={admindetails.last_name}
                                 onChange={handleEdit}
                             />
                         ) : (
-                            admindetails.lastName
+                            admindetails.last_name
                         )}
                     </p>
 
@@ -133,11 +162,11 @@ export default function sprofile() {
                             <Input
                                 type="email"
                                 name="emailId"
-                                value={admindetails.emailId}
+                                value={admindetails.email}
                                 onChange={handleEdit}
                             />
                         ) : (
-                            admindetails.emailId
+                            admindetails.email
                         )}
                     </p>
 
@@ -147,11 +176,11 @@ export default function sprofile() {
                             <Input
                                 type="text"
                                 name="AccNo"
-                                value={admindetails.AccNo}
+                                value={admindetails.account_no}
                                 onChange={handleEdit}
                             />
                         ) : (
-                            admindetails.AccNo
+                            admindetails.account_no
                         )}
                     </p>
 
@@ -161,11 +190,11 @@ export default function sprofile() {
                             <Input
                                 type="text"
                                 name="IFSCcode"
-                                value={admindetails.IFSCcode}
+                                value={admindetails.ifsc_code}
                                 onChange={handleEdit}
                             />
                         ) : (
-                            admindetails.IFSCcode
+                            admindetails.ifsc_code
                         )}
                     </p>
 
@@ -175,11 +204,11 @@ export default function sprofile() {
                             <Input
                                 type="text"
                                 name="BankName"
-                                value={admindetails.BankName}
+                                value={admindetails.bank_name}
                                 onChange={handleEdit}
                             />
                         ) : (
-                            admindetails.BankName
+                            admindetails.bank_name
                         )}
                     </p>
 
@@ -189,11 +218,11 @@ export default function sprofile() {
                             <Input
                                 type="text"
                                 name="BankBranch"
-                                value={admindetails.BankBranch}
+                                value={admindetails.bank_branch}
                                 onChange={handleEdit}
                             />
                         ) : (
-                            admindetails.BankBranch
+                            admindetails.bank_branch
                         )}
                     </p>
 
@@ -203,11 +232,11 @@ export default function sprofile() {
                             <Input
                                 type="text"
                                 name="AccHolderName"
-                                value={admindetails.AccHolderName}
+                                value={admindetails.account_holder_name}
                                 onChange={handleEdit}
                             />
                         ) : (
-                            admindetails.AccHolderName
+                            admindetails.account_holder_name
                         )}
                     </p>
 
@@ -217,16 +246,21 @@ export default function sprofile() {
                             <Input
                                 type="text"
                                 name="UPIid"
-                                value={admindetails.UPIid}
+                                value={admindetails.upi_id}
                                 onChange={handleEdit}
                             />
                         ) : (
-                            admindetails.UPIid
+                            admindetails.upi_id
                         )}
                     </p>
 
 
-                    <Button onClick={() => seteditstatus(!editstatus)}>
+                    <Button onClick={() => {
+                        seteditstatus(!editstatus);
+                        if(editstatus){
+                            updateProfile();
+                        }
+                    }}>
                         {editstatus ? "Save" : "Edit"}
                     </Button>
                 </CardContent>

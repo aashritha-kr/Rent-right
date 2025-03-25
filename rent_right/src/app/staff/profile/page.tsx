@@ -8,18 +8,18 @@ import {jwtDecode} from "jwt-decode";
 export default function sprofile() {
     const [editstatus, seteditstatus] = useState(false);
     const [staffdetails, setstaffdetails] = useState({
-        firstName: "",
-        middleName: "",
-        lastName: "",
+        first_name: "",
+        middle_name: "",
+        last_name: "",
         phone: "",
-        emailId: "",
+        email: "",
         AccNo:"",
         service:"",
-        IFSCcode:"",
-        BankName:"",
-        BankBranch:"",
-        AccHolderName:"",
-        UPIid:""
+        ifsc_code:"",
+        bank_name:"",
+        bank_branch:"",
+        account_holder_name:"",
+        upi_id:""
     });
 
     const fetchProfile = async () => {
@@ -41,18 +41,18 @@ export default function sprofile() {
     
             const data = await response.json();
             setstaffdetails({
-                firstName: data.user.first_name,
-                middleName: data.user.middle_name,
-                lastName: data.user.last_name,
+                first_name: data.user.first_name,
+                middle_name: data.user.middle_name,
+                last_name: data.user.last_name,
                 phone: data.user.phone,
-                emailId: data.user.email,
+                email: data.user.email,
                 service:data.staffDetails.service,
                 AccNo:data.staffDetails.account_no, 
-                IFSCcode:data.staffDetails.ifsc_code,
-                BankName:data.staffDetails.bank_name,
-                BankBranch:data.staffDetails.bank_branch,
-                AccHolderName:data.staffDetails.account_holder_name,
-                UPIid:data.staffDetails.upi_id
+                ifsc_code:data.staffDetails.ifsc_code,
+                bank_name:data.staffDetails.bank_name,
+                bank_branch:data.staffDetails.bank_branch,
+                account_holder_name:data.staffDetails.account_holder_name,
+                upi_id:data.staffDetails.upi_id
             });
     
         } catch (error) {
@@ -62,6 +62,35 @@ export default function sprofile() {
     useEffect(() => {
         fetchProfile();
     }, []);
+
+    const updateProfile = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            if (token) {
+                try {
+                    const decodedToken = jwtDecode(token);
+                    var userId = decodedToken.userId;
+                    console.log("User ID:", userId);
+                } catch (error) {
+                    console.error("Invalid token", error);
+                }
+            }
+            const response = await fetch('/api/profile', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'User_ID': userId
+                },
+                body: JSON.stringify(staffdetails)
+            });
+            if (!response.ok) {
+                throw new Error('Failed to update profile');
+            }
+            console.log('Profile updated successfully');
+        } catch (error) {
+            console.error('Error updating profile:', error);
+        }
+    };
 
     const handleEdit = (e: React.ChangeEvent<HTMLInputElement>) => {
         setstaffdetails({ ...staffdetails, [e.target.name]: e.target.value });
@@ -79,11 +108,11 @@ export default function sprofile() {
                             <Input
                                 type="text"
                                 name="firstName"
-                                value={staffdetails.firstName}
+                                value={staffdetails.first_name}
                                 onChange={handleEdit}
                             />
                         ) : (
-                            staffdetails.firstName
+                            staffdetails.first_name
                         )}
                     </p>
 
@@ -93,11 +122,11 @@ export default function sprofile() {
                             <Input
                                 type="text"
                                 name="middleName"
-                                value={staffdetails.middleName}
+                                value={staffdetails.middle_name}
                                 onChange={handleEdit}
                             />
                         ) : (
-                            staffdetails.middleName
+                            staffdetails.middle_name
                         )}
                     </p>
 
@@ -107,11 +136,11 @@ export default function sprofile() {
                             <Input
                                 type="text"
                                 name="lastName"
-                                value={staffdetails.lastName}
+                                value={staffdetails.last_name}
                                 onChange={handleEdit}
                             />
                         ) : (
-                            staffdetails.lastName
+                            staffdetails.last_name
                         )}
                     </p>
 
@@ -135,11 +164,11 @@ export default function sprofile() {
                             <Input
                                 type="email"
                                 name="emailId"
-                                value={staffdetails.emailId}
+                                value={staffdetails.email}
                                 onChange={handleEdit}
                             />
                         ) : (
-                            staffdetails.emailId
+                            staffdetails.email
                         )}
                     </p>
 
@@ -168,11 +197,11 @@ export default function sprofile() {
                             <Input
                                 type="text"
                                 name="IFSCcode"
-                                value={staffdetails.IFSCcode}
+                                value={staffdetails.ifsc_code}
                                 onChange={handleEdit}
                             />
                         ) : (
-                            staffdetails.IFSCcode
+                            staffdetails.ifsc_code
                         )}
                     </p>
 
@@ -182,11 +211,11 @@ export default function sprofile() {
                             <Input
                                 type="text"
                                 name="BankName"
-                                value={staffdetails.BankName}
+                                value={staffdetails.bank_name}
                                 onChange={handleEdit}
                             />
                         ) : (
-                            staffdetails.BankName
+                            staffdetails.bank_name
                         )}
                     </p>
 
@@ -196,11 +225,11 @@ export default function sprofile() {
                             <Input
                                 type="text"
                                 name="BankBranch"
-                                value={staffdetails.BankBranch}
+                                value={staffdetails.bank_branch}
                                 onChange={handleEdit}
                             />
                         ) : (
-                            staffdetails.BankBranch
+                            staffdetails.bank_branch
                         )}
                     </p>
 
@@ -210,11 +239,11 @@ export default function sprofile() {
                             <Input
                                 type="text"
                                 name="AccHolderName"
-                                value={staffdetails.AccHolderName}
+                                value={staffdetails.account_holder_name}
                                 onChange={handleEdit}
                             />
                         ) : (
-                            staffdetails.AccHolderName
+                            staffdetails.account_holder_name
                         )}
                     </p>
 
@@ -224,16 +253,21 @@ export default function sprofile() {
                             <Input
                                 type="text"
                                 name="UPIid"
-                                value={staffdetails.UPIid}
+                                value={staffdetails.upi_id}
                                 onChange={handleEdit}
                             />
                         ) : (
-                            staffdetails.UPIid
+                            staffdetails.upi_id
                         )}
                     </p>
 
 
-                    <Button onClick={() => seteditstatus(!editstatus)}>
+                    <Button onClick={() => {
+                        seteditstatus(!editstatus);
+                        if(editstatus){
+                            updateProfile();
+                        }
+                    }}>
                         {editstatus ? "Save" : "Edit"}
                     </Button>
                 </CardContent>
