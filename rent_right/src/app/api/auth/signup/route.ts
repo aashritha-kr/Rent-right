@@ -17,8 +17,8 @@ export async function POST(request: Request) {
       await pool.query('BEGIN');
 
       const result = await pool.query(
-        'INSERT INTO Users (First_name, Middle_name, Last_name, Email, Phone, Password_hash, Location) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING User_ID',
-        [req.first_name, req.middle_name, req.last_name, req.email, req.phone, hashedPassword, req.location]
+        'INSERT INTO Users (First_name, Middle_name, Last_name, Email, Phone, Password_hash) VALUES ($1, $2, $3, $4, $5, $6) RETURNING User_ID',
+        [req.first_name, req.middle_name, req.last_name, req.email, req.phone, hashedPassword]
       );
 
       const userId = result.rows[0].user_id;
@@ -44,8 +44,8 @@ export async function POST(request: Request) {
       await pool.query('BEGIN');
 
       const result = await pool.query(
-        'INSERT INTO Users (First_name, Middle_name, Last_name, Email, Phone, Password_hash, Location) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING User_ID',
-        [req.first_name, req.middle_name, req.last_name, req.email, req.phone, hashedPassword, req.location]
+        'INSERT INTO Users (First_name, Middle_name, Last_name, Email, Phone, Password_hash) VALUES ($1, $2, $3, $4, $5, $6) RETURNING User_ID',
+        [req.first_name, req.middle_name, req.last_name, req.email, req.phone, hashedPassword]
       );
 
       const userId = result.rows[0].user_id;
@@ -74,8 +74,8 @@ export async function POST(request: Request) {
       await pool.query('BEGIN');
 
       const result = await pool.query(
-        'INSERT INTO Users (First_name, Middle_name, Last_name, Email, Phone, Password_hash, Location) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING User_ID',
-        [req.first_name, req.middle_name, req.last_name, req.email, req.phone, hashedPassword, req.location]
+        'INSERT INTO Users (First_name, Middle_name, Last_name, Email, Phone, Password_hash) VALUES ($1, $2, $3, $4, $5, $6) RETURNING User_ID',
+        [req.first_name, req.middle_name, req.last_name, req.email, req.phone, hashedPassword]
       );
 
       const userId = result.rows[0].user_id;

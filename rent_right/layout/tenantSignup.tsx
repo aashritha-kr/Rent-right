@@ -13,7 +13,6 @@ export default function UserAuthForm({title, role, ...props}: React.HTMLAttribut
   const [first_name, setFirstName] = useState("");
   const [middle_name, setMiddleName] = useState("");
   const [last_name, setLastName] = useState("");
-  const [loc, setLoc] = useState("");
   const [phone, setPhone] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
@@ -27,7 +26,7 @@ export default function UserAuthForm({title, role, ...props}: React.HTMLAttribut
     setLoading(true);
     const res = await fetch('/api/auth/signup', {
         method: 'POST',
-        body: JSON.stringify({ first_name, middle_name, last_name, email, phone, password, location:loc, role }),
+        body: JSON.stringify({ first_name, middle_name, last_name, email, phone, password, role }),
         headers: { 'Content-Type': 'application/json' },
       });
   
