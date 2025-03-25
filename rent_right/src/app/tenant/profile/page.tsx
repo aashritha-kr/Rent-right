@@ -93,7 +93,7 @@ export default function tprofile() {
                         {editstatus ? (
                             <Input
                                 type="text"
-                                name="firstName"
+                                name="first_name"
                                 value={tenantdetails.first_name}
                                 onChange={handleEdit}
                             />
@@ -121,7 +121,7 @@ export default function tprofile() {
                         {editstatus ? (
                             <Input
                                 type="text"
-                                name="lastName"
+                                name="last_name"
                                 value={tenantdetails.last_name}
                                 onChange={handleEdit}
                             />
@@ -146,16 +146,7 @@ export default function tprofile() {
 
                     <p className="text-gray-600">
                         <strong>Email:</strong>
-                        {editstatus ? (
-                            <Input
-                                type="email"
-                                name="emailId"
-                                value={tenantdetails.email}
-                                onChange={handleEdit}
-                            />
-                        ) : (
-                            tenantdetails.email
-                        )}
+                        {tenantdetails.email}
                     </p>
 
                     <Button onClick={() => {

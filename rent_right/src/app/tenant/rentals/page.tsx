@@ -1,52 +1,79 @@
 "use client";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
-export default function YourRentalsPage() {
-  const [current, setCurrent]=useState([]);
-  const [Past, setPast]=useState([]);
-  const current_rentals = [
-    {
-      address: "a-406,has apt",
-      type: "Apartment",
-      startDate: "2023-01-01",
-      endDate: "2023-12-31",
-      Ownername: "abc",
-      Ownernumber: "384720",
-    },
-    {
-      address: "a-402,has",
-      type: "Villa",
-      startDate: "2022-06-01",
-      endDate: "2023-05-31",
-      Ownername: "dbc",
-      Ownernumber: "824872",
-    },
-  ];
+interface Rental {
+  address: string;
+  type: string;
+  startDate: string;
+  endDate: string;
+  Ownername: string;
+  Ownernumber: string;
+}
 
-  const past_rentals = [
-    {
-      address: "a-406,has apt",
-      type: "Apartment",
-      startDate: "2000-02-06",
-      endDate: "2000-12-31",
-      Ownername: "abc",
-      Ownernumber: "384720",
-    },
-    {
-      address: "a-402,has",
-      type: "Villa",
-      startDate: "2000-06-01",
-      endDate: "2000-05-31",
-      Ownername: "dbc",
-      Ownernumber: "824872",
-    },
-  ];
+export default function YourRentalsPage() {
+  const [currentRentals, setCurrentRentals] = useState<Rental[]>([]);
+  const [pastRentals, setPastRentals] = useState<Rental[]>([]);
+
+  // const [current, setCurrent]=useState([]);
+  // const [Past, setPast]=useState([]);
+  // const current_rentals = [
+  //   {
+  //     address: "a-406,has apt",
+  //     type: "Apartment",
+  //     startDate: "2023-01-01",
+  //     endDate: "2023-12-31",
+  //     Ownername: "abc",
+  //     Ownernumber: "384720",
+  //   },
+  //   {
+  //     address: "a-402,has",
+  //     type: "Villa",
+  //     startDate: "2022-06-01",
+  //     endDate: "2023-05-31",
+  //     Ownername: "dbc",
+  //     Ownernumber: "824872",
+  //   },
+  // ];
+
+  // const past_rentals = [
+  //   {
+  //     address: "a-406,has apt",
+  //     type: "Apartment",
+  //     startDate: "2000-02-06",
+  //     endDate: "2000-12-31",
+  //     Ownername: "abc",
+  //     Ownernumber: "384720",
+  //   },
+  //   {
+  //     address: "a-402,has",
+  //     type: "Villa",
+  //     startDate: "2000-06-01",
+  //     endDate: "2000-05-31",
+  //     Ownername: "dbc",
+  //     Ownernumber: "824872",
+  //   },
+  // ];
 
   const [current_index, setcurrent_index] = useState<number | null>(null);
   const [description, setDescription] = useState("");
+
+  useEffect(() => {
+    async function fetchRentals() {
+      try {
+        const response = await fetch('/api/rentals');
+        const data = await response.json();
+        setCurrentRentals(data.currentRentals);
+        setPastRentals(data.pastRentals);
+      } catch (error) {
+        console.error('Error fetching rental data:', error);
+      }
+    }
+
+    fetchRentals();
+  }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -61,7 +88,7 @@ export default function YourRentalsPage() {
       </h1>
       <h2 className="text-2xl font-semibold text-blue-750 p-4">Current Rentals</h2>
       <div className="flex flex-col gap-6">
-        {current_rentals.map((rental, index) => (
+        {currentRentals?currentRentals.map((rental, index) => (
           <Card key={rental.address} className="p-4 shadow-md rounded-lg">
             <CardContent>
               <CardTitle className="text-lg">Address: {rental.address}</CardTitle>
@@ -98,11 +125,11 @@ export default function YourRentalsPage() {
               )}
             </CardContent>
           </Card>
-        ))}
+        )):<Card>No ongoing rentals</Card>}
       </div>
       <h2 className="text-2xl font-semibold text-blue-750 p-4">Past Rentals</h2>
       <div className="flex flex-col gap-6">
-        {past_rentals.map((rental) => (
+        {pastRentals?pastRentals.map((rental) => (
           <Card key={rental.address} className="p-4 shadow-md rounded-lg">
             <CardContent>
               <CardTitle className="text-lg">Address: {rental.address}</CardTitle>
@@ -116,7 +143,7 @@ export default function YourRentalsPage() {
               </div>
             </CardContent>
           </Card>
-        ))}
+        )):<Card>No past rentals</Card>}
       </div>
     </div>
   );

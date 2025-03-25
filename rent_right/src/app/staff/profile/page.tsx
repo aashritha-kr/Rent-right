@@ -13,7 +13,7 @@ export default function sprofile() {
         last_name: "",
         phone: "",
         email: "",
-        AccNo:"",
+        account_no:"",
         service:"",
         ifsc_code:"",
         bank_name:"",
@@ -47,7 +47,7 @@ export default function sprofile() {
                 phone: data.user.phone,
                 email: data.user.email,
                 service:data.staffDetails.service,
-                AccNo:data.staffDetails.account_no, 
+                account_no:data.staffDetails.account_no, 
                 ifsc_code:data.staffDetails.ifsc_code,
                 bank_name:data.staffDetails.bank_name,
                 bank_branch:data.staffDetails.bank_branch,
@@ -107,7 +107,7 @@ export default function sprofile() {
                         {editstatus ? (
                             <Input
                                 type="text"
-                                name="firstName"
+                                name="first_name"
                                 value={staffdetails.first_name}
                                 onChange={handleEdit}
                             />
@@ -121,7 +121,7 @@ export default function sprofile() {
                         {editstatus ? (
                             <Input
                                 type="text"
-                                name="middleName"
+                                name="middle_name"
                                 value={staffdetails.middle_name}
                                 onChange={handleEdit}
                             />
@@ -135,7 +135,7 @@ export default function sprofile() {
                         {editstatus ? (
                             <Input
                                 type="text"
-                                name="lastName"
+                                name="last_name"
                                 value={staffdetails.last_name}
                                 onChange={handleEdit}
                             />
@@ -160,20 +160,11 @@ export default function sprofile() {
 
                     <p className="text-gray-600">
                         <strong>Email:</strong>
-                        {editstatus ? (
-                            <Input
-                                type="email"
-                                name="emailId"
-                                value={staffdetails.email}
-                                onChange={handleEdit}
-                            />
-                        ) : (
-                            staffdetails.email
-                        )}
+                            {staffdetails.email}
                     </p>
 
                     <p className="text-gray-600">
-                    <strong>Service: </strong>
+                        <strong>Service: </strong>
                             {staffdetails.service}
                     </p>
 
@@ -182,12 +173,12 @@ export default function sprofile() {
                         {editstatus ? (
                             <Input
                                 type="text"
-                                name="AccNo"
-                                value={staffdetails.AccNo}
+                                name="account_no"
+                                value={staffdetails.account_no}
                                 onChange={handleEdit}
                             />
                         ) : (
-                            staffdetails.AccNo
+                            staffdetails.account_no
                         )}
                     </p>
 
@@ -196,7 +187,7 @@ export default function sprofile() {
                         {editstatus ? (
                             <Input
                                 type="text"
-                                name="IFSCcode"
+                                name="ifsc_code"
                                 value={staffdetails.ifsc_code}
                                 onChange={handleEdit}
                             />
@@ -210,7 +201,7 @@ export default function sprofile() {
                         {editstatus ? (
                             <Input
                                 type="text"
-                                name="BankName"
+                                name="bank_name"
                                 value={staffdetails.bank_name}
                                 onChange={handleEdit}
                             />
@@ -224,7 +215,7 @@ export default function sprofile() {
                         {editstatus ? (
                             <Input
                                 type="text"
-                                name="BankBranch"
+                                name="bank_branch"
                                 value={staffdetails.bank_branch}
                                 onChange={handleEdit}
                             />
@@ -238,7 +229,7 @@ export default function sprofile() {
                         {editstatus ? (
                             <Input
                                 type="text"
-                                name="AccHolderName"
+                                name="account_holder_name"
                                 value={staffdetails.account_holder_name}
                                 onChange={handleEdit}
                             />
@@ -252,7 +243,7 @@ export default function sprofile() {
                         {editstatus ? (
                             <Input
                                 type="text"
-                                name="UPIid"
+                                name="upi_id"
                                 value={staffdetails.upi_id}
                                 onChange={handleEdit}
                             />
