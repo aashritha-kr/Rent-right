@@ -25,9 +25,6 @@ export default function YourRentalsPage() {
   const [current_index, setcurrent_index] = useState<number | null>(null);
   const [description, setDescription] = useState("");
 
-  const Service = ["Plumbing", "Electrical", "Carpentry", "Pest Control"];
-  const [currentservice, setcurrentservice] = useState<string | null>(null);
-
   useEffect(() => {
     async function fetchRentals() {
       try {

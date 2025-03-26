@@ -81,7 +81,7 @@ export default function Home() {
             <Image
               src="/house.svg"
               alt="House Illustration"
-              layout="fill"
+              fill
               className="md:object-cover"
               priority
             />
