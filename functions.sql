@@ -298,3 +298,184 @@ INSERT INTO Lease_Agreement (
     );
 END;
 $$;
+CREATE FUNCTION check_admin_role()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM Roles
+        WHERE User_ID = NEW.User_ID AND Role = 'Admin'
+    ) THEN
+        RAISE EXCEPTION 'User must have Admin role';
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+CREATE TRIGGER check_admin_role_trigger
+BEFORE INSERT ON Admins
+FOR EACH ROW
+EXECUTE FUNCTION check_admin_role();
+
+CREATE FUNCTION check_staff_role()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM Roles
+        WHERE User_ID = NEW.User_ID AND Role = 'staff'
+    ) THEN
+        RAISE EXCEPTION 'User must have staff role';
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER check_staff_role_trigger
+BEFORE INSERT ON Staff
+FOR EACH ROW
+EXECUTE FUNCTION check_staff_role();
+CREATE FUNCTION check_tenant_role()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM Roles
+        WHERE User_ID = NEW.User_ID AND Role = 'tenant'
+    ) THEN
+        RAISE EXCEPTION 'User must have tenant role';
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+CREATE TRIGGER check_tenant_role_in_lease_trigger
+BEFORE INSERT OR UPDATE ON Lease_Agreement
+FOR EACH ROW
+EXECUTE FUNCTION check_tenant_role();
+
+CREATE TRIGGER check_tenant_role_in_sale_trigger
+BEFORE INSERT OR UPDATE ON Sale_Agreement
+FOR EACH ROW
+EXECUTE FUNCTION check_tenant_role();
+
+CREATE OR REPLACE PROCEDURE if_renewed(in_lease_id INT,in_property_id INT,in_tenant_id INT,
+IN_end_date DATE,in_price DECIMAL(10,2))
+LANGUAGE plpgsql
+AS $$
+DECLARE old_end_date DATE;
+BEGIN
+SELECT End_date INTO old_end_date
+FROM Lease_Agreement WHERE Lease_ID = in_lease_id;
+
+--UPDATE OLD Lease_Agreement status to expired and update_at should now.
+UPDATE Lease_Agreement
+SET Status ='expired',
+Updated_at =NOW()
+WHERE Lease_ID =in_lease_id;
+--insert new lease_agreement
+INSERT INTO Lease_Agreement (
+        Property_ID,
+        Tenant_ID,
+        Start_date,
+        End_date,
+        Renewed
+        Price,
+        Advance_amount,+/
+        Status,
+        Created_at,
+        Updated_at
+    )
+    VALUES (
+        in_property_id,
+        in_tenant_id,
+        old_end_date + INTERVAL '1 day', 
+        -- Start date is the day after the old lease ends
+        in_end_date,
+        'NO'
+        in_price,
+        0.00,
+      'active',
+        NOW(),
+        NOW()
+    );
+END;
+$$;
+CREATE OR REPLACE PROCEDURE add_user_with_role(
+    input_first_name VARCHAR(30),
+    input_middle_name VARCHAR(30),
+    input_last_name VARCHAR(30),
+    input_email VARCHAR(100),
+    input_phone VARCHAR(15),
+    input_password_hash VARCHAR(80),
+    input_role VARCHAR(10),  
+    --  parameters for Admin:-*
+    input_UPI_ID VARCHAR(60) DEFAULT NULL,
+    input_Account_no VARCHAR(20) DEFAULT NULL,
+    input_IFSC_code  VARCHAR(20) DEFAULT NULL,
+    input_Bank_name VARCHAR(100) DEFAULT NULL,
+    input_Bank_Branch VARCHAR(100) DEFAULT NULL,
+    input_Account_holder_name VARCHAR(100) DEFAULT NULL,
+    -- parameter for Staff:
+    input_Service            VARCHAR(15) DEFAULT NULL,
+    input_Availability       BOOLEAN DEFAULT TRUE
+)
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    existing_user_id INT;
+    new_user_id INT;
+BEGIN
+    -- Check if a user with the same email and role already exists.
+    SELECT u.User_ID
+      INTO existing_user_id
+      FROM Users u
+      JOIN Roles r ON u.User_ID = r.User_ID
+     WHERE u.Email = input_email
+       AND r.Role = input_role;
+       
+    IF existing_user_id IS NOT NULL THEN
+        RAISE EXCEPTION 'User with email "%" and role "%" already exists.', input_email, input_role;
+    END IF;
+    
+    -- Insert a new record into Users.
+    INSERT INTO Users (First_name, Middle_name, Last_name, Email, Phone, Password_hash)
+    VALUES (input_first_name, input_middle_name, input_last_name, input_email, input_phone, input_password_hash)
+    RETURNING User_ID INTO new_user_id;
+    
+    -- Insert the role into Roles.
+    INSERT INTO Roles (User_ID, Role)
+    VALUES (new_user_id, input_role);
+    
+    -- role-specific details:
+    IF input_role = 'Admin' THEN
+        INSERT INTO Admins (User_ID, UPI_ID, Account_no, IFSC_code, Bank_name, Bank_Branch, Account_holder_name)
+        VALUES (new_user_id, input_UPI_ID, input_Account_no, input_IFSC_code, input_Bank_name, input_Bank_Branch, input_Account_holder_name);
+    ELSIF input_role = 'Staff' THEN
+        INSERT INTO Staff (User_ID, Service, Account_no, IFSC_code, Bank_name, Bank_Branch, Account_holder_name, UPI_ID, Availability)
+        VALUES (new_user_id, input_Service, input_Account_no, input_IFSC_code, input_Bank_name, input_Bank_Branch, input_Account_holder_name, input_UPI_ID, input_Availability);
+    END IF;
+    
+    -- For tenant role, no additional insertion is needed.
+    
+END;
+$$;
+CREATE OR REPLACE FUNCTION prevent_overlapping_leases()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF EXISTS (
+        SELECT 1
+        FROM Lease_Agreement
+        WHERE Property_ID = NEW.Property_ID
+        AND Lease_ID != NEW.Lease_ID -- Exclude the current row if updating
+        AND Status IN ('active', 'expired')
+        AND (NEW.Start_date, NEW.End_date) OVERLAPS (Start_date, End_date)
+    ) THEN
+        RAISE EXCEPTION 'Overlapping lease agreement detected';
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER prevent_overlapping_leases_trigger
+BEFORE INSERT OR UPDATE ON Lease_Agreement
+FOR EACH ROW
+EXECUTE PROCEDURE prevent_overlapping_leases();
+
+
+
