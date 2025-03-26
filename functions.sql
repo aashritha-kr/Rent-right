@@ -255,7 +255,7 @@ BEGIN
     );
 END;
 $$;
-
+-- if renewed the lease_agreement
 CREATE OR REPLACE PROCEDURE if_renewed(in_lease_id INT,in_property_id INT,in_tenant_id INT,
 IN_end_date DATE,in_price DECIMAL(10,2))
 LANGUAGE plpgsql
