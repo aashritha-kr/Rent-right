@@ -255,4 +255,45 @@ BEGIN
     );
 END;
 $$;
+CREATE OR REPLACE PROCEDURE if_renewed(in_lease_id INT,in_property_id INT,in_tenant_id INT,
+IN_end_date DATE,in_price DECIMAL(10,2))
+LANGUAGE plpgsql
+AS $$
+DECLARE old_end_date DATE;
+BEGIN
+SELECT End_date INTO old_end_date
+FROM Lease_Agreement WHERE Lease_ID = in_lease_id;
 
+--UPDATE OLD Lease_Agreement status to expired and update_at should now.
+UPDATE Lease_Agreement
+SET Status ='expired',
+Updated_at =NOW()
+WHERE Lease_ID =in_lease_id;
+--insert new lease_agreement
+INSERT INTO Lease_Agreement (
+        Property_ID,
+        Tenant_ID,
+        Start_date,
+        End_date,
+        Renewed
+        Price,
+        Advance_amount,
+        Status,
+        Created_at,
+        Updated_at
+    )
+    VALUES (
+        in_property_id,
+        in_tenant_id,
+        old_end_date + INTERVAL '1 day', 
+        -- Start date is the day after the old lease ends
+        in_end_date,
+        'NO'
+        in_price,
+        0.00,
+      'active',
+        NOW(),
+        NOW()
+    );
+END;
+$$;
