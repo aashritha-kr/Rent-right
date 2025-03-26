@@ -5,12 +5,15 @@ import { Button } from "@/components/ui/button";
 
 export default function AddProp() {
   const [property, setproperty] = useState({
-    address: "",
+    Door_no: "",
+    Date_of_construction:"",
+    Building_name:"",
+    Street_name:"",
+    Area:"",
+    Area_in_sqft:"",
+    Facing:"",
     Type: "",
-    Availability: "",
     Description: "",
-    tenant_name: "",
-    Property_ID: "",
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -23,16 +26,76 @@ export default function AddProp() {
 
   return (
     <div className="p-6">
-      <h1 className="text-3xl font-seminbold my-3">Add property details</h1>
+      <h1 className="text-3xl text-center font-semibold my-3">Add property details</h1>
       <form onSubmit={handleSubmit}>
         <Card>
           <CardContent>
-            <div className="mb-4">
-              <label font-semibold>Address</label>
+          <div className="mb-4">
+              <label font-semibold>Date of Construction</label>
               <input
                 type="text"
-                name="address"
-                value={property.address}
+                name=""
+                value={property.Date_of_construction}
+                onChange={handleChange}
+                className="border p-2 w-full "
+              />
+            </div>
+            <div className="mb-4">
+              <label font-semibold>Door_no</label>
+              <input
+                type="text"
+                name="Door_no"
+                value={property.Door_no}
+                onChange={handleChange}
+                className="border p-2 w-full "
+              />
+            </div>
+            <div className="mb-4">
+              <label font-semibold>Building_name</label>
+              <input
+                type="text"
+                name="Building_name"
+                value={property.Building_name}
+                onChange={handleChange}
+                className="border p-2 w-full "
+              />
+            </div>
+            <div className="mb-4">
+              <label font-semibold>Street_name</label>
+              <input
+                type="text"
+                name="Street_name"
+                value={property.Street_name}
+                onChange={handleChange}
+                className="border p-2 w-full "
+              />
+            </div>
+            <div className="mb-4">
+              <label font-semibold>Area</label>
+              <input
+                type="text"
+                name="Area"
+                value={property.Area}
+                onChange={handleChange}
+                className="border p-2 w-full "
+              />
+            </div>
+            <div className="mb-4">
+              <label font-semibold>Area_in_sqft</label>
+              <input
+                type="text"
+                name="Area_in_sqft"
+                value={property.Area_in_sqft}
+                onChange={handleChange}
+                className="border p-2 w-full "
+              />
+            </div>
+            <div className="mb-4">
+              <label font-semibold>Facing</label>
+              <input
+                type="text"
+                name="Facing"
+                value={property.Facing}
                 onChange={handleChange}
                 className="border p-2 w-full "
               />
@@ -47,44 +110,13 @@ export default function AddProp() {
                 className="border p-2 w-full "
               />
             </div>
-            <div>
-              <label font-semibold>Availability</label>
-              <input
-                type="text"
-                name="Availability"
-                value={property.Availability}
-                onChange={handleChange}
-                className="border p-2 w-full "
-              />
-            </div>
-
+            
             <div>
               <label font-semibold>Description</label>
               <input
                 type="text"
                 name="Description"
                 value={property.Description}
-                onChange={handleChange}
-                className="border p-2 w-full "
-              />
-            </div>
-
-            <div>
-              <label font-semibold>tenant_name</label>
-              <input
-                type="text"
-                name="tenant_name"
-                value={property.tenant_name}
-                onChange={handleChange}
-                className="border p-2 w-full "
-              />
-            </div>
-            <div>
-              <label font-semibold>Property_ID</label>
-              <input
-                type="text"
-                name="Property_ID"
-                value={property.Property_ID}
                 onChange={handleChange}
                 className="border p-2 w-full "
               />
