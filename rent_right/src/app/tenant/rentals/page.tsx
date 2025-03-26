@@ -18,6 +18,10 @@ interface Rental {
 export default function YourRentalsPage() {
   const [currentRentals, setCurrentRentals] = useState<Rental[]>([]);
   const [pastRentals, setPastRentals] = useState<Rental[]>([]);
+
+  const Service = ["Plumbing", "Electrical", "Carpentry", "Pest Control"];
+  const [currentservice, setcurrentservice] = useState<string | null>(null);
+  
   const [current_index, setcurrent_index] = useState<number | null>(null);
   const [description, setDescription] = useState("");
 
@@ -42,7 +46,7 @@ export default function YourRentalsPage() {
         setCurrentRentals(data.currentRentals);
         setPastRentals(data.pastRentals);
       } catch (error) {
-        console.error('Error fetching rental data:', error);
+        console.error("Error fetching rental data:", error);
       }
     }
 
