@@ -255,6 +255,7 @@ BEGIN
     );
 END;
 $$;
+
 CREATE OR REPLACE PROCEDURE if_renewed(in_lease_id INT,in_property_id INT,in_tenant_id INT,
 IN_end_date DATE,in_price DECIMAL(10,2))
 LANGUAGE plpgsql
@@ -264,7 +265,7 @@ BEGIN
 SELECT End_date INTO old_end_date
 FROM Lease_Agreement WHERE Lease_ID = in_lease_id;
 
---UPDATE OLD Lease_Agreement status to expired and update_at should now.
+--UPDATE OLD Lease_Agreement status to 'expired' and update_at  now.
 UPDATE Lease_Agreement
 SET Status ='expired',
 Updated_at =NOW()
