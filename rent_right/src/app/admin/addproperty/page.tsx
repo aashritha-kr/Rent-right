@@ -2,9 +2,14 @@
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
+import Header from "../../../../layout/tenantHeader";
+import {jwtDecode} from "jwt-decode";
+import { useRouter } from "next/navigation";
 
 export default function AddProp() {
-  const [property, setproperty] = useState({
+  const [property, setProperty] = useState({
     Door_no: "",
     Date_of_construction:"",
     Building_name:"",
@@ -15,116 +20,157 @@ export default function AddProp() {
     Type: "",
     Description: "",
   });
+  const router = useRouter();
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setproperty({ ...property, [e.target.name]: e.target.value });
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement> | { value: string; name: string }) => {
+    if (e && 'value' in e) {
+      setProperty({ ...property, [e.name]: e.value });
+    } else {
+      setProperty({ ...property, [e.target.name]: e.target.value });
+    }
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    try{
+      const token = localStorage.getItem("token");
+      if(!token){
+        console.error("Token not found");
+        return;
+      }
+      const decodedToken = jwtDecode<any>(token);
+      const userId = decodedToken.userId;
+      const res=await fetch("/api/properties", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "User_ID": userId
+        },
+        body: JSON.stringify(property),
+      });
+      if(!res.ok){
+        console.error("Error adding property");
+      }
+      router.push("/admin/properties");
+    }catch(error){
+      console.error("Error adding property:", error);
+    }
   };
 
   return (
-    <div className="p-6">
-      <h1 className="text-3xl text-center font-semibold my-3">Add property details</h1>
-      <form onSubmit={handleSubmit}>
-        <Card>
-          <CardContent>
-          <div className="mb-4">
-              <label font-semibold>Date of Construction</label>
-              <input
-                type="text"
-                name=""
-                value={property.Date_of_construction}
-                onChange={handleChange}
-                className="border p-2 w-full "
-              />
-            </div>
+    <Header>
+      <div className="p-6">
+        <h1 className="text-3xl text-center font-semibold my-3">Add property details</h1>
+        <form onSubmit={handleSubmit}>
+          <Card>
+            <CardContent>
             <div className="mb-4">
-              <label font-semibold>Door_no</label>
-              <input
-                type="text"
-                name="Door_no"
-                value={property.Door_no}
-                onChange={handleChange}
-                className="border p-2 w-full "
-              />
-            </div>
-            <div className="mb-4">
-              <label font-semibold>Building_name</label>
-              <input
-                type="text"
-                name="Building_name"
-                value={property.Building_name}
-                onChange={handleChange}
-                className="border p-2 w-full "
-              />
-            </div>
-            <div className="mb-4">
-              <label font-semibold>Street_name</label>
-              <input
-                type="text"
-                name="Street_name"
-                value={property.Street_name}
-                onChange={handleChange}
-                className="border p-2 w-full "
-              />
-            </div>
-            <div className="mb-4">
-              <label font-semibold>Area</label>
-              <input
-                type="text"
-                name="Area"
-                value={property.Area}
-                onChange={handleChange}
-                className="border p-2 w-full "
-              />
-            </div>
-            <div className="mb-4">
-              <label font-semibold>Area_in_sqft</label>
-              <input
-                type="text"
-                name="Area_in_sqft"
-                value={property.Area_in_sqft}
-                onChange={handleChange}
-                className="border p-2 w-full "
-              />
-            </div>
-            <div className="mb-4">
-              <label font-semibold>Facing</label>
-              <input
-                type="text"
-                name="Facing"
-                value={property.Facing}
-                onChange={handleChange}
-                className="border p-2 w-full "
-              />
-            </div>
-            <div>
-              <label font-semibold>Type</label>
-              <input
-                type="text"
-                name="Type"
-                value={property.Type}
-                onChange={handleChange}
-                className="border p-2 w-full "
-              />
-            </div>
-            
-            <div>
-              <label font-semibold>Description</label>
-              <input
-                type="text"
-                name="Description"
-                value={property.Description}
-                onChange={handleChange}
-                className="border p-2 w-full "
-              />
-            </div>
-            <button type="submit" className="bg-green-700 text-2xl text-white my-3 rounded"> Save</button>
-          </CardContent>
-        </Card>
-      </form>
-    </div>
+                <label className="font-semibold">Date of Construction</label>
+                <Input
+                  type="date"
+                  name="Date_of_construction"
+                  value={property.Date_of_construction}
+                  onChange={handleChange}
+                  className="border p-2 w-full "
+                />
+              </div>
+              <div className="mb-4">
+                <label className="font-semibold">Door_no</label>
+                <Input
+                  type="text"
+                  name="Door_no"
+                  value={property.Door_no}
+                  onChange={handleChange}
+                  className="border p-2 w-full "
+                />
+              </div>
+              <div className="mb-4">
+                <label className="font-semibold">Building_name</label>
+                <Input
+                  type="text"
+                  name="Building_name"
+                  value={property.Building_name}
+                  onChange={handleChange}
+                  className="border p-2 w-full "
+                />
+              </div>
+              <div className="mb-4">
+                <label className="font-semibold">Street_name</label>
+                <Input
+                  type="text"
+                  name="Street_name"
+                  value={property.Street_name}
+                  onChange={handleChange}
+                  className="border p-2 w-full "
+                />
+              </div>
+              <div className="mb-4">
+                <label className="font-semibold">Area</label>
+                <Input
+                  type="text"
+                  name="Area"
+                  value={property.Area}
+                  onChange={handleChange}
+                  className="border p-2 w-full "
+                />
+              </div>
+              <div className="mb-4">
+                <label className="font-semibold">Area_in_sqft</label>
+                <Input
+                  type="number"
+                  name="Area_in_sqft"
+                  value={property.Area_in_sqft}
+                  onChange={handleChange}
+                  className="border p-2 w-full "
+                />
+              </div>
+              <div className="mb-4">
+                <label className="font-semibold">Facing</label>
+                <Select name="Facing" value={property.Facing} onValueChange={(value) => handleChange({ name: "Facing", value })}>
+                  <SelectTrigger className="border p-2 w-full md:w-auto">
+                    <SelectValue placeholder="Facing" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="North">North</SelectItem>
+                    <SelectItem value="South">South</SelectItem>
+                    <SelectItem value="East">East</SelectItem>
+                    <SelectItem value="West">West</SelectItem>
+                    <SelectItem value="North-East">North-East</SelectItem>
+                    <SelectItem value="North-West">North-West</SelectItem> 
+                    <SelectItem value="South-East">South-East</SelectItem>
+                    <SelectItem value="South-West">South-West</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <label className="font-semibold">Type</label>
+                <Select name="Type" value={property.Type} onValueChange={(value) => handleChange({ name: "Type", value })}>
+                  <SelectTrigger className="border p-2 w-full md:w-auto">
+                    <SelectValue placeholder="Type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Commercial Building">Commercial Building</SelectItem>
+                    <SelectItem value="Residential Building">Residential Building</SelectItem>
+                    <SelectItem value="Land">Land</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div>
+                <label className="font-semibold">Description</label>
+                <Input
+                  type="text"
+                  name="Description"
+                  value={property.Description}
+                  onChange={handleChange}
+                  className="border p-2 w-full "
+                />
+              </div>
+              <Button type="submit" className="bg-blue-600 text-2xl text-white my-3 rounded"> Save</Button>
+            </CardContent>
+          </Card>
+        </form>
+      </div>
+    </Header>
   );
 }
