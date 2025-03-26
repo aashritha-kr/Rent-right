@@ -46,7 +46,6 @@ export default function Home() {
             </p>
             <div className="bg-white p-4 rounded-md shadow-md">
               <div className="flex flex-col md:flex-row md:items-center gap-4">
-                {/* BHK (Bedroom Hall Kitchen) Select */}
                 <Select>
                   <SelectTrigger className="w-full md:w-auto">
                     <SelectValue placeholder="BHK" />
