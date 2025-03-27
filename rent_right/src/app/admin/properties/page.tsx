@@ -186,7 +186,7 @@ export default function YourRentalsPage() {
                   >
                     {editStatus === index ? "Save" : "Edit Property"}
                   </Button>
-                  <Button className="w-fit px-4 py-2 text-sm my-4 bg-green-700">
+                  <Button className="w-fit px-4 py-2 text-sm my-4 bg-green-700" onClick={() => router.push(`/properties/${prop.property_id}`)}>
                     View Property
                   </Button>
                 </div>

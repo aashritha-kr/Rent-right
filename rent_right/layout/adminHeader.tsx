@@ -34,7 +34,6 @@ export default function AdminHeader({ children }: { children: React.ReactNode })
           <Link href="/admin" className="hover:text-blue-600">Home</Link>
           <Link href="/admin/properties" className="hover:text-blue-600">Properties</Link>
           <Link href="/admin/maintenance" className="hover:text-blue-600">Service</Link>
-          <Link href="/admin/rentals" className="hover:text-blue-600">Rentals</Link>
           <Link href="/admin/profile" className="hover:text-blue-600">Profile</Link>
           <Link href="/admin/enquiries" className="hover:text-blue-600">Enquiries</Link>
 

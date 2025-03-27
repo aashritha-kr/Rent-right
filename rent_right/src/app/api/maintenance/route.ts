@@ -1,3 +1,4 @@
+"use server"
 import { NextResponse } from 'next/server';
 import pool from '@/lib/db';
 
@@ -131,15 +132,15 @@ export async function GET(request: Request) {
                 Maintenance.Description,
                 Maintenance.Created_at,
                 Maintenance.Status,
-                Tenant.Name as TenantName,
-                Tenant.PhoneNumber as TenantNumber,
-                Users.First_name || ' ' || Users.Last_name as OwnerName,
-                Users.Phone as OwnerPhone
+                Tenant.First_name || ' ' || Tenant.Last_name as TenantName,
+                Tenant.Phone as TenantNumber,
+                Owner.First_name || ' ' || Owner.Last_name as OwnerName,
+                Owner.Phone as OwnerPhone
             FROM Maintenance
             JOIN Lease_Agreement ON Maintenance.Lease_ID = Lease_Agreement.Lease_ID
             JOIN Property ON Lease_Agreement.Property_ID = Property.Property_ID
             JOIN Users AS Owner ON Property.Owner_ID = Owner.User_ID
-            JOIN Users AS Tenant ON Lease_Agreement.Tenant_ID = Tenant.User_ID  -- Join Users table for tenant details
+            JOIN Users AS Tenant ON Lease_Agreement.Tenant_ID = Tenant.User_ID
             WHERE Maintenance.Staff_ID = $1
         `;
   

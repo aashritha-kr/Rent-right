@@ -3,6 +3,7 @@ import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { jwtDecode } from "jwt-decode";
+import Header from '../../../../layout/staffHeader';
 
 export default function YourRequestsPage() {
   interface MaintenanceRequest {
@@ -42,7 +43,7 @@ export default function YourRequestsPage() {
     if (userId) {
       const fetchRequests = async () => {
         try {
-          const response = await fetch("/api/maintenance", {
+          const response = await fetch("/api/staff", {
             method: "GET",
             headers: {
               "User_ID": userId,
@@ -54,8 +55,8 @@ export default function YourRequestsPage() {
           }
 
           const data = await response.json();
-          setCurrentRequests(data.currentRequests || []);
-          setPastRequests(data.pastRequests || []);
+          setCurrentRequests(data.currentStaffRequests || []);
+          setPastRequests(data.pastStaffRequests || []);
         } catch (error) {
           console.error("Error fetching requests:", error);
           setError("Failed to load requests");
@@ -70,7 +71,7 @@ export default function YourRequestsPage() {
 
   const handleStatusUpdate = async (requestId: string, newStatus: string) => {
     try {
-      const response = await fetch("/api/maintenance/update-status", {
+      const response = await fetch("/api/staff", {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -105,9 +106,10 @@ export default function YourRequestsPage() {
   }
 
   return (
+    <Header>
     <div className="p-8">
       <h1 className="text-3xl font-bold text-blue-750 text-center p-6">
-        YOUR MAINTENANCE REQUESTS
+        Your Maintenance Requests
       </h1>
 
       <h2 className="text-2xl font-semibold text-blue-750 p-4 bg-blue-100">
@@ -170,5 +172,6 @@ export default function YourRequestsPage() {
         ))}
       </div>
     </div>
+    </Header>
   );
 }

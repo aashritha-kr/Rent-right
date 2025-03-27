@@ -1,6 +1,6 @@
 "use client";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
-import React, { useState, useEffect, use } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import Header from "../../../../layout/adminHeader";
 import {jwtDecode} from "jwt-decode";
@@ -41,6 +41,11 @@ export default function AdminEnquiriesPage() {
         });
         const data = await response.json();
         setEnquiries(data.enquiries);
+        const initialApprovalStatus: { [key: number]: string } = {};
+        data.enquiries.forEach((enquiry: Enquiry, index: number) => {
+          initialApprovalStatus[index] = enquiry.approval || "Pending";
+        });
+        setApprovalStatus(initialApprovalStatus);
       } catch (error) {
         console.error("Error fetching enquiries:", error);
       }
@@ -51,6 +56,10 @@ export default function AdminEnquiriesPage() {
   useEffect(() => {
     console.log(enquiries);
   }, [enquiries]);
+
+  useEffect(()=>{
+    console.log(approvalStatus);
+  }, [approvalStatus]);
 
   const [finalTenant, setFinalTenant] = useState<{ [propertyIndex: number]: string }>({});
 
@@ -89,6 +98,8 @@ export default function AdminEnquiriesPage() {
     }
   };
 
+  
+
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>,propertyIndex:number) => {
     setFinalTenant((prev) => ({
         ...prev,
@@ -117,18 +128,16 @@ export default function AdminEnquiriesPage() {
                     <strong>Enquiry Description:</strong> {enquiry.description}
                   </p>
 
-                  {!approvalStatus[index] && <div className="flex gap-4 mt-2">
+                  {approvalStatus[index]==='Pending' && <div className="flex gap-4 mt-2">
                     <Button
                       className="px-4 py-2 bg-green-800"
                       onClick={() => handleApproval(index, "Approved")}
-                      disabled={approvalStatus[index] === "Approved"}
                     >
                       Approve
                     </Button>
                     <Button
                       className="px-4 py-2 bg-red-800"
                       onClick={() => handleApproval(index, "Rejected")}
-                      disabled={approvalStatus[index] === "Rejected"}
                     >
                       Reject
                     </Button>

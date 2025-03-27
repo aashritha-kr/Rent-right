@@ -106,7 +106,7 @@ export default function YourRentalsPage() {
         </h1>
         <h2 className="text-2xl font-semibold text-blue-750 p-4">Current Rentals</h2>
         <div className="flex flex-col gap-6">
-          {currentRentals.length?currentRentals.map((rental, index) => (
+          {currentRentals?.length?currentRentals.map((rental, index) => (
             <Card key={rental.property_id} className="p-4 shadow-md rounded-lg">
               <CardContent>
                 <CardTitle className="text-lg">Name: {rental.building_name}</CardTitle>
