@@ -10,8 +10,17 @@ export async function GET(request: Request) {
     const userId = request.headers.get('User_ID');
 
     if (!userId) {
-      return new Response(JSON.stringify({ message: 'User ID is required' }),
-      { status: 400, headers: { 'Content-Type': 'application/json' } });
+      const propertyQuery = `
+          SELECT * FROM Property
+      `;
+
+      const propertyResult = await pool.query(propertyQuery);
+      const properties = propertyResult.rows;
+
+      return new Response(
+          JSON.stringify({ properties }),
+          { status: 200, headers: { 'Content-Type': 'application/json' } }
+      );
     }
 
     const userResult = await pool.query(
@@ -46,8 +55,19 @@ export async function GET(request: Request) {
             { status: 200, headers: { 'Content-Type': 'application/json' } }
         );
     }
+    else if(role==='Tenant'){
+      const propertyQuery = `
+          SELECT * FROM Property
+      `;
 
-    
+      const propertyResult = await pool.query(propertyQuery);
+      const properties = propertyResult.rows;
+
+      return new Response(
+          JSON.stringify({ properties }),
+          { status: 200, headers: { 'Content-Type': 'application/json' } }
+      );
+    }    
   } catch (error) {
     console.error("Error fetching rental data:", error);
     return new Response(JSON.stringify({ message: 'Error fetching property data' }),
