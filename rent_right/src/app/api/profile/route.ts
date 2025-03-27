@@ -60,7 +60,7 @@ export async function GET(request: Request) {
 
 export async function PUT(request: Request) {
   try {
-    const userId = parseInt(request.headers.get('User_ID')??"", 10);
+    const userId = parseInt(request.headers.get('User_ID') || '');
 
     if (!userId) {
       return new Response('User ID is required', { status: 400 });

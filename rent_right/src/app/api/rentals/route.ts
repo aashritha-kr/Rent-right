@@ -35,7 +35,7 @@ export async function GET(request: Request) {
 
     const currentRentalsQuery = `
         SELECT
-          Lease_Agreement.Lease_ID, Property.Address, Property.Type,
+          Lease_Agreement.Lease_ID, Property.Building_name, Property.Type,
           Lease_Agreement.Start_date, Lease_Agreement.End_date,
           Users.Name as OwnerName, Users.PhoneNumber as OwnerPhone
         FROM Lease_Agreement
@@ -45,7 +45,7 @@ export async function GET(request: Request) {
       `;
     const pastRentalsQuery = `
         SELECT
-            Lease_Agreement.Lease_ID, Property.Address, Property.Type,
+            Lease_Agreement.Lease_ID, Property.Building_name, Property.Type,
             Lease_Agreement.Start_date, Lease_Agreement.End_date,
             Users.Name as OwnerName, Users.PhoneNumber as OwnerPhone
         FROM Lease_Agreement
@@ -67,7 +67,10 @@ export async function GET(request: Request) {
       }
     );
   } catch (error) {
-    console.error( JSON.stringify({ message: 'Error fetching rentals' }),
-        { status: 500, headers: { 'Content-Type': 'application/json' } });
+    console.error('Error fetching rentals:', error);
+    return new Response(
+      JSON.stringify({ message: 'Error fetching rentals' }),
+      { status: 500, headers: { 'Content-Type': 'application/json' } }
+    );
   }
 }

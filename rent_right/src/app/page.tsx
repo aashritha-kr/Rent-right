@@ -46,7 +46,6 @@ export default function Home() {
             </p>
             <div className="bg-white p-4 rounded-md shadow-md">
               <div className="flex flex-col md:flex-row md:items-center gap-4">
-                {/* BHK (Bedroom Hall Kitchen) Select */}
                 <Select>
                   <SelectTrigger className="w-full md:w-auto">
                     <SelectValue placeholder="BHK" />
@@ -82,7 +81,7 @@ export default function Home() {
             <Image
               src="/house.svg"
               alt="House Illustration"
-              layout="fill"
+              fill
               className="md:object-cover"
               priority
             />
@@ -93,7 +92,7 @@ export default function Home() {
       <section className="mx-auto px-6 py-16 text-white w-full" style={{ backgroundColor: '#002F63' }}>
         <h2 className="text-3xl font-bold text-center mb-8">Why Choose Us</h2>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          <div className="rounded-lg shadow-md p-6 text-center"  style={{ backgroundColor: '#BFEAFF' }}>
+          <div className="rounded-lg shadow-md p-6 text-center m-6"  style={{ backgroundColor: '#BFEAFF' }}>
             <div className="text-blue-600 mb-4 ">
               <Image className="mx-auto" src="/search.svg" alt="Homes" width={60} height={60} />
             </div>
@@ -103,17 +102,17 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="rounded-lg shadow-md p-6 text-center"  style={{ backgroundColor: '#BFEAFF' }}>
+          <div className="rounded-lg shadow-md p-6 text-center m-6"  style={{ backgroundColor: '#BFEAFF' }}>
             <div className="text-blue-600 mb-4">
               <Image className="mx-auto" src="/repair.svg" alt="Homes" width={60} height={60} />
             </div>
             <h3 className="font-semibold mb-2 text-blue-600">Experienced staff</h3>
             <p className="text-gray-600">
-              Find an experienced agent who knows your market best.
+              Find experienced staff to resolve your maintenance woes.
             </p>
           </div>
 
-          <div className="rounded-lg shadow-md p-6 text-center" style={{ backgroundColor: '#BFEAFF' }}>
+          <div className="rounded-lg shadow-md p-6 text-center m-6" style={{ backgroundColor: '#BFEAFF' }}>
             <div className="text-blue-600 mb-4">
               <Image className="mx-auto" src="/property.svg" alt="Homes" width={60} height={60} />
             </div>
@@ -123,7 +122,7 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="rounded-lg shadow-md p-6 text-center" style={{ backgroundColor: '#BFEAFF' }}>
+          <div className="rounded-lg shadow-md p-6 text-center m-6" style={{ backgroundColor: '#BFEAFF' }}>
             <div className="text-blue-600 mb-4">
               <Image className="mx-auto" src="/listing.svg" alt="Homes" width={60} height={60} />
             </div>

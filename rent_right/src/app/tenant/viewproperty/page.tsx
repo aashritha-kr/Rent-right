@@ -1,5 +1,5 @@
-
 "use client";
+
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import React, { useState } from "react";
 import { Input } from "@/components/ui/input";
@@ -46,6 +46,7 @@ export default function ViewPropTenant() {
     },
   ];
 return (
+  <Header>
     <div className="p-8">
       <h1 className="text-3xl font-bold text-blue-850 text-center p-6">
         PROPERTIES
@@ -114,5 +115,6 @@ return (
         ))}
       </div>
     </div>
+  </Header>
   );
 }
