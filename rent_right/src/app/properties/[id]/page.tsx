@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import Header from "../../../../layout/tenantHeader";
 import { useParams } from 'next/navigation';
+import {jwtDecode} from 'jwt-decode';
 
 export default function ViewPropTenant() {
     const id = useParams();
@@ -26,7 +27,7 @@ export default function ViewPropTenant() {
                 const data = await response.json();
                 if (response.ok) {
                     setProperty(data);
-                    console.log("Property:", property);
+                    setSubmitted(data.enquiries.approval?true:false);
                     setLoading(false);
                 } else {
                     console.error("Property not found");
@@ -43,28 +44,50 @@ export default function ViewPropTenant() {
         }
     }, [id.id]);
 
-    // useEffect(() => {
-    //     console.log("Updated Property:", property);
-      
-    //     // Ensure property is not null before accessing properties
-    //     if (property) {
-    //       console.log(property.property_id);  // 2
-    //       console.log(property.owner_id);     // 5
-    //       console.log(property.date_of_construction);  // '2010-05-19T18:30:00.000Z'
-    //       console.log("hi", property.area);         // 'Downtown'
-    //       console.log(property.area_in_sqft); // 1500
-    //       console.log(property.availability); // 'Available'
-    //       console.log(property.building_name); // 'Sunset Apartments'
-    //       console.log(property.description);   // 'Spacious apartment'
-    //     }
-    //   }, [property]);
-    const handleSubmit = (e: React.FormEvent) => {
+    useEffect(() => {
+        console.log("Updated Property:", property);
+        console.log("Updated Property:", property?.enquiries?.approval);
+      }, [property]);
+
+      useEffect(() => {
+        console.log("Updated Contact Request:", contactRequested);
+      }, [contactRequested]);
+
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setSubmitted(true);
+        try{
+            const token = localStorage.getItem('token');
+            if (token) {
+              try {
+                  const decodedToken = jwtDecode(token);
+                  var userId = decodedToken.userId;
+                  console.log("User ID:", userId);
+              } catch (error) {
+                  console.error("Invalid token", error);
+              }
+            }
+            const response = await fetch("/api/enquiry", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                'User_ID': userId,
+                'Property_ID': id.id?.toString() || ""
+              },
+              body: JSON.stringify({ description })
+            });
+            const data = await response.json();
+            console.log(data);
+            if (response.ok) {
+              console.log("Enquiry created successfully");
+            }
+          } catch (error) {
+            console.error("Error creating enquiry:", error);
+          }
         setDescription("");
     };
 
-    const handleContactRequest = () => {
+    const handleContactRequest = async () => {
         setContactRequested(true);
     };
 
@@ -104,16 +127,16 @@ export default function ViewPropTenant() {
                                 <div className="flex flex-col items-start gap-2 mt-4">
                                     <Button
                                         className="w-fit px-4 py-2 text-sm bg-green-700 hover:bg-green-700 text-white"
-                                        onClick={handleContactRequest} // Show the message input when clicked
+                                        onClick={handleContactRequest}
                                     >
                                         Request to contact the owner
                                     </Button>
                                 </div>
-                            ) : (
-                                <p className="text-blue-950 mt-4">Owner Approval Status: {property.approval_status}</p>
+                            ) : submitted && (
+                                <p className="text-blue-950 mt-4">Owner Approval Status: {property?.enquiries?.approval}</p>
                             )}
 
-                            {contactRequested && (
+                            {contactRequested && !submitted && (
                                 <form
                                     onSubmit={handleSubmit}
                                     className="mt-4 p-4 border rounded-lg bg-gray-100"

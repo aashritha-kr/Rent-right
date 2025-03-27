@@ -36,6 +36,7 @@ export async function POST(request: Request) {
             );
         }
         const requestBody = await request.json();
+        console.log("Request Body:", requestBody);
         const { description } = requestBody;
 
         const insertEnquiryQuery = `
