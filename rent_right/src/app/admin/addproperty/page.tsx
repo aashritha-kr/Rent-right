@@ -6,12 +6,12 @@ import { Button } from "@/components/ui/button";
 export default function AddProp() {
   const [property, setproperty] = useState({
     Door_no: "",
-    Date_of_construction:"",
-    Building_name:"",
-    Street_name:"",
-    Area:"",
-    Area_in_sqft:"",
-    Facing:"",
+    Date_of_construction: "",
+    Building_name: "",
+    Street_name: "",
+    Area: "",
+    Area_in_sqft: "",
+    Facing: "",
     Type: "",
     Description: "",
   });
@@ -26,22 +26,24 @@ export default function AddProp() {
 
   return (
     <div className="p-6">
-      <h1 className="text-3xl text-center font-semibold my-3">Add property details</h1>
+      <h1 className="text-3xl text-center font-semibold my-3">
+        Add property details
+      </h1>
       <form onSubmit={handleSubmit}>
         <Card>
           <CardContent>
-          <div className="mb-4">
-              <label font-semibold>Date of Construction</label>
+            <div className="mb-4">
+              <label className="font-semibold">Date of Construction</label>
               <input
                 type="text"
-                name=""
+                name="Date_of_construction"
                 value={property.Date_of_construction}
                 onChange={handleChange}
-                className="border p-2 w-full "
+                className="border p-2 w-full"
               />
             </div>
             <div className="mb-4">
-              <label font-semibold>Door_no</label>
+              <label className="font-semibold">Door_no</label>
               <input
                 type="text"
                 name="Door_no"
@@ -51,7 +53,7 @@ export default function AddProp() {
               />
             </div>
             <div className="mb-4">
-              <label font-semibold>Building_name</label>
+              <label className="font-semibold">Building_name</label>
               <input
                 type="text"
                 name="Building_name"
@@ -61,7 +63,7 @@ export default function AddProp() {
               />
             </div>
             <div className="mb-4">
-              <label font-semibold>Street_name</label>
+              <label className="font-semibold">Street_name</label>
               <input
                 type="text"
                 name="Street_name"
@@ -71,7 +73,7 @@ export default function AddProp() {
               />
             </div>
             <div className="mb-4">
-              <label font-semibold>Area</label>
+              <label className="font-semibold">Area</label>
               <input
                 type="text"
                 name="Area"
@@ -81,7 +83,7 @@ export default function AddProp() {
               />
             </div>
             <div className="mb-4">
-              <label font-semibold>Area_in_sqft</label>
+              <label className="font-semibold">Area_in_sqft</label>
               <input
                 type="text"
                 name="Area_in_sqft"
@@ -91,7 +93,7 @@ export default function AddProp() {
               />
             </div>
             <div className="mb-4">
-              <label font-semibold>Facing</label>
+              <label className="font-semibold">Facing</label>
               <input
                 type="text"
                 name="Facing"
@@ -101,7 +103,7 @@ export default function AddProp() {
               />
             </div>
             <div>
-              <label font-semibold>Type</label>
+              <label className="font-semibold">Type</label>
               <input
                 type="text"
                 name="Type"
@@ -110,9 +112,9 @@ export default function AddProp() {
                 className="border p-2 w-full "
               />
             </div>
-            
+
             <div>
-              <label font-semibold>Description</label>
+              <label className="font-semibold">Description</label>
               <input
                 type="text"
                 name="Description"
@@ -121,7 +123,13 @@ export default function AddProp() {
                 className="border p-2 w-full "
               />
             </div>
-            <button type="submit" className="bg-green-700 text-2xl text-white my-3 rounded"> Save</button>
+            <button
+              type="submit"
+              className="bg-green-800 text-2xl text-white my-3 px-3 py-3 rounded"
+            >
+              
+              Submit
+            </button>
           </CardContent>
         </Card>
       </form>
