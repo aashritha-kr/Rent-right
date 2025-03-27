@@ -27,7 +27,7 @@ export default function UserAuthForm({title, role, ...props}: React.HTMLAttribut
     } else {
       localStorage.setItem('token', data.token);
       console.log('Login successful', data.token);
-      router.push("/" + role?.toLowerCase() + "/home");
+      router.push("/" + role?.toLowerCase());
     }
     setLoading(false);
   };

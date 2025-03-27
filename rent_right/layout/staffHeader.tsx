@@ -31,7 +31,7 @@ export default function staffHeader({ children }: { children: React.ReactNode })
         </div>
 
         <nav className="flex items-center gap-4">
-          <Link href="/staff/home" className="hover:text-blue-600">Home</Link>
+          <Link href="/staff" className="hover:text-blue-600">Home</Link>
           <Link href="/staff/maintenance" className="hover:text-blue-600">Requests</Link>
           <Link href="/staff/profile" className="hover:text-blue-600">Profile</Link>
 

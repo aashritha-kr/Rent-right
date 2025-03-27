@@ -40,7 +40,7 @@ export default function UserAuthForm({title, role, ...props}: React.HTMLAttribut
       setLoading(false);
       if(res.status===201){
         localStorage.setItem('token', data.token);
-        router.push("/" + role.toLowerCase() + "/home");
+        router.push("/" + role.toLowerCase());
       }
   };
 

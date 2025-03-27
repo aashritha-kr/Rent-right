@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
-import Header from "../../../../layout/tenantHeader";
+import Header from "../../../../layout/adminHeader";
 import {jwtDecode} from "jwt-decode";
 import { useRouter } from "next/navigation";
 
@@ -77,7 +77,7 @@ export default function AddProp() {
       if(!res.ok){
         console.error("Error adding property");
       }
-      // router.push("/admin/properties");
+      router.push("/admin/properties");
     }catch(error){
       console.error("Error adding property:", error);
     }

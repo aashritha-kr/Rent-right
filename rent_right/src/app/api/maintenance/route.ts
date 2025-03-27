@@ -169,10 +169,10 @@ export async function GET(request: Request) {
             JOIN Property ON Lease_Agreement.Property_ID = Property.Property_ID
             JOIN Users ON Property.Owner_ID = Users.User_ID
             LEFT JOIN Users AS Staff ON Maintenance.Staff_ID = Staff.User_ID
-            WHERE Lease_Agreement.Tenant_ID = $1 AND Maintenance.Status = 'Resolved';
+            WHERE Property.Owner_ID = $1;
         `;
   
-        const adminRequestsRes = await pool.query(adminRequestsQuery);
+        const adminRequestsRes = await pool.query(adminRequestsQuery, [userId]);
         const adminRequests = adminRequestsRes.rows;
   
         return new Response(JSON.stringify({ adminRequests }), {

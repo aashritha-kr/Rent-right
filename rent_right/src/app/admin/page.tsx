@@ -4,7 +4,7 @@ import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import Header from "../../../../layout/adminHeader";
+import Header from "../../../layout/adminHeader";
 import { jwtDecode } from "jwt-decode";
 import { useRouter } from "next/navigation";
 

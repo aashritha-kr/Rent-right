@@ -1,5 +1,5 @@
 "use client";
-import Header from "../../../../layout/tenantHeader";
+import Header from "../../../layout/tenantHeader";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";

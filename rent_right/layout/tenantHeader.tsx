@@ -31,7 +31,7 @@ export default function tenantHeader({ children }: { children: React.ReactNode }
         </div>
 
         <nav className="flex items-center gap-4">
-          <Link href="/tenant/home" className="hover:text-blue-600">Home</Link>
+          <Link href="/tenant" className="hover:text-blue-600">Home</Link>
           <Link href="/tenant/properties" className="hover:text-blue-600">Properties</Link>
           <Link href="/tenant/maintenance" className="hover:text-blue-600">Service</Link>
           <Link href="/tenant/rentals" className="hover:text-blue-600">Rentals</Link>

@@ -1,34 +1,51 @@
 "use client";
 import { Card, CardContent } from "@/components/ui/card";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import Header from "../../../../layout/adminHeader";
+import {jwtDecode} from "jwt-decode";
 
 export default function ViewMaintenanceRequests() {
-  const [Requests, setRequests] = useState([
-    {
-      request_id: "342",
-      address: "a-406,has apt",
-      type: "Apartment",
-      created_at: "12:01",
-      Tenantname: "abc",
-      Tenantnumber: "384720",
-      Status: "Assigned",
-      Service: "Plumbing",
-      Description: "leaky faucet",
-      staffMember: "asv",
-    },
-    {
-      request_id: "3242",
-      address: "a-406",
-      type: "Villa",
-      created_at: "12:03",
-      Ownername: "abc",
-      Ownernumber: "384720",
-      Status: "Pending",
-      Service: "Plumbing",
-      Description: "leaky faucet",
-      staffMember: "",
-    },
-  ]);
+  const [Requests, setRequests] = useState<Request[]>([]);
+  interface Request {
+    request_id: number;
+    Service: string;
+    Description: string;
+    created_at: string;
+    Tenantname: string;
+    Tenantnumber: string;
+    Status: string;
+    staffMember: string;
+  }
+
+  useEffect(() => {
+    const fetchRequests = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        if (!token) {
+          throw new Error("No token found");
+        }
+        try {
+            const decodedToken = jwtDecode(token);
+            var userId = decodedToken.userId;
+            console.log("User ID:", userId);
+        } catch (error) {
+            console.error("Invalid token", error);
+        }
+        const response = await fetch("/api/maintenance", {
+          method: "GET",
+          headers: {
+            "User_ID": userId,
+          },
+        });
+        const data = await response.json();
+        setRequests(data.adminRequests);
+      } catch (error) {
+        console.error("Error fetching maintenance requests:", error);
+      }
+    };
+
+    fetchRequests();
+  }, []);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLSelectElement>,
@@ -44,9 +61,10 @@ export default function ViewMaintenanceRequests() {
   };
 
   return (
+    <Header>
     <div className="p-8">
       <h1 className="text-3xl font-bold text-blue-750 text-center p-6">
-        YOUR MAINTENANCE REQUESTS
+        Your Maintenance Requests
       </h1>
 
       <div className="flex flex-col gap-6">
@@ -101,5 +119,6 @@ export default function ViewMaintenanceRequests() {
         ))}
       </div>
     </div>
+    </Header>
   );
 }

@@ -1,5 +1,72 @@
 import pool from '@/lib/db';
 
+export async function GET(request: Request) {
+    try{
+        console.log("Fetching Enquiries");
+        const userId = request.headers.get('User_ID');
+        if (!userId) {
+            return new Response(
+            JSON.stringify({ message: 'User ID is required' }),
+            { status: 400, headers: { 'Content-Type': 'application/json' } }
+            );
+        }
+    
+        const userResult = await pool.query('SELECT * FROM Users WHERE User_ID = $1', [userId]);
+        if (userResult.rowCount === 0) {
+            return new Response(
+            JSON.stringify({ message: 'User not found' }),
+            { status: 404, headers: { 'Content-Type': 'application/json' } }
+            );
+        }
+    
+        const roleResult = await pool.query('SELECT Role FROM Roles WHERE User_ID = $1', [userId]);
+        const role = roleResult.rows.length > 0 ? roleResult.rows[0].role : null;
+
+        if(role === 'Tenant'){
+            const enquiriesQuery = `
+                SELECT * FROM Enquiry WHERE Tenant_ID = $1;
+            `;
+            const enquiriesResult = await pool.query(enquiriesQuery, [userId]);
+            const enquiries = enquiriesResult.rows;
+            return new Response(
+                JSON.stringify({ enquiries }),
+                { status: 200, headers: { 'Content-Type': 'application/json' } }
+            );
+        }
+        else if(role === 'Admin'){
+            console.log("Admin Enquiries");
+            const enquiriesQuery = `
+                SELECT
+                    Enquiry.Enquiry_ID,
+                    Enquiry.Description,
+                    Enquiry.Approval,
+                    Property.Property_ID,
+                    Property.Building_name
+                FROM Enquiry
+                JOIN Property ON Enquiry.Property_ID = Property.Property_ID
+                WHERE Property.Owner_ID = $1;
+            `;
+
+            const enquiriesResult = await pool.query(enquiriesQuery, [userId]);  // Pass userId to filter based on the logged-in admin
+            const enquiries = enquiriesResult.rows;
+
+            console.log("Enquiries:", enquiries);
+
+            return new Response(
+                JSON.stringify({ enquiries }),
+                { status: 200, headers: { 'Content-Type': 'application/json' } }
+            );
+        }    
+    }
+    catch (error) {
+        console.error("Error fetching enquiries:", error);
+        return new Response(
+            JSON.stringify({ message: 'Server error' }),
+            { status: 500, headers: { 'Content-Type': 'application/json' } }
+        );
+    }
+}
+
 export async function POST(request: Request) {
     try{
         const userId = request.headers.get('User_ID');
@@ -63,5 +130,54 @@ export async function POST(request: Request) {
             JSON.stringify({ message: 'Server error' }),
             { status: 500, headers: { 'Content-Type': 'application/json' } }
         );
+    }
+}
+
+export async function PATCH(request: Request) {
+    try {
+        const { userId, enquiryId, newStatus } = await request.json();
+    
+        const userResult = await pool.query('SELECT * FROM Users WHERE User_ID = $1', [userId]);
+        if (userResult.rowCount === 0) {
+            return new Response(
+                JSON.stringify({ message: 'User not found' }),
+                { status: 404, headers: { 'Content-Type': 'application/json' } }
+            );
+        }
+    
+        const roleResult = await pool.query('SELECT Role FROM Roles WHERE User_ID = $1', [userId]);
+        const role = roleResult.rows.length > 0 ? roleResult.rows[0].role : null;
+
+        if(role !== 'Admin') {
+            return new Response(
+                JSON.stringify({ message: 'User is not an Admin' }),
+                { status: 403, headers: { 'Content-Type': 'application/json' } }
+            );
+        }
+        
+        if (!enquiryId || !newStatus) {
+            return new Response('Missing parameters', { status: 400 });
+        }
+
+        const updateQuery = `
+            UPDATE Enquiry
+            SET Approval = $1
+            WHERE Enquiry_ID = $2
+            RETURNING *;
+        `;
+
+        const result = await pool.query(updateQuery, [newStatus, enquiryId]);
+
+        if (result.rowCount === 0) {
+            return new Response('Enquiry not found', { status: 404 });
+        }
+
+        return new Response(JSON.stringify(result.rows[0]), {
+            headers: { 'Content-Type': 'application/json' },
+        });
+
+    } catch (error) {
+        console.error('Error updating enquiry status:', error);
+        return new Response('Error updating status', { status: 500 });
     }
 }

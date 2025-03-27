@@ -1,52 +1,92 @@
 "use client";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
-import React, { useState } from "react";
+import React, { useState, useEffect, use } from "react";
 import { Button } from "@/components/ui/button";
-
-const propdetails = [
-  {
-    address: "ad",
-    tenant_description1: "good",
-    tenant_description2: "bad",
-  },
-  {
-    address: "ad",
-    tenant_description1: "good",
-    tenant_description2: "bad",
-  },
-  {
-    address: "ad",
-    tenant_description1: "good",
-    tenant_description2: "bad",
-  },
-];
+import Header from "../../../../layout/adminHeader";
+import {jwtDecode} from "jwt-decode";
+import { useRouter } from "next/navigation";
 
 export default function AdminEnquiriesPage() {
-  const [approvalStatus, setApprovalStatus] = useState<{
-    [propertyIndex: number]: { [descriptionKey: string]: string };
-  }>({});
+  interface Enquiry {
+    enquiry_id: string;
+    building_name: string;
+    description: string;
+    property_id: string;
+    approval: string;
+  }
 
-const [finalTenant, setFinalTenant] = useState<{ [propertyIndex: number]: string }>({});
+  const [enquiries, setEnquiries] = useState<Enquiry[]>([]);
+  const [approvalStatus, setApprovalStatus] = useState<{ [enquiryIndex: number]: string }>({});
+  const router = useRouter();
 
+  useEffect(() => {
+    const fetchEnquiries = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        if (!token) {
+          throw new Error("No token found");
+        }
+        try {
+            const decodedToken = jwtDecode(token);
+            var userId = decodedToken.userId;
+            console.log("User ID:", userId);
+        } catch (error) {
+            console.error("Invalid token", error);
+        }
+        const response = await fetch("/api/enquiry", {
+          method: "GET",
+          headers: {
+            "User_ID": userId,
+          },
+        });
+        const data = await response.json();
+        setEnquiries(data.enquiries);
+      } catch (error) {
+        console.error("Error fetching enquiries:", error);
+      }
+    };
+    fetchEnquiries();
+  }, []);
 
-  const handleApprove = (propertyIndex: number, descriptionKey: string) => {
-    setApprovalStatus((prev) => ({
-      ...prev,
-      [propertyIndex]: {
-        ...prev[propertyIndex],
-        [descriptionKey]: "Approved",
-      },
-    }));
-  };
+  useEffect(() => {
+    console.log(enquiries);
+  }, [enquiries]);
 
-  const handleReject = (propertyIndex: number, descriptionKey: string) => {
-    setApprovalStatus((prev) => ({
-      ...prev,
-      [propertyIndex]: {
-        ...prev[propertyIndex],
-        [descriptionKey]: "Rejected",
-      },
-    }));
+  const [finalTenant, setFinalTenant] = useState<{ [propertyIndex: number]: string }>({});
+
+  const handleApproval = async (enquiryIndex: number, status: string) => {
+    const enquiryId = enquiries[enquiryIndex].enquiry_id;
+      try {
+        const token = localStorage.getItem("token");
+        if (!token) {
+          throw new Error("No token found");
+        }
+        try {
+            const decodedToken = jwtDecode(token);
+            var userId = decodedToken.userId;
+            console.log("User ID:", userId);
+        } catch (error) {
+            console.error("Invalid token", error);
+        }
+      const response = await fetch(`/api/enquiry`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ userId, enquiryId, newStatus: status }),
+      });
+
+      if (response.ok) {
+        setApprovalStatus((prev) => ({
+          ...prev,
+          [enquiryIndex]: status,
+        }));
+      } else {
+        console.error("Failed to update approval status");
+      }
+    } catch (error) {
+      console.error("Error updating approval status:", error);
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>,propertyIndex:number) => {
@@ -55,86 +95,54 @@ const [finalTenant, setFinalTenant] = useState<{ [propertyIndex: number]: string
         [propertyIndex]: e.target.value,
       }));  };
 
-  return (
-    <div className="p-8">
-      <h1 className="text-3xl font-bold text-blue-750 text-center p-6">
-        YOUR PROPERTY APPROVAL REQUESTS
-      </h1>
-      <div className="flex flex-col gap-6">
-        {propdetails.map((prop, index) => (
-          <Card key={index} className="p-4 shadow-md rounded-lg">
-            <CardTitle>Address: {prop.address}</CardTitle>
-            <CardContent>
-              <Button className="w-fit px-4 py-2 text-sm my-4 bg-blue-900">
-                View Property
-              </Button>
+    return (
+      <Header>
+        <div className="p-8">
+          <h1 className="text-3xl font-bold text-blue-750 text-center p-6">
+            Enquiry Requests
+          </h1>
+          <div className="flex flex-col gap-6">
+            {enquiries.map((enquiry, index) => (
+              <Card key={enquiry.enquiry_id} className="p-4 shadow-md rounded-lg">
+                <CardTitle>Property: {enquiry.building_name}</CardTitle>
+                <CardContent>
+                  <Button
+                    className="w-fit px-4 py-2 text-sm my-4 bg-blue-900"
+                    onClick={() => router.push(`/properties/${enquiry.property_id}`)}
+                  >
+                    View Property
+                  </Button>
 
-              <p>
-                <strong>Tenant Request 1 :</strong> {prop.tenant_description1}
-              </p>
-              <div className="flex gap-4 mt-2">
-                <Button
-                  className="px-4 py-2 bg-green-800"
-                  onClick={() =>
-                    approvalStatus[index]?.tenant_description1 !== "Approved" &&
-                    handleApprove(index, "tenant_description1")
+                  <p>
+                    <strong>Enquiry Description:</strong> {enquiry.description}
+                  </p>
+
+                  {!approvalStatus[index] && <div className="flex gap-4 mt-2">
+                    <Button
+                      className="px-4 py-2 bg-green-800"
+                      onClick={() => handleApproval(index, "Approved")}
+                      disabled={approvalStatus[index] === "Approved"}
+                    >
+                      Approve
+                    </Button>
+                    <Button
+                      className="px-4 py-2 bg-red-800"
+                      onClick={() => handleApproval(index, "Rejected")}
+                      disabled={approvalStatus[index] === "Rejected"}
+                    >
+                      Reject
+                    </Button>
+                  </div>
                   }
-                >
-                  Approve
-                </Button>
-                <Button
-                  className="px-4 py-2 bg-red-800"
-                  onClick={() =>
-                    approvalStatus[index]?.tenant_description1 !== "Rejected" &&
-                    handleReject(index, "tenant_description1")
-                  }
-                >
-                  Reject
-                </Button>
-              </div>
 
-              <p>
-                <strong>Tenant Request 2:</strong> {prop.tenant_description2}
-              </p>
-              <div className="flex gap-4 mt-2">
-                <Button
-                  className="px-4 py-2 bg-green-800"
-                  onClick={() =>
-                    approvalStatus[index]?.tenant_description2 !== "Approved" &&
-                    handleApprove(index, "tenant_description2")
-                  }
-                >
-                  Approve
-                </Button>
-                <Button
-                  className="px-4 py-2 bg-red-800"
-                  onClick={() =>
-                    approvalStatus[index]?.tenant_description2 !== "Rejected" &&
-                    handleReject(index, "tenant_description2")
-                  }
-                >
-                  Reject
-                </Button>
-              </div>
-
-              <div className="mt-4">
-                <label className="font-semibold">Select a Tenant:</label>
-                <select
-                  value={finalTenant[index]}
-                  onChange={(e) => handleChange(e, index)}
-
-                  className="p-2 border rounded-md w-full mt-2"
-                >
-                  <option value="">-</option>
-                  <option value="tenant1">Tenant 1</option>
-                  <option value="tenant2">Tenant 2</option>
-
-                </select>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-    </div>
-  );
-}
+                  <p className="mt-2">
+                    <strong>Approval Status:</strong> {approvalStatus[index] || "Pending"}
+                  </p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </Header>
+    );
+  }
