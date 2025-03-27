@@ -19,6 +19,7 @@ export default function AddProp() {
     Facing:"",
     Type: "",
     Description: "",
+    images: [] as File[],
   });
   const router = useRouter();
 
@@ -27,6 +28,15 @@ export default function AddProp() {
       setProperty({ ...property, [e.name]: e.value });
     } else {
       setProperty({ ...property, [e.target.name]: e.target.value });
+    }
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      setProperty({
+        ...property,
+        images: Array.from(e.target.files), // Convert FileList to array
+      });
     }
   };
 
@@ -40,18 +50,34 @@ export default function AddProp() {
       }
       const decodedToken = jwtDecode<any>(token);
       const userId = decodedToken.userId;
+      const formData = new FormData();
+      formData.append("Door_no", property.Door_no);
+      formData.append("Date_of_construction", property.Date_of_construction);
+      formData.append("Building_name", property.Building_name);
+      formData.append("Street_name", property.Street_name);
+      formData.append("Area", property.Area);
+      formData.append("Area_in_sqft", property.Area_in_sqft);
+      formData.append("Facing", property.Facing);
+      formData.append("Type", property.Type);
+      formData.append("Description", property.Description);
+      
+      property.images.forEach((file, index) => {
+        formData.append(`images`, file);
+      });
+      formData.forEach((value, key) => {
+        console.log(key, value);
+    });
       const res=await fetch("/api/properties", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
           "User_ID": userId
         },
-        body: JSON.stringify(property),
+        body: formData,
       });
       if(!res.ok){
         console.error("Error adding property");
       }
-      router.push("/admin/properties");
+      // router.push("/admin/properties");
     }catch(error){
       console.error("Error adding property:", error);
     }
@@ -163,6 +189,16 @@ export default function AddProp() {
                   name="Description"
                   value={property.Description}
                   onChange={handleChange}
+                  className="border p-2 w-full "
+                />
+              </div>
+              <div className="mb-4">
+                <label className="font-semibold">Upload Property Images</label>
+                <Input
+                  type="file"
+                  name="images"
+                  onChange={handleFileChange}
+                  multiple
                   className="border p-2 w-full "
                 />
               </div>
