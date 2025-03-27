@@ -10,6 +10,8 @@ export default function YourRentalsPage() {
     {
       address: "flat 305, hasa apt",
       Type: "apt",
+      Date_of_construction:"3",
+      Facing:"e",
       Availability: "available",
       Description: "describe house",
       tenant_name: "ashj",
@@ -18,6 +20,8 @@ export default function YourRentalsPage() {
     {
       address: "flat 2110, med apt",
       Type: "apt",
+      Date_of_construction:"3",
+      Facing:"e",
       Availability: "available",
       Description: "describe house",
       tenant_name: "ashj",
@@ -87,6 +91,34 @@ export default function YourRentalsPage() {
                   />
                 ) : (
                   prop.Description
+                )}
+              </p>
+              <p className="text-blue-950">
+                <strong>Date of Construction: </strong>
+                {editStatus == index ? (
+                  <input
+                    type="text"
+                    name="Date_of_construction"
+                    value={prop.Date_of_construction}
+                    
+                    onChange={(e) => handleEdit(e, index)}
+                  />
+                ) : (
+                  prop.Date_of_construction
+                )}
+              </p>
+              <p className="text-blue-950">
+                <strong>Facing: </strong>
+                {editStatus == index ? (
+                  <input
+                    type="text"
+                    name="Facing"
+                    value={prop.Facing}
+                    
+                    onChange={(e) => handleEdit(e, index)}
+                  />
+                ) : (
+                  prop.Facing
                 )}
               </p>
               <p className="text-blue-950">
