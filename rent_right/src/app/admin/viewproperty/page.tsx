@@ -1,3 +1,4 @@
+
 "use client";
 import { Card, CardContent } from "@/components/ui/card";
 import React, { useState } from "react";
@@ -25,28 +26,7 @@ export default function ViewPropAdmin() {
       tenant_description1: "I am good",
       tenant_description2: "I am bad",
     },
-    
   ]);
-
-  const handleApprove = (propertyIndex: number, descriptionKey: string) => {
-    setApprovalStatus((prev) => ({
-      ...prev,
-      [propertyIndex]: {
-        ...prev[propertyIndex],
-        [descriptionKey]: "Approved",
-      },
-    }));
-  };
-
-  const handleReject = (propertyIndex: number, descriptionKey: string) => {
-    setApprovalStatus((prev) => ({
-      ...prev,
-      [propertyIndex]: {
-        ...prev[propertyIndex],
-        [descriptionKey]: "Rejected",
-      },
-    }));
-  };
 
   const handleEdit = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -59,6 +39,15 @@ export default function ViewPropAdmin() {
     };
     setpropdetails(updated_details);
   };
+
+  const [finalTenant, setFinalTenant] = useState<{ [propertyIndex: number]: string }>({});
+  
+  
+    const handleChange = (e: React.ChangeEvent<HTMLSelectElement>,propertyIndex:number) => {
+      setFinalTenant((prev) => ({
+          ...prev,
+          [propertyIndex]: e.target.value,
+        }));  };
 
   return (
     <div className="p-8">
@@ -96,8 +85,8 @@ export default function ViewPropAdmin() {
                 )}
               </p>
               <p className="text-blue-950">
-              <strong>BHK Type: </strong>
-                {editStatus == index ? (
+                <strong>BHK Type: </strong>
+                {editStatus === index ? (
                   <input
                     type="text"
                     name="BHK_Type"
@@ -106,10 +95,11 @@ export default function ViewPropAdmin() {
                   />
                 ) : (
                   prop.BHK_Type
-                )}</p>
+                )}
+              </p>
               <p className="text-blue-950">
-              <strong>Furnishing: </strong>
-                {editStatus == index ? (
+                <strong>Furnishing: </strong>
+                {editStatus === index ? (
                   <input
                     type="text"
                     name="Furnishing"
@@ -118,10 +108,11 @@ export default function ViewPropAdmin() {
                   />
                 ) : (
                   prop.Furnishing
-                )}</p>
+                )}
+              </p>
               <p className="text-blue-950">
-              <strong>Price: </strong>
-                {editStatus == index ? (
+                <strong>Price: </strong>
+                {editStatus === index ? (
                   <input
                     type="text"
                     name="Price"
@@ -130,11 +121,11 @@ export default function ViewPropAdmin() {
                   />
                 ) : (
                   prop.Price
-                )}</p>
-
+                )}
+              </p>
               <p className="text-blue-950">
-              <strong>Advance Amount: </strong>
-                {editStatus == index ? (
+                <strong>Advance Amount: </strong>
+                {editStatus === index ? (
                   <input
                     type="text"
                     name="Advance_amount"
@@ -143,11 +134,11 @@ export default function ViewPropAdmin() {
                   />
                 ) : (
                   prop.Advance_amount
-                )}</p>
-              
+                )}
+              </p>
               <p className="text-blue-950">
-              <strong>Negotiability: </strong>
-                {editStatus == index ? (
+                <strong>Negotiability: </strong>
+                {editStatus === index ? (
                   <input
                     type="text"
                     name="Negotiability"
@@ -156,115 +147,8 @@ export default function ViewPropAdmin() {
                   />
                 ) : (
                   prop.Negotiability
-                )}</p>
-                <p className="text-blue-950">
-              <strong>Two_wheeler_parking: </strong>
-                {editStatus == index ? (
-                  <input
-                    type="text"
-                    name="Two_wheeler_parking"
-                    value={prop.Two_wheeler_parking}
-                    onChange={(e) => handleEdit(e, index)}
-                  />
-                ) : (
-                  prop.Two_wheeler_parking
-                )}</p>
-<p className="text-blue-950">
-              <strong>Four_wheeler_parking: </strong>
-                {editStatus == index ? (
-                  <input
-                    type="text"
-                    name="Four_wheeler_parking"
-                    value={prop.Four_wheeler_parking}
-                    onChange={(e) => handleEdit(e, index)}
-                  />
-                ) : (
-                  prop.Four_wheeler_parking
-                )}</p>
-                <p className="text-blue-950">
-              <strong>Bathrooms: </strong>
-                {editStatus == index ? (
-                  <input
-                    type="text"
-                    name="Bathrooms"
-                    value={prop.Bathrooms}
-                    onChange={(e) => handleEdit(e, index)}
-                  />
-                ) : (
-                  prop.Bathrooms
-                )}</p>
-<p className="text-blue-950">
-              <strong>Floor: </strong>
-                {editStatus == index ? (
-                  <input
-                    type="text"
-                    name="Floor"
-                    value={prop.Floor}
-                    onChange={(e) => handleEdit(e, index)}
-                  />
-                ) : (
-                  prop.Floor
-                )}</p>
-<p className="text-blue-950">
-              <strong>Lift_service: </strong>
-                {editStatus == index ? (
-                  <input
-                    type="text"
-                    name="Lift_service"
-                    value={prop.Lift_service}
-                    onChange={(e) => handleEdit(e, index)}
-                  />
-                ) : (
-                  prop.Lift_service
-                )}</p>
-                
-
-              <p>
-                <strong>Tenant Request 1 :</strong> {prop.tenant_description1}
+                )}
               </p>
-              <div className="flex gap-4 mt-2">
-                <Button
-                  className="px-4 py-2 bg-green-700"
-                  onClick={() =>
-                    approvalStatus[index]?.tenant_description1 !== "Approved" &&
-                    handleApprove(index, "tenant_description1")
-                  }
-                >
-                  Approve
-                </Button>
-                <Button
-                  className="px-4 py-2 bg-red-700"
-                  onClick={() =>
-                    approvalStatus[index]?.tenant_description1 !== "Rejected" &&
-                    handleReject(index, "tenant_description1")
-                  }
-                >
-                  Reject
-                </Button>
-              </div>
-              <p>
-                <strong>Tenant Request 2:</strong> {prop.tenant_description2}
-              </p>
-              <div className="flex gap-4 mt-2">
-                <Button
-                  className="px-4 py-2 bg-green-700"
-                  onClick={() =>
-                    approvalStatus[index]?.tenant_description2 !== "Approved" &&
-                    handleApprove(index, "tenant_description2")
-                  }
-                >
-                  Approve
-                </Button>
-                <Button
-                  className="px-4 py-2 bg-red-700"
-                  onClick={() =>
-                    approvalStatus[index]?.tenant_description2 !== "Rejected" &&
-                    handleReject(index, "tenant_description2")
-                  }
-                >
-                  Reject
-                </Button>
-              </div>
               <div className="flex flex-col items-start gap-2 mt-4">
                 <Button
                   onClick={() => {
@@ -274,6 +158,21 @@ export default function ViewPropAdmin() {
                   {editStatus === index ? "Save" : "Edit property"}
                 </Button>
               </div>
+
+              <div className="mt-4">
+                <label className="font-semibold">Select a Tenant:</label>
+                <select
+                  value={finalTenant[index]}
+                  onChange={(e) => handleChange(e, index)}
+
+                  className="p-2 border rounded-md w-full mt-2"
+                >
+                  <option value="">-</option>
+                  <option value="tenant1">Tenant 1</option>
+                  <option value="tenant2">Tenant 2</option>
+
+                </select>
+              </div>
             </CardContent>
           </Card>
         ))}
@@ -281,3 +180,4 @@ export default function ViewPropAdmin() {
     </div>
   );
 }
+

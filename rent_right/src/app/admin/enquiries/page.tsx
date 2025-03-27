@@ -2,9 +2,24 @@
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import Header from "../../../../layout/adminHeader";
-import {jwtDecode} from "jwt-decode";
-import { useRouter } from "next/navigation";
+
+const propdetails = [
+  {
+    address: "ad",
+    tenant_description1: "good",
+    tenant_description2: "bad",
+  },
+  {
+    address: "ad",
+    tenant_description1: "good",
+    tenant_description2: "bad",
+  },
+  {
+    address: "ad",
+    tenant_description1: "good",
+    tenant_description2: "bad",
+  },
+];
 
 export default function AdminEnquiriesPage() {
   interface Enquiry {
