@@ -10,21 +10,21 @@ export default function YourRequestsPage() {
   const currentRequests = [
     {
       address: "a-406, has apt",
-      type: "Apartment",
+      Type: "Apartment",
       Ownername: "abc",
       Ownernumber: "384720",
       Status: "Assigned",
-      maintenance_id: "123",
+      created_at:"4:23",
       Service: "Plumbing",
       Description: "Leaky faucet",
     },
     {
       address: "a-406",
-      type: "Villa",
+      Type: "Villa",
       Ownername: "abc",
       Ownernumber: "384720",
       Status: "In Progress",
-      maintenance_id: "124",
+      created_at:"34:23",
       Service: "Plumbing",
       Description: "Leaky faucet",
     },
@@ -48,7 +48,9 @@ export default function YourRequestsPage() {
           <Card key={index} className="p-4 shadow-md rounded-lg">
             <CardContent>
               <CardTitle className="text-lg">Address: {request.address}</CardTitle>
+              <p className="text-gray-900 my-2">Type: {request.Type}</p>
               <p className="text-gray-900 my-2">Service: {request.Service}</p>
+              <p className="text-gray-900 my-2">created_at: {request.created_at}</p>
               <p className="text-gray-900 mb-2">Description: {request.Description}</p>
               <p className="text-green-700 font-semibold bg-green-100 p-2 rounded-md">
                 Status: {status[index] || request.Status}
