@@ -172,6 +172,7 @@ BEGIN
 END;
 $$;
 
+
 CREATE OR REPLACE PROCEDURE add_commercial_building(
     input_Owner_ID INT,
     input_Date_of_construction DATE,
@@ -255,6 +256,8 @@ BEGIN
     );
 END;
 $$;
+
+
 -- if renewed the lease_agreement
 CREATE OR REPLACE PROCEDURE if_renewed(in_lease_id INT,in_property_id INT,in_tenant_id INT,
 IN_end_date DATE,in_price DECIMAL(10,2))
@@ -298,6 +301,8 @@ INSERT INTO Lease_Agreement (
     );
 END;
 $$;
+
+
 CREATE FUNCTION check_admin_role()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -315,6 +320,7 @@ BEFORE INSERT ON Admins
 FOR EACH ROW
 EXECUTE FUNCTION check_admin_role();
 
+
 CREATE FUNCTION check_staff_role()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -328,10 +334,13 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+
 CREATE TRIGGER check_staff_role_trigger
 BEFORE INSERT ON Staff
 FOR EACH ROW
 EXECUTE FUNCTION check_staff_role();
+
+
 CREATE FUNCTION check_tenant_role()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -344,6 +353,8 @@ BEGIN
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
+
+
 CREATE TRIGGER check_tenant_role_in_lease_trigger
 BEFORE INSERT OR UPDATE ON Lease_Agreement
 FOR EACH ROW
@@ -354,48 +365,7 @@ BEFORE INSERT OR UPDATE ON Sale_Agreement
 FOR EACH ROW
 EXECUTE FUNCTION check_tenant_role();
 
-CREATE OR REPLACE PROCEDURE if_renewed(in_lease_id INT,in_property_id INT,in_tenant_id INT,
-IN_end_date DATE,in_price DECIMAL(10,2))
-LANGUAGE plpgsql
-AS $$
-DECLARE old_end_date DATE;
-BEGIN
-SELECT End_date INTO old_end_date
-FROM Lease_Agreement WHERE Lease_ID = in_lease_id;
 
---UPDATE OLD Lease_Agreement status to expired and update_at should now.
-UPDATE Lease_Agreement
-SET Status ='expired',
-Updated_at =NOW()
-WHERE Lease_ID =in_lease_id;
---insert new lease_agreement
-INSERT INTO Lease_Agreement (
-        Property_ID,
-        Tenant_ID,
-        Start_date,
-        End_date,
-        Renewed
-        Price,
-        Advance_amount,+/
-        Status,
-        Created_at,
-        Updated_at
-    )
-    VALUES (
-        in_property_id,
-        in_tenant_id,
-        old_end_date + INTERVAL '1 day', 
-        -- Start date is the day after the old lease ends
-        in_end_date,
-        'NO'
-        in_price,
-        0.00,
-      'active',
-        NOW(),
-        NOW()
-    );
-END;
-$$;
 CREATE OR REPLACE PROCEDURE add_user_with_role(
     input_first_name VARCHAR(30),
     input_middle_name VARCHAR(30),
@@ -455,6 +425,8 @@ BEGIN
     
 END;
 $$;
+
+
 CREATE OR REPLACE FUNCTION prevent_overlapping_leases()
 RETURNS TRIGGER AS $$
 BEGIN
