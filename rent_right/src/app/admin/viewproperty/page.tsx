@@ -25,22 +25,7 @@ export default function ViewPropAdmin() {
       tenant_description1: "I am good",
       tenant_description2: "I am bad",
     },
-    {
-      Sale_type: "buy",
-      Type: "villa",
-      BHK_Type: "3",
-      Furnishing: "Fully furnished",
-      Price: "100.23",
-      Advance_amount: "54.4",
-      Negotiability: "No",
-      Two_wheeler_parking: "Yes",
-      Four_wheeler_parking: "Yes",
-      Bathrooms: 2,
-      Floor: 3,
-      Lift_service: "Yes",
-      tenant_description1: "I am good",
-      tenant_description2: "I am bad",
-    },
+    
   ]);
 
   const handleApprove = (propertyIndex: number, descriptionKey: string) => {
