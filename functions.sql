@@ -450,4 +450,107 @@ FOR EACH ROW
 EXECUTE PROCEDURE prevent_overlapping_leases();
 
 
+CREATE OR REPLACE PROCEDURE manage_maintenance(
+    input_request_id INT,
+    input_staff_id INT DEFAULT NULL,
+    input_new_status VARCHAR(10) DEFAULT NULL -- Expected values: 'Pending', 'Assigned', 'Resolved', 'In progress', 'Cancelled'
+)
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    current_status VARCHAR(10);
+    current_staff INT;
+BEGIN
+    -- Get current status and staff of the maintenance request
+    SELECT Status, Staff_ID
+      INTO current_status, current_staff
+      FROM Maintenance
+     WHERE Request_ID = input_request_id;
+
+    IF input_request_id IS NULL OR NOT FOUND THEN
+        RAISE EXCEPTION 'Maintenance request ID % not found.', input_request_id;
+    END IF;
+
+    IF input_staff_id IS NOT NULL THEN
+        -- Check if the staff member exists and is available
+        IF NOT EXISTS (SELECT 1 FROM Staff WHERE User_ID = input_staff_id AND Availability IS TRUE) THEN
+            RAISE EXCEPTION 'Staff member with ID % is not available.', input_staff_id;
+        END IF;
+
+        -- Update maintenance record: set the staff and status to 'Assigned'
+        UPDATE Maintenance
+        SET Staff_ID   = input_staff_id,
+            Status     = 'Assigned',
+            Updated_at = NOW()
+        WHERE Request_ID = input_request_id;
+
+        -- Mark the assigned staff as unavailable
+        UPDATE Staff
+        SET Availability = FALSE
+        WHERE User_ID = input_staff_id;
+    ELSE
+        -- Only updating the status without reassigning staff
+        UPDATE Maintenance
+        SET Status     = input_new_status,
+            Updated_at = NOW()
+        WHERE Request_ID = input_request_id;
+
+        -- If the updated status means the work is completed or cancelled,
+        -- mark the assigned staff (if any) as available
+        IF input_new_status IN ('Resolved', 'Cancelled') THEN
+            IF current_staff IS NOT NULL THEN
+                UPDATE Staff
+                SET Availability = TRUE
+                WHERE User_ID = current_staff;
+            END IF;
+        END IF;
+    END IF;
+END;
+$$;
+
+
+CREATE OR REPLACE FUNCTION expire_lease()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF NEW.End_date <= CURRENT_DATE THEN
+        NEW.Status := 'expired';
+        NEW.Updated_at := NOW();
+    END IF;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER expire_lease_trigger
+BEFORE INSERT OR UPDATE ON Lease_Agreement
+FOR EACH ROW
+EXECUTE PROCEDURE expire_lease();
+
+
+CREATE OR REPLACE FUNCTION update_staff_availability()
+RETURNS TRIGGER AS $$
+BEGIN
+    -- Update staff availability to TRUE when maintenance is resolved or cancelled
+    IF NEW.Status IN ('Resolved', 'Cancelled') THEN
+        UPDATE Staff
+        SET Availability = TRUE
+        WHERE User_ID = NEW.Staff_ID;
+    END IF;
+
+    -- Update staff availability to FALSE when maintenance is assigned
+    IF NEW.Status = 'Assigned' THEN
+        UPDATE Staff
+        SET Availability = FALSE
+        WHERE User_ID = NEW.Staff_ID;
+    END IF;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trigger_update_staff_availability
+AFTER INSERT OR UPDATE ON Maintenance
+FOR EACH ROW
+EXECUTE FUNCTION update_staff_availability();
+
 
