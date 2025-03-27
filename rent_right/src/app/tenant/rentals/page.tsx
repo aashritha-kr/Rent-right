@@ -5,19 +5,26 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Header from "../../../../layout/tenantHeader";
 import {jwtDecode} from "jwt-decode";
+import { useRouter } from "next/navigation";
 
 interface Rental {
+  property_id: number;
   building_name: string;
   type: string;
   start_date: string;
   end_date: string;
-  owner_name: string;
-  owner_number: string;
+  ownername: string;
+  ownerphone: string;
 }
 
 export default function YourRentalsPage() {
+
+  const router=useRouter();
+
   const [currentRentals, setCurrentRentals] = useState<Rental[]>([]);
   const [pastRentals, setPastRentals] = useState<Rental[]>([]);
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
 
   const Service = ["Plumbing", "Electrical", "Carpentry", "Pest Control"];
   const [currentservice, setcurrentservice] = useState<string | null>(null);
@@ -36,12 +43,16 @@ export default function YourRentalsPage() {
                 console.log("User ID:", userId);
             } catch (error) {
                 console.error("Invalid token", error);
+                setError("Invalid token");
             }
         }
+        setLoading(true);
         const response = await fetch("/api/rentals", { method: 'GET' , headers:{'User_ID': userId}});
         const data = await response.json();
+        console.log(data);
         setCurrentRentals(data.currentRentals);
         setPastRentals(data.pastRentals);
+        setLoading(false);
       } catch (error) {
         console.error("Error fetching rental data:", error);
       }
@@ -83,6 +94,10 @@ export default function YourRentalsPage() {
     }
   };
 
+  if(loading){
+    return <Header>Loading...</Header>;
+  }
+
   return (
     <Header>
       <div className="p-8">
@@ -92,16 +107,16 @@ export default function YourRentalsPage() {
         <h2 className="text-2xl font-semibold text-blue-750 p-4">Current Rentals</h2>
         <div className="flex flex-col gap-6">
           {currentRentals.length?currentRentals.map((rental, index) => (
-            <Card key={rental.building_name} className="p-4 shadow-md rounded-lg">
+            <Card key={rental.property_id} className="p-4 shadow-md rounded-lg">
               <CardContent>
                 <CardTitle className="text-lg">Name: {rental.building_name}</CardTitle>
                 <p className="text-blue-950">Type: {rental.type}</p>
                 <p className="text-blue-950">Start date of lease: {rental.start_date}</p>
                 <p className="text-blue-950">End date of lease: {rental.end_date}</p>
-                <p className="text-blue-950">Owner Name: {rental.owner_name}</p>
-                <p className="text-blue-950">Owner Phone Number: {rental.owner_number}</p>
+                <p className="text-blue-950">Owner Name: {rental.ownername}</p>
+                <p className="text-blue-950">Owner Phone Number: {rental.ownerphone}</p>
                 <div className="flex flex-col items-start gap-2 mt-4">
-                  <Button className="w-fit px-4 py-2 text-sm">View Property</Button>
+                  <Button className="w-fit px-4 py-2 text-sm" onClick={()=>{router.push(`/properties/${rental.property_id}`)}}>View Property</Button>
                   <Button
                     className="w-fit px-4 py-2 text-sm bg-green-700 hover:bg-green-700 text-white"
                     onClick={() => setcurrent_index(index === current_index ? null : index)}
@@ -165,8 +180,8 @@ export default function YourRentalsPage() {
                 <p className="text-blue-950">Type: {rental.type}</p>
                 <p className="text-blue-950">Start date of lease: {rental.start_date}</p>
                 <p className="text-blue-950">End date of lease: {rental.end_date}</p>
-                <p className="text-blue-950">Owner Name: {rental.owner_name}</p>
-                <p className="text-blue-950">Owner Phone Number: {rental.owner_number}</p>
+                <p className="text-blue-950">Owner Name: {rental.ownername}</p>
+                <p className="text-blue-950">Owner Phone Number: {rental.ownerphone}</p>
                 <div className="flex flex-col items-start gap-2 mt-4">
                   <Button className="w-fit px-4 py-2 text-sm">View Property</Button>
                 </div>

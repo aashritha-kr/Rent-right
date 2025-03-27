@@ -52,7 +52,15 @@ export async function GET(request: NextRequest) {
       propertyDetails = landRows[0] || {};
     }
 
-    const combinedDetails = { ...property, ...propertyDetails };
+    const enquiryQuery = `
+      SELECT Approval
+      FROM Enquiry
+      WHERE Property_ID = $1
+    `;
+    const { rows: enquiryRows } = await pool.query(enquiryQuery, [id]);
+    const enquiries = enquiryRows[0] || "";
+
+    const combinedDetails = { ...property, ...propertyDetails,  enquiries};
     console.log(combinedDetails)
 
     return NextResponse.json(combinedDetails);

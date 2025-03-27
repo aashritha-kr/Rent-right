@@ -34,29 +34,33 @@ export async function GET(request: Request) {
     }
 
     const currentRentalsQuery = `
-        SELECT
-          Lease_Agreement.Lease_ID, Property.Building_name, Property.Type,
-          Lease_Agreement.Start_date, Lease_Agreement.End_date,
-          Users.Name as OwnerName, Users.PhoneNumber as OwnerPhone
-        FROM Lease_Agreement
-        JOIN Property ON Lease_Agreement.Property_ID = Property.Property_ID
-        JOIN Users ON Property.Owner_ID = Users.User_ID
-        WHERE Lease_Agreement.Status = 'active'
-      `;
-    const pastRentalsQuery = `
-        SELECT
-            Lease_Agreement.Lease_ID, Property.Building_name, Property.Type,
-            Lease_Agreement.Start_date, Lease_Agreement.End_date,
-            Users.Name as OwnerName, Users.PhoneNumber as OwnerPhone
-        FROM Lease_Agreement
-        JOIN Property ON Lease_Agreement.Property_ID = Property.Property_ID
-        JOIN Users ON Property.Owner_ID = Users.User_ID
-        WHERE Lease_Agreement.Status = 'expired'
+      SELECT
+        Lease_Agreement.Lease_ID, Property.Property_ID, Property.Building_name, Property.Type,
+        Lease_Agreement.Start_date, Lease_Agreement.End_date,
+        Users.First_name as OwnerName, Users.Phone as OwnerPhone
+      FROM Lease_Agreement
+      JOIN Property ON Lease_Agreement.Property_ID = Property.Property_ID
+      JOIN Users ON Property.Owner_ID = Users.User_ID
+      WHERE Lease_Agreement.Status = 'active'
+      AND Lease_Agreement.Tenant_ID = $1
     `;
 
+    const pastRentalsQuery = `
+      SELECT
+        Lease_Agreement.Lease_ID, Property.Property_ID, Property.Building_name, Property.Type,
+        Lease_Agreement.Start_date, Lease_Agreement.End_date,
+        Users.First_name as OwnerName, Users.Phone as OwnerPhone
+      FROM Lease_Agreement
+      JOIN Property ON Lease_Agreement.Property_ID = Property.Property_ID
+      JOIN Users ON Property.Owner_ID = Users.User_ID
+      WHERE Lease_Agreement.Status = 'expired'
+      AND Lease_Agreement.Tenant_ID = $1
+    `;
+
+
     const [currentRentalsRes, pastRentalsRes] = await Promise.all([
-        pool.query(currentRentalsQuery),
-        pool.query(pastRentalsQuery),
+        pool.query(currentRentalsQuery, [userId]),
+        pool.query(pastRentalsQuery, [userId]),
       ]);
 
     const currentRentals = currentRentalsRes.rows;

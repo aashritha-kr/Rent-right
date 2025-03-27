@@ -4,6 +4,7 @@ import React from "react";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {jwtDecode} from "jwt-decode";
+import Header from "../../../../layout/tenantHeader";
 
 export default function YourRequestsPage() {
 
@@ -25,63 +26,6 @@ export default function YourRequestsPage() {
   const [pastRequests, setPastRequests] = useState<MaintenanceRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-//   const current_requests = [
-//     {
-//       address: "a-406,has apt",
-//       type: "Apartment",
-//       created_at: "12:01",
-//       Ownername: "abc",
-//       Ownernumber: "384720",
-//       Status: "Pending",
-//       staff_name: "asg",
-//       staff_number: "23840",
-//       maintenance_id: "123",
-//       Service: "Plumbing",
-//       Description: "leaky faucet",
-//     },
-//     {
-//       address: "a-406",
-//       type: "Villa",
-//       created_at: "12:03",
-//       Ownername: "abc",
-//       Ownernumber: "384720",
-//       Status: "Pending",
-//       staff_name: "asg",
-//       staff_number: "23840",
-//       maintenance_id: "124",
-//       Service: "Plumbing",
-//       Description: "leaky faucet",
-//     },
-//   ];
-
-//   const past_requests = [
-//     {
-//       address: "a-406,has apt",
-//       type: "Apartment",
-//       created_at: "11:01",
-//       Ownername: "abc",
-//       Ownernumber: "384720",
-//       Status: "Resolved",
-//       staff_name: "asg",
-//       staff_number: "23840",
-//       maintenance_id: "125",
-//       Service: "Plumbing",
-//       Description: "leaky faucet",
-//     },
-//     {
-//       address: "a-406",
-//       type: "Villa",
-//       created_at: "11:03",
-//       Ownername: "abc",
-//       Ownernumber: "384720",
-//       Status: "Resolved",
-//       staff_name: "asg",
-//       staff_number: "23840",
-//       maintenance_id: "126",
-//       Service: "Plumbing",
-//       Description: "leaky faucet",
-//     },
-//   ];
     useEffect(() => {
         const token = localStorage.getItem('token');
         if (token) {
@@ -130,9 +74,10 @@ export default function YourRequestsPage() {
     }
 
   return (
+    <Header>
     <div className="p-8">
-      <h1 className="text-3xl font-bold text-blue-750 text-center p-6">
-        YOUR MAINTENANCE REQUESTS
+      <h1 className="text-xl font-bold text-blue-750 text-center p-6">
+        Maintenance Requests
       </h1>
 
 
@@ -177,5 +122,6 @@ export default function YourRequestsPage() {
         ))}
       </div>
     </div>
+    </Header>
   );
 }

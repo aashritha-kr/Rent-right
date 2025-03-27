@@ -87,7 +87,7 @@ export async function GET(request: Request) {
         const currentRequestsQuery = `
             SELECT
                 Maintenance.Request_ID, Property.Building_name, Maintenance.Service, Maintenance.Description, Maintenance.Status,
-                Maintenance.Created_at, Maintenance.Status, Staff.Name as StaffName, Staff.PhoneNumber as StaffNumber,
+                Maintenance.Created_at, Maintenance.Status, Staff.First_name || Staff.Last_name as StaffName, Staff.Phone as StaffNumber,
                 Users.First_name || ' ' || Users.Last_name as OwnerName, Users.Phone as OwnerPhone
             FROM Maintenance
             JOIN Lease_Agreement ON Maintenance.Lease_ID = Lease_Agreement.Lease_ID
@@ -100,7 +100,7 @@ export async function GET(request: Request) {
         const pastRequestsQuery = `
             SELECT
                 Maintenance.Request_ID, Property.Building_name, Maintenance.Service, Maintenance.Description, Maintenance.Status,
-                Maintenance.Created_at, Maintenance.Status, Staff.Name as StaffName, Staff.PhoneNumber as StaffNumber,
+                Maintenance.Created_at, Maintenance.Status, Staff.First_name || Staff.Last_name as StaffName, Staff.Phone as StaffNumber,
                 Users.First_name || ' ' || Users.Last_name as OwnerName, Users.Phone as OwnerPhone
             FROM Maintenance
             JOIN Lease_Agreement ON Maintenance.Lease_ID = Lease_Agreement.Lease_ID
@@ -111,8 +111,8 @@ export async function GET(request: Request) {
         `;
   
         const [currentRequestsRes, pastRequestsRes] = await Promise.all([
-            pool.query(currentRequestsQuery),
-            pool.query(pastRequestsQuery),
+            pool.query(currentRequestsQuery, [userId]),
+            pool.query(pastRequestsQuery, [userId]),
           ]);
   
         const currentRequests = currentRequestsRes.rows;
