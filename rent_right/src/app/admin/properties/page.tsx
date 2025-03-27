@@ -115,6 +115,7 @@ export default function YourRentalsPage() {
   };
 
   return (
+
     <Header>
       <div className="p-8">
         <h1 className="text-3xl font-bold text-blue-750 text-center p-6">

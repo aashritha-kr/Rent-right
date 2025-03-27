@@ -1,12 +1,32 @@
 "use client";
-import { Card, CardContent, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 
-export default function ViewPropTenant() {
+export default function ViewPropAdmin() {
   const [approvalStatus, setApprovalStatus] = useState<{
     [propertyIndex: number]: { [descriptionKey: string]: string };
   }>({});
+  const [editStatus, setEditStatus] = useState<number | null>(null);
+  const [propdetails, setpropdetails] = useState([
+    {
+      Sale_type: "buy",
+      Type: "villa",
+      BHK_Type: "3",
+      Furnishing: "Fully furnished",
+      Price: "100.23",
+      Advance_amount: "54.4",
+      Negotiability: "No",
+      Two_wheeler_parking: "Yes",
+      Four_wheeler_parking: "Yes",
+      Bathrooms: 2,
+      Floor: 3,
+      Lift_service: "Yes",
+      tenant_description1: "I am good",
+      tenant_description2: "I am bad",
+    },
+    
+  ]);
 
   const handleApprove = (propertyIndex: number, descriptionKey: string) => {
     setApprovalStatus((prev) => ({
@@ -28,40 +48,17 @@ export default function ViewPropTenant() {
     }));
   };
 
-  const propdetails = [
-    {
-      Sale_type: "buy",
-      Type: "villa",
-      BHK_Type: "3",
-      Furnishing: "Fully furnished",
-      Price: "100.23",
-      Advance_amount: "54.4",
-      Negotiability: "No",
-      Two_wheeler_parking: "Yes",
-      Four_wheeler_parking: "Yes",
-      Bathrooms: 2,
-      Floor: 3,
-      Lift_service: "Yes",
-      description1: "I am good",
-      description2: "I am bad",
-    },
-    {
-      Sale_type: "buy",
-      Type: "villa",
-      BHK_Type: "3",
-      Furnishing: "Fully furnished",
-      Price: "100.23",
-      Advance_amount: "54.4",
-      Negotiability: "No",
-      Two_wheeler_parking: "Yes",
-      Four_wheeler_parking: "Yes",
-      Bathrooms: 2,
-      Floor: 3,
-      Lift_service: "Yes",
-      description1: "I am good",
-      description2: "I am bad",
-    },
-  ];
+  const handleEdit = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    index: number
+  ) => {
+    const updated_details = [...propdetails];
+    updated_details[index] = {
+      ...updated_details[index],
+      [e.target.name]: e.target.value,
+    };
+    setpropdetails(updated_details);
+  };
 
   return (
     <div className="p-8">
@@ -69,86 +66,213 @@ export default function ViewPropTenant() {
         PROPERTIES
       </h1>
       <div className="flex flex-col gap-6">
-        {propdetails.map((prop, propertyIndex) => (
-          <Card key={propertyIndex} className="p-4 shadow-md rounded-lg">
+        {propdetails.map((prop, index) => (
+          <Card key={index} className="p-4 shadow-md rounded-lg">
             <CardContent>
-              <p className="text-blue-950">Sale Type: {prop.Sale_type}</p>
-              <p className="text-blue-950">Type: {prop.Type}</p>
-              <p className="text-blue-950">BHK Type: {prop.BHK_Type}</p>
-              <p className="text-blue-950">Furnishing: {prop.Furnishing}</p>
-              <p className="text-blue-950">Price: {prop.Price}</p>
               <p className="text-blue-950">
-                Advance Amount: {prop.Advance_amount}
+                <strong>Sale Type: </strong>
+                {editStatus === index ? (
+                  <input
+                    type="text"
+                    name="Sale_type"
+                    value={prop.Sale_type}
+                    onChange={(e) => handleEdit(e, index)}
+                  />
+                ) : (
+                  prop.Sale_type
+                )}
               </p>
               <p className="text-blue-950">
-                Negotiability: {prop.Negotiability}
+                <strong>Type: </strong>
+                {editStatus === index ? (
+                  <input
+                    type="text"
+                    name="Type"
+                    value={prop.Type}
+                    onChange={(e) => handleEdit(e, index)}
+                  />
+                ) : (
+                  prop.Type
+                )}
               </p>
               <p className="text-blue-950">
-                Two-Wheeler Parking: {prop.Two_wheeler_parking}
-              </p>
+              <strong>BHK Type: </strong>
+                {editStatus == index ? (
+                  <input
+                    type="text"
+                    name="BHK_Type"
+                    value={prop.BHK_Type}
+                    onChange={(e) => handleEdit(e, index)}
+                  />
+                ) : (
+                  prop.BHK_Type
+                )}</p>
               <p className="text-blue-950">
-                Four-Wheeler Parking: {prop.Four_wheeler_parking}
-              </p>
-              <p className="text-blue-950">Bathrooms: {prop.Bathrooms}</p>
-              <p className="text-blue-950">Floor: {prop.Floor}</p>
-              <p className="text-blue-950">Lift Service: {prop.Lift_service}</p>
+              <strong>Furnishing: </strong>
+                {editStatus == index ? (
+                  <input
+                    type="text"
+                    name="Furnishing"
+                    value={prop.Furnishing}
+                    onChange={(e) => handleEdit(e, index)}
+                  />
+                ) : (
+                  prop.Furnishing
+                )}</p>
+              <p className="text-blue-950">
+              <strong>Price: </strong>
+                {editStatus == index ? (
+                  <input
+                    type="text"
+                    name="Price"
+                    value={prop.Price}
+                    onChange={(e) => handleEdit(e, index)}
+                  />
+                ) : (
+                  prop.Price
+                )}</p>
 
-              <div className="mt-4 bg-gray-100 p-3 rounded-md">
-                <div>
-                  <p>
-                    <strong>Description 1:</strong> {prop.description1}
-                  </p>
-                  <div className="flex gap-4 mt-2">
-                    <Button
-                      className="px-4 py-2 bg-green-700"
-                      onClick={() =>
-                        approvalStatus[propertyIndex]?.description1 !==
-                          "Approved" &&
-                        handleApprove(propertyIndex, "description1")
-                      }
-                    >
-                      Approve
-                    </Button>
-                    <Button
-                      className="px-4 py-2 bg-red-700"
-                      onClick={() =>
-                        approvalStatus[propertyIndex]?.description1 !==
-                          "Approved" &&
-                        handleApprove(propertyIndex, "description1")
-                      }
-                    >
-                      Reject
-                    </Button>
-                  </div>
-                </div>
+              <p className="text-blue-950">
+              <strong>Advance Amount: </strong>
+                {editStatus == index ? (
+                  <input
+                    type="text"
+                    name="Advance_amount"
+                    value={prop.Advance_amount}
+                    onChange={(e) => handleEdit(e, index)}
+                  />
+                ) : (
+                  prop.Advance_amount
+                )}</p>
+              
+              <p className="text-blue-950">
+              <strong>Negotiability: </strong>
+                {editStatus == index ? (
+                  <input
+                    type="text"
+                    name="Negotiability"
+                    value={prop.Negotiability}
+                    onChange={(e) => handleEdit(e, index)}
+                  />
+                ) : (
+                  prop.Negotiability
+                )}</p>
+                <p className="text-blue-950">
+              <strong>Two_wheeler_parking: </strong>
+                {editStatus == index ? (
+                  <input
+                    type="text"
+                    name="Two_wheeler_parking"
+                    value={prop.Two_wheeler_parking}
+                    onChange={(e) => handleEdit(e, index)}
+                  />
+                ) : (
+                  prop.Two_wheeler_parking
+                )}</p>
+<p className="text-blue-950">
+              <strong>Four_wheeler_parking: </strong>
+                {editStatus == index ? (
+                  <input
+                    type="text"
+                    name="Four_wheeler_parking"
+                    value={prop.Four_wheeler_parking}
+                    onChange={(e) => handleEdit(e, index)}
+                  />
+                ) : (
+                  prop.Four_wheeler_parking
+                )}</p>
+                <p className="text-blue-950">
+              <strong>Bathrooms: </strong>
+                {editStatus == index ? (
+                  <input
+                    type="text"
+                    name="Bathrooms"
+                    value={prop.Bathrooms}
+                    onChange={(e) => handleEdit(e, index)}
+                  />
+                ) : (
+                  prop.Bathrooms
+                )}</p>
+<p className="text-blue-950">
+              <strong>Floor: </strong>
+                {editStatus == index ? (
+                  <input
+                    type="text"
+                    name="Floor"
+                    value={prop.Floor}
+                    onChange={(e) => handleEdit(e, index)}
+                  />
+                ) : (
+                  prop.Floor
+                )}</p>
+<p className="text-blue-950">
+              <strong>Lift_service: </strong>
+                {editStatus == index ? (
+                  <input
+                    type="text"
+                    name="Lift_service"
+                    value={prop.Lift_service}
+                    onChange={(e) => handleEdit(e, index)}
+                  />
+                ) : (
+                  prop.Lift_service
+                )}</p>
+                
 
-                <div className="mt-4">
-                  <p className="text-gray-700">
-                    <strong>Description 2:</strong> {prop.description2}
-                  </p>
-                  <div className="flex gap-4 mt-2">
-                    <Button
-                      className="px-4 py-2 bg-green-700"
-                      onClick={() =>
-                        approvalStatus[propertyIndex]?.description1 !==
-                          "Approved" &&
-                        handleApprove(propertyIndex, "description1")
-                      }
-                    >
-                      Approve
-                    </Button>
-                    <Button
-                      className="px-4 py-2 bg-red-700"
-                      onClick={() =>
-                        approvalStatus[propertyIndex]?.description1 !==
-                          "Rejected" &&
-                        handleReject(propertyIndex, "description1")
-                      }
-                    >
-                      Reject
-                    </Button>
-                  </div>
-                </div>
+              <p>
+                <strong>Tenant Request 1 :</strong> {prop.tenant_description1}
+              </p>
+              <div className="flex gap-4 mt-2">
+                <Button
+                  className="px-4 py-2 bg-green-700"
+                  onClick={() =>
+                    approvalStatus[index]?.tenant_description1 !== "Approved" &&
+                    handleApprove(index, "tenant_description1")
+                  }
+                >
+                  Approve
+                </Button>
+                <Button
+                  className="px-4 py-2 bg-red-700"
+                  onClick={() =>
+                    approvalStatus[index]?.tenant_description1 !== "Rejected" &&
+                    handleReject(index, "tenant_description1")
+                  }
+                >
+                  Reject
+                </Button>
+              </div>
+              <p>
+                <strong>Tenant Request 2:</strong> {prop.tenant_description2}
+              </p>
+              <div className="flex gap-4 mt-2">
+                <Button
+                  className="px-4 py-2 bg-green-700"
+                  onClick={() =>
+                    approvalStatus[index]?.tenant_description2 !== "Approved" &&
+                    handleApprove(index, "tenant_description2")
+                  }
+                >
+                  Approve
+                </Button>
+                <Button
+                  className="px-4 py-2 bg-red-700"
+                  onClick={() =>
+                    approvalStatus[index]?.tenant_description2 !== "Rejected" &&
+                    handleReject(index, "tenant_description2")
+                  }
+                >
+                  Reject
+                </Button>
+              </div>
+              <div className="flex flex-col items-start gap-2 mt-4">
+                <Button
+                  onClick={() => {
+                    setEditStatus(editStatus === index ? null : index);
+                  }}
+                >
+                  {editStatus === index ? "Save" : "Edit property"}
+                </Button>
               </div>
             </CardContent>
           </Card>

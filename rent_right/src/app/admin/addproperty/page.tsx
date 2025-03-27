@@ -11,12 +11,12 @@ import { useRouter } from "next/navigation";
 export default function AddProp() {
   const [property, setProperty] = useState({
     Door_no: "",
-    Date_of_construction:"",
-    Building_name:"",
-    Street_name:"",
-    Area:"",
-    Area_in_sqft:"",
-    Facing:"",
+    Date_of_construction: "",
+    Building_name: "",
+    Street_name: "",
+    Area: "",
+    Area_in_sqft: "",
+    Facing: "",
     Type: "",
     Description: "",
     images: [] as File[],
