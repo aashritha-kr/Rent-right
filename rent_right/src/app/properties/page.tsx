@@ -30,7 +30,7 @@ export default function YourRentalsPage() {
   useEffect(() => {
     const fetchProperties = async () => {
       try {
-        const response = await fetch("/api/general", {
+        const response = await fetch("/api/properties", {
             method: "GET"
         });
 
@@ -80,7 +80,7 @@ export default function YourRentalsPage() {
                 </p>
 
                 <div className="flex flex-col items-start gap-2 mt-4">
-                  <Button className="w-fit px-4 py-2 text-sm my-4 bg-green-700">
+                  <Button className="w-fit px-4 py-2 text-sm my-4 bg-green-700" onClick={() => router.push(`/properties/${prop.property_id}`)}>
                     View Property
                   </Button>
                 </div>
