@@ -153,14 +153,23 @@ export async function GET(request: Request) {
       else if(role === 'Admin'){
         const adminRequestsQuery = `
             SELECT
-                Maintenance.Request_ID, Property.Building_name, Maintenance.Service, Maintenance.Description, Maintenance.Status,
-                Maintenance.Created_at, Maintenance.Status, Staff.Name as StaffName, Staff.PhoneNumber as StaffNumber,
-                Users.First_name || ' ' || Users.Last_name as OwnerName, Users.Phone as OwnerPhone
+                Maintenance.Request_ID,
+                Property.Building_name,
+                Maintenance.Service,
+                Maintenance.Description,
+                Maintenance.Status,
+                Maintenance.Created_at,
+                Maintenance.Status,
+                Staff.First_name || ' ' || Staff.Last_name AS StaffName,
+                Staff.Phone AS StaffNumber,
+                Users.First_name || ' ' || Users.Last_name AS OwnerName,
+                Users.Phone AS OwnerPhone
             FROM Maintenance
             JOIN Lease_Agreement ON Maintenance.Lease_ID = Lease_Agreement.Lease_ID
             JOIN Property ON Lease_Agreement.Property_ID = Property.Property_ID
             JOIN Users ON Property.Owner_ID = Users.User_ID
-            LEFT JOIN Staff ON Maintenance.Staff_ID = Staff.User_ID
+            LEFT JOIN Users AS Staff ON Maintenance.Staff_ID = Staff.User_ID
+            WHERE Lease_Agreement.Tenant_ID = $1 AND Maintenance.Status = 'Resolved';
         `;
   
         const adminRequestsRes = await pool.query(adminRequestsQuery);

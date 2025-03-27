@@ -35,6 +35,7 @@ export default function YourRentalsPage() {
     const fetchProperties = async () => {
       try {
         const token = localStorage.getItem("token");
+        console.log("Token:", token);
         if (token) {
           try {
             const decodedToken = jwtDecode<any>(token);

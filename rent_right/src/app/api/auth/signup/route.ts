@@ -62,7 +62,9 @@ export async function POST(request: Request) {
 
       await pool.query('COMMIT');
 
-      return NextResponse.json({ message: 'User registered successfully', userId }, { status: 201 });
+      const token = jwt.sign({ userId: userId, email: req.email, role: req.role }, SECRET_KEY, { expiresIn: '1h' });
+
+      return NextResponse.json({ message: 'User registered successfully', token, role:req.role }, { status: 201 });
     } catch (err) {
       await pool.query('ROLLBACK');
       console.error(err);
@@ -92,7 +94,9 @@ export async function POST(request: Request) {
 
       await pool.query('COMMIT');
 
-      return NextResponse.json({ message: 'User registered successfully', userId }, { status: 201 });
+      const token = jwt.sign({ userId: userId, email: req.email, role: req.role }, SECRET_KEY, { expiresIn: '1h' });
+
+      return NextResponse.json({ message: 'User registered successfully', token, role:req.role }, { status: 201 });
     } catch (err) {
       await pool.query('ROLLBACK');
       console.error(err);
