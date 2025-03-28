@@ -50,7 +50,7 @@ export default function UserAuthForm({title, role, ...props}: React.HTMLAttribut
         <CardTitle>{title}</CardTitle>
       </CardHeader>
       <CardContent>
-        <Label>Email</Label>
+        <Label className="my-4">Email</Label>
         <Input
           type="email"
           value={email}
@@ -58,7 +58,7 @@ export default function UserAuthForm({title, role, ...props}: React.HTMLAttribut
           placeholder="Email"
           required
         />
-        <Label>First Name</Label>
+        <Label className="my-4">First Name</Label>
         <Input
             type="text"
             value={first_name}
@@ -66,14 +66,14 @@ export default function UserAuthForm({title, role, ...props}: React.HTMLAttribut
             placeholder="First Name"
             required
         />
-        <Label>Middle Name</Label>
+        <Label className="my-4">Middle Name</Label>
         <Input
             type="text"
             value={middle_name}
             onChange={(e) => setMiddleName(e.target.value)}
             placeholder="Middle Name"
         />
-        <Label>Last Name</Label>
+        <Label className="my-4">Last Name</Label>
         <Input
             type="text"
             value={last_name}
@@ -81,7 +81,7 @@ export default function UserAuthForm({title, role, ...props}: React.HTMLAttribut
             placeholder="Last Name"
             required
         />
-        <Label>Phone Number</Label>
+        <Label className="my-4">Phone Number</Label>
         <Input
             type="tel"
             value={phone}
@@ -91,14 +91,14 @@ export default function UserAuthForm({title, role, ...props}: React.HTMLAttribut
             pattern="^[0-9]{10}$"
             title="10-digit phone number"
         />
-        <Label>Password</Label>
+        <Label className="my-4">Password</Label>
         <Input
           type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           placeholder="Password"
         />
-        <Button onClick={handleSignUp}>Sign Up</Button>
+        <Button className="my-4" onClick={handleSignUp}>Sign Up</Button>
       </CardContent>
     </Card>
   );
