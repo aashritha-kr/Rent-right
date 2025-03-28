@@ -297,7 +297,7 @@ INSERT INTO Lease_Agreement (
         Tenant_ID,
         Start_date,
         End_date,
-        Renewed
+        Renewed,
         Price,
         Advance_amount,
         Status,
