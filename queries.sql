@@ -77,7 +77,7 @@ CREATE TABLE Property (
     Type VARCHAR(20) CHECK(Type IN ('Commercial Building', 'Residential Building', 'Land')),
     Area_in_sqft FLOAT,
     Facing VARCHAR(15) CHECK(Facing IN ('North', 'West', 'East', 'South', 'North-East', 'North-West', 'South-East', 'South-West')),
-    Availability VARCHAR(15) CHECK(Availability IN ('Available', 'Leased', 'Under maintenance', 'Sold')),
+    Availability VARCHAR(20) CHECK(Availability IN ('Available', 'Leased', 'Under maintenance', 'Sold')),
     Past_tenant_count INT DEFAULT 0,
     Description VARCHAR(500),
     FOREIGN KEY (Owner_ID) REFERENCES Admins(User_ID) ON DELETE CASCADE,
@@ -91,7 +91,7 @@ CREATE TABLE Photos (
 );
 CREATE TABLE Plot_lands (
     Property_ID INT,
-    Type VARCHAR(10) CHECK(Type IN ('commercial', 'Residential')),
+    Type VARCHAR(11) CHECK(Type IN ('commercial', 'Residential')),
     Boundary_wall VARCHAR(3) CHECK(Boundary_wall IN ('Yes', 'No')),
     Sale_type VARCHAR(4) CHECK(Sale_type IN ('Rent', 'Buy')),
     Price_per_sqft DECIMAL(10, 2),
@@ -123,7 +123,7 @@ CREATE TABLE Commercial_buildings (
     Sale_type VARCHAR(4) CHECK(Sale_type IN ('Rent', 'Buy')),
     PRIMARY KEY (Property_ID, Sale_type),
     Type VARCHAR(15) CHECK(Type IN ('Office space', 'Warehouse', 'Retail shop')),
-    Parking VARCHAR(7) CHECK(Parking IN ('Public', 'Reserved')),
+    Parking VARCHAR(10) CHECK(Parking IN ('Public', 'Reserved')),
     Furnishing VARCHAR(15) CHECK(Furnishing IN ('Fully furnished', 'Semi furnished', 'Unfurnished')),
     Price DECIMAL(10, 2),
     Advance_amount DECIMAL(10, 2),
