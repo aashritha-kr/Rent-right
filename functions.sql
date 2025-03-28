@@ -1,11 +1,10 @@
---to add data to respected type (plot_lands)
 CREATE OR REPLACE PROCEDURE add_land(
     input_Owner_ID INT,
     input_Zip_code VARCHAR(10),
     input_Country VARCHAR(100),
     input_Date_of_construction DATE,
-    input_Create_at DATETIME,
-    input_Update_at DATETIME,
+    input_Create_at TIMESTAMP,
+    input_Update_at TIMESTAMP,
     input_Door_no VARCHAR(50),
     input_Building_name VARCHAR(100),
     input_Street_name VARCHAR(100),
@@ -15,23 +14,21 @@ CREATE OR REPLACE PROCEDURE add_land(
     input_Facing VARCHAR(15),
     input_Availability VARCHAR(15),
     input_Past_tenant_count INT,
-    input_Description Varchar(500),
-
-    input_Type VARCHAR(10),
-    input_Type VARCHAR(10),
+    input_Description VARCHAR(500),
+    input_Land_Type VARCHAR(10),
     input_Boundary_wall VARCHAR(3),
     input_Sale_type VARCHAR(4),
     input_Price_per_sqft DECIMAL(10, 2),
     input_Advance_Amount DECIMAL(10, 2),
     input_Negotiability VARCHAR(3)
-    )
-    LANGUAGE plpgsql
-    AS $$
-    DECLARE new_property_id INT;
-    BEGIN
+)
+LANGUAGE plpgsql
+AS $$
+DECLARE 
+    new_property_id INT;
+BEGIN
     INSERT INTO Property(
-        Property_ID ,
-        Owner_ID ,
+        Owner_ID,
         Zip_code,
         Country,
         Date_of_construction,
@@ -47,46 +44,46 @@ CREATE OR REPLACE PROCEDURE add_land(
         Availability,
         Past_tenant_count,
         Description
-        ) VALUES (
-        input_Owner_ID ,
+    ) VALUES (
+        input_Owner_ID,
         input_Zip_code,
         input_Country,
-        input_Date_of_construction ,
-        input_Create_at ,
-        input_Update_at ,
-        input_Door_no ,
-        input_Building_name ,
-        input_Street_name ,
-        input_Area ,
-        input_Type ,
-        input_Area_in_sqft ,
-        input_Facing ,
-        input_Availability ,
-        input_Past_tenant_count ,
+        input_Date_of_construction,
+        input_Create_at,
+        input_Update_at,
+        input_Door_no,
+        input_Building_name,
+        input_Street_name,
+        input_Area,
+        input_Type,
+        input_Area_in_sqft,
+        input_Facing,
+        input_Availability,
+        input_Past_tenant_count,
         input_Description
-        ) RETURNING Property_ID INTO new_property_id;
+    ) RETURNING Property_ID INTO new_property_id;
 
-        INSERT INTO Plot_lands (
-        Property_ID ,
+    INSERT INTO Plot_lands (
+        Property_ID,
         Type,
         Boundary_wall,
         Sale_type,
         Price_per_sqft,
         Advance_Amount,
         Negotiability
-        ) 
-        VALUES (
+    ) 
+    VALUES (
         new_property_id,
-        input_Type,
-        input_Type,
+        input_Land_Type,
         input_Boundary_wall,
         input_Sale_type,
         input_Price_per_sqft,
         input_Advance_Amount,
         input_Negotiability
-        );
-        END;
-        $$;
+    );
+END;
+$$;
+
 
 --to add data to respected type (residential_buildings)
 CREATE OR REPLACE PROCEDURE add_residential_building(
