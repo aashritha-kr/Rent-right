@@ -9,10 +9,11 @@ export default function SignUp() {
   const [Role, setRole] = useState("Tenant");
 
   return (
-    <>
-      <div className="flex flex-col items-center w-full bg-gray-100 min-h-screen py-10">
-        <div className="mb-6 w-full max-w-md mx-auto">
-          <div className="flex items-center justify-center bg-white rounded-lg shadow-lg border border-gray-300">
+    <><div 
+    className="flex flex-col items-center w-full min-h-screen py-10 bg-cover bg-center bg-no-repeat"
+    style={{ backgroundImage: "url('/loginbg.jpg')" }}
+  >
+    <div className="mb-6 w-full max-w-md mx-auto"><div className="flex items-center justify-center bg-white rounded-lg shadow-lg border border-gray-300">
             <Button
               variant={(Role === "Tenant") ? "outline" : "secondary"}
               onClick={() => setRole("Tenant")}
