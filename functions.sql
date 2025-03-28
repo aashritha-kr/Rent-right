@@ -2,6 +2,8 @@ CREATE OR REPLACE PROCEDURE add_land(
     input_Owner_ID INT,
     input_Zip_code VARCHAR(10),
     input_Country VARCHAR(100),
+    input_State VARCHAR(100),
+    input_City VARCHAR(100),
     input_Date_of_construction DATE,
     input_Create_at TIMESTAMP,
     input_Update_at TIMESTAMP,
@@ -27,6 +29,18 @@ AS $$
 DECLARE 
     new_property_id INT;
 BEGIN
+     INSERT INTO COUNTRY_STATE(State, Country) 
+    VALUES (input_State, input_Country)
+    ON CONFLICT (State) DO NOTHING;
+    
+    INSERT INTO CITY_STATE(City, State)
+    VALUES (input_City, input_State)
+    ON CONFLICT (City, State) DO NOTHING;
+    
+    INSERT INTO ZIP_CITY(Zip_code, City, State, Country)
+    VALUES (input_Zip_code, input_City, input_State, input_Country)
+    ON CONFLICT (Zip_code, Country) DO NOTHING;
+
     INSERT INTO Property(
         Owner_ID,
         Zip_code,
