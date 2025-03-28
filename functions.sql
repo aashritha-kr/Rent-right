@@ -341,7 +341,7 @@ RETURNS TRIGGER AS $$
 BEGIN
     IF NOT EXISTS (
         SELECT 1 FROM Roles
-        WHERE User_ID = NEW.User_ID AND Role = 'staff'
+        WHERE User_ID = NEW.User_ID AND Role = 'Staff'
     ) THEN
         RAISE EXCEPTION 'User must have staff role';
     END IF;
