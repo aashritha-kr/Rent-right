@@ -14,10 +14,10 @@ CREATE OR REPLACE PROCEDURE add_land(
     input_Type VARCHAR(20),
     input_Area_in_sqft FLOAT,
     input_Facing VARCHAR(15),
-    input_Availability VARCHAR(15),
+    input_Availability VARCHAR(20),
     input_Past_tenant_count INT,
     input_Description VARCHAR(500),
-    input_Land_Type VARCHAR(10),
+    input_Land_Type VARCHAR(11),
     input_Boundary_wall VARCHAR(3),
     input_Sale_type VARCHAR(4),
     input_Price_per_sqft DECIMAL(10, 2),
@@ -118,7 +118,7 @@ CREATE OR REPLACE PROCEDURE add_residential_building(
     input_Sale_type VARCHAR(4),
     input_Type VARCHAR(20),
     input_BHK_Type VARCHAR(1),
-    input_Furnishing VARCHAR(15),
+    input_Furnishing VARCHAR(20),
     input_Price DECIMAL(10, 2),
     input_Advance_amount DECIMAL(10, 2),
     input_Negotiability VARCHAR(3),
@@ -224,11 +224,11 @@ CREATE OR REPLACE PROCEDURE add_commercial_building(
     input_Area VARCHAR(100),
     input_Area_in_sqft FLOAT,
     input_Facing VARCHAR(15),
-    input_Availability VARCHAR(15),
+    input_Availability VARCHAR(20),
     input_Description VARCHAR(500),
     input_Sale_type VARCHAR(4),
     input_Type VARCHAR(15),
-    input_Parking VARCHAR(7),
+    input_Parking VARCHAR(10),
     input_Furnishing VARCHAR(15),
     input_Price DECIMAL(10, 2),
     input_Advance_amount DECIMAL(10, 2),
@@ -402,7 +402,7 @@ RETURNS TRIGGER AS $$
 BEGIN
     IF NOT EXISTS (
         SELECT 1 FROM Roles
-        WHERE User_ID = NEW.User_ID AND Role = 'tenant'
+        WHERE User_ID = NEW.Tenant_ID AND Role = 'tenant'
     ) THEN
         RAISE EXCEPTION 'User must have tenant role';
     END IF;
