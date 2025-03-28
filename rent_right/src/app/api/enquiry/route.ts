@@ -2,7 +2,6 @@ import pool from '@/lib/db';
 
 export async function GET(request: Request) {
     try{
-        console.log("Fetching Enquiries");
         const userId = request.headers.get('User_ID');
         if (!userId) {
             return new Response(
@@ -24,7 +23,33 @@ export async function GET(request: Request) {
 
         if(role === 'Tenant'){
             const enquiriesQuery = `
-                SELECT * FROM Enquiry WHERE Tenant_ID = $1;
+                SELECT 
+                e.Enquiry_ID,
+                e.Tenant_ID,
+                e.Property_ID,
+                e.Description,
+                e.Approval,
+                p.Building_name,
+                CASE 
+                    WHEN e.Approval = 'Approved' THEN a.First_name  || ' ' || a.Last_name 
+                    ELSE NULL 
+                END AS Ownername,
+                CASE 
+                    WHEN e.Approval = 'Approved' THEN a.Phone 
+                    ELSE NULL 
+                END AS Ownerphone,
+                CASE 
+                    WHEN e.Approval = 'Approved' THEN a.Email 
+                    ELSE NULL 
+                END AS Owneremail
+            FROM 
+                Enquiry e
+            JOIN 
+                Property p ON e.Property_ID = p.Property_ID
+            LEFT JOIN 
+                Users a ON p.Owner_ID = a.User_ID
+            WHERE 
+                e.Tenant_ID = $1;
             `;
             const enquiriesResult = await pool.query(enquiriesQuery, [userId]);
             const enquiries = enquiriesResult.rows;
@@ -49,8 +74,6 @@ export async function GET(request: Request) {
 
             const enquiriesResult = await pool.query(enquiriesQuery, [userId]);  // Pass userId to filter based on the logged-in admin
             const enquiries = enquiriesResult.rows;
-
-            console.log("Enquiries:", enquiries);
 
             return new Response(
                 JSON.stringify({ enquiries }),
@@ -103,7 +126,6 @@ export async function POST(request: Request) {
             );
         }
         const requestBody = await request.json();
-        console.log("Request Body:", requestBody);
         const { description } = requestBody;
 
         const insertEnquiryQuery = `

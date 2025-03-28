@@ -35,6 +35,7 @@ export default function tenantHeader({ children }: { children: React.ReactNode }
           <Link href="/tenant/properties" className="hover:text-blue-600">Properties</Link>
           <Link href="/tenant/maintenance" className="hover:text-blue-600">Service</Link>
           <Link href="/tenant/rentals" className="hover:text-blue-600">Rentals</Link>
+          <Link href="/tenant/enquiries" className="hover:text-blue-600">Enquiries</Link>
           <Link href="/tenant/profile" className="hover:text-blue-600">Profile</Link>
 
           <button
