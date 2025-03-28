@@ -130,6 +130,7 @@ export default function YourRentalsPage() {
                 <p className="text-blue-950">Owner Phone Number: {rental.ownerphone}</p>
                 <div className="flex flex-col items-start gap-2 mt-4">
                   <Button className="w-fit px-4 py-2 text-sm" onClick={()=>{router.push(`/tenant/properties/${rental.property_id}`)}}>View Property</Button>
+                  <Button className="w-fit px-4 py-2 text-sm" onClick={()=>{router.push(`/tenant/payment/${rental.lease_id}`)}}>Pay Rent</Button>
                   <Button
                     className="w-fit px-4 py-2 text-sm bg-green-700 hover:bg-green-700 text-white"
                     onClick={() => setcurrent_index(index === current_index ? null : index)}

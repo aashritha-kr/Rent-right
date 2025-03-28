@@ -3,7 +3,9 @@ import { Card, CardContent } from "@/components/ui/card";
 import React, { useState, useEffect } from "react";
 import Header from "../../../../layout/adminHeader";
 import { jwtDecode } from "jwt-decode";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"; // Import Shadcn Select
+import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useRouter } from "next/navigation";
 
 export default function ViewMaintenanceRequests() {
   const [Requests, setRequests] = useState<Request[]>([]);
@@ -19,8 +21,15 @@ export default function ViewMaintenanceRequests() {
     tenantname: string;
     tenantnumber: string;
     status: string;
-    staffMember: string | number;
+    staffname: string;
+    staffnumber:number;
+    building_name:string;
   }
+  const router=useRouter();
+
+  useEffect(()=>{
+    console.log(Requests)
+  }, [Requests])
 
   useEffect(() => {
     const fetchRequestsAndStaff = async () => {
@@ -108,7 +117,7 @@ export default function ViewMaintenanceRequests() {
       setRequests((prevRequests) =>
         prevRequests.map((request) =>
           request.request_id === requestId
-            ? { ...request, staffMember: selectedStaffId, status: "Assigned" }
+            ? { ...request, staffname: selectedStaffId, status: "Assigned" }
             : request
         )
       );
@@ -138,6 +147,7 @@ export default function ViewMaintenanceRequests() {
           {Requests.map((request) => (
             <Card key={request.request_id} className="p-4 shadow-md rounded-lg">
               <CardContent>
+              <p className="text-black-950">Property: {request.building_name}</p>
                 <p className="text-black-950">Service: {request.service}</p>
                 <p className="text-black-950">
                   Description: {request.description}
@@ -209,12 +219,15 @@ export default function ViewMaintenanceRequests() {
                       </button>
                     )}
                   </div>
+                ) : request.status === "Resolved" ? (
+                  <Button className="w-fit px-4 py-2 text-sm" onClick={()=>{router.push(`/admin/payment/${request.request_id}`)}}>Make Payment</Button>
                 ) : (
                   <div>
                     <p className="text-green-950 font-semibold bg-green-50">
                       Status: {request.status}
                     </p>
-                    <p>Staff Member: {request.staffMember}</p>
+                    <p>Staff Member: {request.staffname}</p>
+                    <p>Staff Number: {request.staffnumber}</p>
                   </div>
                 )}
               </CardContent>

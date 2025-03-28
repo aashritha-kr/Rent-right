@@ -52,7 +52,13 @@ export default function StaffRequestsPage() {
         }
 
         const data = await response.json();
-        setRequests(data.staffRequests);
+        setRequests((prevRequests) =>
+          prevRequests.map((request) =>
+            request.request_id === data.request_id
+              ? { ...request, status: data.status }
+              : request
+          )
+        );
         setLoading(false);
       } catch (error) {
         console.error("Error fetching enquiries:", error);
@@ -62,6 +68,32 @@ export default function StaffRequestsPage() {
 
     fetchRequests();
   }, []);
+
+  useEffect(()=>{
+    console.log(requests)
+  }, [requests])
+
+  const handleStatusChange = async (status: string, requestId: number) => {
+      try {
+        const token = localStorage.getItem("token");
+        if (!token) {
+          throw new Error("No token found");
+        }
+        const decodedToken = jwtDecode(token);
+        const userId = decodedToken.userId;
+  
+        const statusResponse = await fetch("/api/maintenance", {
+          method: "PATCH",
+          headers: {
+            "User_ID": userId
+          },
+          body: JSON.stringify({request_id: requestId, newStatus:status})
+        });
+        const NewStatus = await statusResponse.json();
+      } catch (error) {
+        console.error("Error fetching staff members:", error);
+      }
+    };
 
   if (loading) {
     return <p>Loading requests...</p>;
@@ -96,8 +128,6 @@ export default function StaffRequestsPage() {
             >
               Profile
             </Button>
-            
-            
           </nav>
         </SheetContent>
       </Sheet>
@@ -111,19 +141,25 @@ export default function StaffRequestsPage() {
         {requests.map((request, index) => (
           <Card key={index} className="p-4 shadow-md rounded-lg">
             <CardContent>
-              <CardTitle className="text-lg">Property: {request.Building_name}</CardTitle>
-              <p className="text-gray-900 my-2">Service: {request.Service}</p>
-              <p className="text-gray-900 my-2">Description: {request.Description}</p>
-              <p className="text-gray-900 my-2">Created at: {new Date(request.Created_at).toLocaleString()}</p>
-              <p className="text-green-700 font-semibold bg-green-100 p-2 rounded-md">
-                Status: {request.Status}
-              </p>
+              <CardTitle className="text-lg">Property: {request.building_name}</CardTitle>
+              <p className="text-gray-900 my-2">Service: {request.service}</p>
+              <p className="text-gray-900 my-2">Description: {request.description}</p>
+              <p className="text-gray-900 my-2">Created at: {new Date(request.created_at).toLocaleString()}</p>
               <div className="mt-4">
-                <p><strong>Tenant Name:</strong> {request.TenantName}</p>
-                <p><strong>Tenant Phone:</strong> {request.TenantNumber}</p>
-                <p><strong>Owner Name:</strong> {request.OwnerName}</p>
-                <p><strong>Owner Phone:</strong> {request.OwnerPhone}</p>
+                <p><strong>Tenant Name:</strong> {request.tenantname}</p>
+                <p><strong>Tenant Phone:</strong> {request.tenantnumber}</p>
+                <p><strong>Owner Name:</strong> {request.ownername}</p>
+                <p><strong>Owner Phone:</strong> {request.ownerphone}</p>
               </div>
+              <p className="text-green-700 font-semibold bg-green-100 p-2 rounded-md">
+                Status: {request.status}
+              </p>
+              {
+                request.status==='Assigned' && <Button className="w-fit px-4 py-2 text-sm" onClick={()=>{handleStatusChange('In progress', request.request_id)}}>Mark as Ongoing</Button>
+              }
+              {
+                request.status==='In progress' && <Button className="w-fit px-4 py-2 text-sm" onClick={()=>{handleStatusChange('Resolved', request.request_id)}}>Mark as Resolved</Button>
+              }
             </CardContent>
           </Card>
         ))}

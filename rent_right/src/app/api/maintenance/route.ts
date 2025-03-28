@@ -190,9 +190,10 @@ export async function GET(request: Request) {
 
   export async function PATCH(request: Request) {
     try {
-        const { requestId, newStatus } = await request.json();
+        const { request_id, newStatus } = await request.json();
+        console.log(request_id, newStatus)
         
-        if (!requestId || !newStatus) {
+        if (!request_id || !newStatus) {
             return new Response('Missing parameters', { status: 400 });
         }
 
@@ -203,7 +204,7 @@ export async function GET(request: Request) {
             RETURNING *;
         `;
 
-        const result = await pool.query(updateQuery, [newStatus, requestId]);
+        const result = await pool.query(updateQuery, [newStatus, request_id]);
 
         if (result.rowCount === 0) {
             return new Response('Request not found', { status: 404 });
