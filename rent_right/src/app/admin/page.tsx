@@ -1,3 +1,4 @@
+
 "use client";
 
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
@@ -7,6 +8,14 @@ import { Input } from "@/components/ui/input";
 import Header from "../../../layout/adminHeader";
 import { jwtDecode } from "jwt-decode";
 import { useRouter } from "next/navigation";
+import {
+  Sheet,
+  SheetContent,
+  SheetTrigger,
+  SheetTitle,
+} from "@/components/ui/sheet";
+import { Menu } from "lucide-react";
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 
 type PropertyDetails = {
   property_id: number;
@@ -35,18 +44,14 @@ export default function YourRentalsPage() {
     const fetchProperties = async () => {
       try {
         const token = localStorage.getItem("token");
-        console.log("Token:", token);
         if (token) {
           try {
             const decodedToken = jwtDecode<any>(token);
             const userId = decodedToken.userId;
-            console.log("User ID:", userId);
 
             const response = await fetch("/api/properties", {
               method: "GET",
-              headers: {
-                "User_ID": userId,
-              },
+              headers: { User_ID: userId },
             });
 
             const data = await response.json();
@@ -65,7 +70,6 @@ export default function YourRentalsPage() {
         console.error("Error fetching rental data:", error);
       }
     };
-
     fetchProperties();
   }, []);
 
@@ -74,7 +78,8 @@ export default function YourRentalsPage() {
     index: number
   ) => {
     const updated_details: PropertyDetails[] = [...propdetails];
-    updated_details[index][e.target.name as keyof PropertyDetails] = e.target.value;
+    updated_details[index][e.target.name as keyof PropertyDetails] =
+      e.target.value;
     setpropdetails(updated_details);
   };
 
@@ -102,7 +107,7 @@ export default function YourRentalsPage() {
         throw new Error("Failed to update property");
       }
   
-      const data = await response.json();
+      const data = await response.json(); // Optionally handle the response data
   
       console.log("Property updated successfully:", data);
     } catch (error) {
@@ -116,7 +121,6 @@ export default function YourRentalsPage() {
   };
 
   return (
-
     <Header>
       <div className="p-8">
         <h1 className="text-3xl font-bold text-blue-750 text-center p-6">
@@ -134,7 +138,7 @@ export default function YourRentalsPage() {
                     <Input
                       type="text"
                       name="type"
-                      value={prop.type || ""}
+                      value={prop.type}
                       onChange={(e) => handleEdit(e, index)}
                     />
                   ) : (
@@ -148,7 +152,7 @@ export default function YourRentalsPage() {
                     <Input
                       type="text"
                       name="availability"
-                      value={prop.availability  || ""}
+                      value={prop.availability}
                       onChange={(e) => handleEdit(e, index)}
                     />
                   ) : (
@@ -162,7 +166,7 @@ export default function YourRentalsPage() {
                     <Input
                       type="text"
                       name="description"
-                      value={prop.description || ""}
+                      value={prop.description}
                       onChange={(e) => handleEdit(e, index)}
                     />
                   ) : (
@@ -172,16 +176,7 @@ export default function YourRentalsPage() {
 
                 <p className="text-blue-950">
                   <strong>Area (sqft): </strong>
-                  {editStatus === index ? (
-                    <Input
-                      type="text"
-                      name="area_in_sqft"
-                      value={prop.area_in_sqft || ""}
-                      onChange={(e) => handleEdit(e, index)}
-                    />
-                  ) : (
-                    prop.area_in_sqft
-                  )}
+                  {prop.area_in_sqft}
                 </p>
 
                 <div className="flex flex-col items-start gap-2 mt-4">
@@ -195,7 +190,7 @@ export default function YourRentalsPage() {
                   >
                     {editStatus === index ? "Save" : "Edit Property"}
                   </Button>
-                  <Button className="w-fit px-4 py-2 text-sm my-4 bg-green-700" onClick={() => router.push(`admin/properties/${prop.property_id}`)}>
+                  <Button className="w-fit px-4 py-2 text-sm my-4 bg-green-700">
                     View Property
                   </Button>
                 </div>

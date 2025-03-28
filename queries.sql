@@ -65,6 +65,8 @@ CREATE TABLE ZIP_CITY (
 CREATE TABLE Property (
     Property_ID SERIAL PRIMARY KEY,
     Owner_ID INT NOT NULL,
+    Zip_code VARCHAR(10) NOT NULL,
+    Country VARCHAR(100) NOT NULL,
     Date_of_construction DATE,
     Create_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     Update_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -78,7 +80,8 @@ CREATE TABLE Property (
     Availability VARCHAR(15) CHECK(Availability IN ('Available', 'Leased', 'Under maintenance', 'Sold')),
     Past_tenant_count INT DEFAULT 0,
     Description VARCHAR(500),
-    FOREIGN KEY (Owner_ID) REFERENCES Admins(User_ID) ON DELETE CASCADE
+    FOREIGN KEY (Owner_ID) REFERENCES Admins(User_ID) ON DELETE CASCADE,
+    FOREIGN KEY (Zip_code, Country) REFERENCES ZIP_CITY(Zip_code, Country) ON DELETE CASCADE
 );
 CREATE TABLE Photos (
     Photo_ID SERIAL PRIMARY KEY,
