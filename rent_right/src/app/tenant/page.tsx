@@ -89,11 +89,12 @@ export default function TenantHome() {
         <SheetTrigger className="p-4 fixed z-50 top-4 left-4">
           <Menu size={30} />
         </SheetTrigger>
+  <SheetContent side="left" className="p-6 w-70 bg-gray-100">
 
-        <SheetContent side="left" className="p-6 w-70 bg-gray-100">
-          <VisuallyHidden>
-            <SheetTitle>Navigation Menu</SheetTitle>
-          </VisuallyHidden>
+                    {/* <VisuallyHidden> */}
+                    <SheetTitle className="text-center">Rent Right</SheetTitle>
+                    {/* </VisuallyHidden> */}
+
 
                    
  <div className="flex justify-center">
