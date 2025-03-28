@@ -3,7 +3,6 @@
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import Header from '../../../layout/staffHeader';
 import { useRouter } from "next/navigation";
 import { jwtDecode } from "jwt-decode";
 import {
@@ -73,8 +72,7 @@ export default function StaffRequestsPage() {
   }
 
   return (
-    <Header>
-
+    <>
               <Sheet>
                 <SheetTrigger className="p-4">
                   <Menu size={30} />
@@ -134,6 +132,6 @@ export default function StaffRequestsPage() {
         ))}
       </div>
     </div>
-    </Header>
+    </>
   );
 }

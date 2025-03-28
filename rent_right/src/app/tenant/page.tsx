@@ -1,5 +1,4 @@
 "use client";
-import Header from "../../../layout/tenantHeader";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -85,7 +84,6 @@ export default function TenantHome() {
   }, []);
 
   return (
- <Header>
       <div className="flex">
        
         <Sheet>
@@ -100,10 +98,7 @@ export default function TenantHome() {
               <Button
                 variant="ghost"
                 onClick={() => router.push("/tenant/rentals")}
-                className="text-2xl bg-blue-100 mb-4 mt-8 hover:bg-blue-700:tsx
-Copy
-Edit
-"
+                className="text-2xl bg-blue-100 mb-4 mt-8 hover:bg-blue-700:tsx"
               >
                 Rentals
               </Button>
@@ -197,6 +192,5 @@ Edit
           </Card>
         </div>
       </div>
-    </Header>
   );
 }

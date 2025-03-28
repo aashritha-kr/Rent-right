@@ -5,10 +5,54 @@ export async function GET(request: NextRequest) {
   try {
     const userId = request.headers.get('User_ID');
     if (!userId) {
-      return new Response(
-        JSON.stringify({ message: 'User ID is required' }),
-        { status: 400, headers: { 'Content-Type': 'application/json' } }
-      );
+      const url = new URL(request.url);
+      const id = url.searchParams.get("id");
+      if (!id) {
+        return NextResponse.json({ message: "Property ID is required" }, { status: 400 });
+      }
+      const propertyQuery = `
+        SELECT * 
+        FROM Property 
+        WHERE Property_ID = $1
+      `;
+      const { rows: propertyRows } = await pool.query(propertyQuery, [id]);
+
+      if (propertyRows.length === 0) {
+        return NextResponse.json({ message: "Property not found" }, { status: 404 });
+      }
+
+      const property = propertyRows[0];
+
+      let propertyDetails = {};
+
+      if (property.Type === 'Residential Building') {
+        const residentialQuery = `
+          SELECT * 
+          FROM Residential_buildings 
+          WHERE Property_ID = $1
+        `;
+        const { rows: residentialRows } = await pool.query(residentialQuery, [id]);
+        propertyDetails = residentialRows[0] || {};
+      }
+      else if (property.Type === 'Commercial Building') {
+        const commercialQuery = `
+          SELECT * 
+          FROM Commercial_buildings 
+          WHERE Property_ID = $1
+        `;
+        const { rows: commercialRows } = await pool.query(commercialQuery, [id]);
+        propertyDetails = commercialRows[0] || {};
+      }
+      else if (property.Type === 'Land') {
+        const landQuery = `
+          SELECT * 
+          FROM Plot_lands 
+          WHERE Property_ID = $1
+        `;
+        const { rows: landRows } = await pool.query(landQuery, [id]);
+        propertyDetails = landRows[0] || {};
+      }
+      return NextResponse.json({...property, ...propertyDetails});
     }
 
     const userResult = await pool.query('SELECT * FROM Users WHERE User_ID = $1', [userId]);
@@ -27,7 +71,6 @@ export async function GET(request: NextRequest) {
     if (!id) {
       return NextResponse.json({ message: "Property ID is required" }, { status: 400 });
     }
-    console.log(id)
     if (role === 'Tenant') {
       const propertyQuery = `
         SELECT * 
@@ -147,6 +190,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json(combinedDetails);
 
     }
+
 
   } catch (error) {
     console.error("Error fetching property details:", error);

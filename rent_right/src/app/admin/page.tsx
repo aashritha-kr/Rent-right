@@ -5,7 +5,6 @@ import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import Header from "../../../layout/adminHeader";
 import { jwtDecode } from "jwt-decode";
 import { useRouter } from "next/navigation";
 import {
@@ -121,7 +120,6 @@ export default function YourRentalsPage() {
   };
 
   return (
-    <Header>
       <div className="p-8">
         <h1 className="text-3xl font-bold text-blue-750 text-center p-6">
           YOUR PROPERTIES
@@ -208,6 +206,5 @@ export default function YourRentalsPage() {
           </Button>
         </div>
       </div>
-    </Header>
   );
 }
