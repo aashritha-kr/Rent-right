@@ -310,7 +310,7 @@ INSERT INTO Lease_Agreement (
         old_end_date + INTERVAL '1 day', 
         -- Start date is the day after the old lease ends
         in_end_date,
-        'NO'
+        'NO',
         in_price,
         0.00,
       'active',
