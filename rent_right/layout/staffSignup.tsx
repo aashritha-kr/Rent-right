@@ -73,7 +73,7 @@ export default function UserAuthForm({title, role, ...props}: React.HTMLAttribut
         <CardTitle>{title}</CardTitle>
       </CardHeader>
       <CardContent>
-        <Label>Email</Label>
+        <Label className="my-4">Email</Label>
         <Input
           type="email"
           value={email}
@@ -81,7 +81,7 @@ export default function UserAuthForm({title, role, ...props}: React.HTMLAttribut
           placeholder="Email"
           required
         />
-        <Label>First Name</Label>
+        <Label className="my-4">First Name</Label>
         <Input
             type="text"
             value={first_name}
@@ -89,14 +89,14 @@ export default function UserAuthForm({title, role, ...props}: React.HTMLAttribut
             placeholder="First Name"
             required
         />
-        <Label>Middle Name</Label>
+        <Label className="my-4">Middle Name</Label>
         <Input
             type="text"
             value={middle_name}
             onChange={(e) => setMiddleName(e.target.value)}
             placeholder="Middle Name"
         />
-        <Label>Last Name</Label>
+        <Label className="my-4"> Last Name</Label>
         <Input
             type="text"
             value={last_name}
@@ -104,7 +104,7 @@ export default function UserAuthForm({title, role, ...props}: React.HTMLAttribut
             placeholder="Last Name"
             required
         />
-        <Label>Service Field</Label>
+        <Label className="my-4">Service Field</Label>
         <Select value={service} onValueChange={(value) => setService(value)}>
           <SelectTrigger>
             <span>{service || "Select Service"}</span>
@@ -116,7 +116,7 @@ export default function UserAuthForm({title, role, ...props}: React.HTMLAttribut
             <SelectItem value="PestControl">Pest Control</SelectItem>
           </SelectContent>
         </Select>
-        <Label>Phone Number</Label>
+        <Label className="my-4">Phone Number</Label>
         <Input
             type="tel"
             value={phone}
@@ -126,7 +126,7 @@ export default function UserAuthForm({title, role, ...props}: React.HTMLAttribut
             pattern="^[0-9]{10}$"
             title="10-digit phone number"
         />
-        <Label>UPI ID</Label>
+        <Label className="my-4">UPI ID</Label>
         <Input
             type="text"
             value={upi}
@@ -134,7 +134,7 @@ export default function UserAuthForm({title, role, ...props}: React.HTMLAttribut
             placeholder="UPI ID"
             title="UPI ID"
         />
-        <Label>Account Number</Label>
+        <Label className="my-4">Account Number</Label>
         <Input
             type="text"
             value={accNo}
@@ -144,7 +144,7 @@ export default function UserAuthForm({title, role, ...props}: React.HTMLAttribut
             pattern="^[0-9]*$"
             title="Account number"
         />
-        <Label>IFSC Code</Label>
+        <Label className="my-4">IFSC Code</Label>
         <Input
             type="text"
             value={ifsc}
@@ -153,7 +153,7 @@ export default function UserAuthForm({title, role, ...props}: React.HTMLAttribut
             required
             title="IFSC Code"
         />
-        <Label>Bank Name</Label>
+        <Label className="my-4">Bank Name</Label>
         <Input
             type="text"
             value={bank}
@@ -162,7 +162,7 @@ export default function UserAuthForm({title, role, ...props}: React.HTMLAttribut
             required
             title="Bank Name"
         />
-        <Label>Bank Branch</Label>
+        <Label className="my-4">Bank Branch</Label>
         <Input
             type="text"
             value={branch}
@@ -171,7 +171,7 @@ export default function UserAuthForm({title, role, ...props}: React.HTMLAttribut
             required
             title="Bank Branch"
         />
-        <Label>Account holder name</Label>
+        <Label className="my-4">Account holder name</Label>
         <Input
             type="text"
             value={accName}
@@ -180,14 +180,14 @@ export default function UserAuthForm({title, role, ...props}: React.HTMLAttribut
             required
             title="Account holder name"
         />
-        <Label>Password</Label>
+        <Label className="my-4">Password</Label>
         <Input
           type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           placeholder="Password"
         />
-        <Button onClick={handleSignUp}>Sign Up</Button>
+        <Button className="my-4" onClick={handleSignUp}>Sign Up</Button>
       </CardContent>
     </Card>
   );

@@ -2,6 +2,8 @@ CREATE OR REPLACE PROCEDURE add_land(
     input_Owner_ID INT,
     input_Zip_code VARCHAR(10),
     input_Country VARCHAR(100),
+    input_State VARCHAR(100),
+    input_City VARCHAR(100),
     input_Date_of_construction DATE,
     input_Create_at TIMESTAMP,
     input_Update_at TIMESTAMP,
@@ -27,6 +29,18 @@ AS $$
 DECLARE 
     new_property_id INT;
 BEGIN
+     INSERT INTO COUNTRY_STATE(State, Country) 
+    VALUES (input_State, input_Country)
+    ON CONFLICT (State) DO NOTHING;
+    
+    INSERT INTO CITY_STATE(City, State)
+    VALUES (input_City, input_State)
+    ON CONFLICT (City, State) DO NOTHING;
+    
+    INSERT INTO ZIP_CITY(Zip_code, City, State, Country)
+    VALUES (input_Zip_code, input_City, input_State, input_Country)
+    ON CONFLICT (Zip_code, Country) DO NOTHING;
+
     INSERT INTO Property(
         Owner_ID,
         Zip_code,
@@ -90,6 +104,8 @@ CREATE OR REPLACE PROCEDURE add_residential_building(
     input_Owner_ID INT,
     input_Zip_code VARCHAR(10),
     input_Country VARCHAR(100),
+     input_State VARCHAR(100),
+    input_City VARCHAR(100),
     input_Date_of_construction DATE,
     input_Door_no VARCHAR(50),
     input_Building_name VARCHAR(100),
@@ -117,6 +133,18 @@ AS $$
 DECLARE
     new_property_ID INT;
 BEGIN
+    INSERT INTO COUNTRY_STATE(State, Country) 
+    VALUES (input_State, input_Country)
+    ON CONFLICT (State) DO NOTHING;
+    
+    INSERT INTO CITY_STATE(City, State)
+    VALUES (input_City, input_State)
+    ON CONFLICT (City, State) DO NOTHING;
+    
+    INSERT INTO ZIP_CITY(Zip_code, City, State, Country)
+    VALUES (input_Zip_code, input_City, input_State, input_Country)
+    ON CONFLICT (Zip_code, Country) DO NOTHING;
+
     INSERT INTO Property (
         Owner_ID,
         Zip_code,
@@ -187,6 +215,8 @@ CREATE OR REPLACE PROCEDURE add_commercial_building(
     input_Owner_ID INT,
     input_Zip_code VARCHAR(10),
     input_Country VARCHAR(100),
+     input_State VARCHAR(100),
+    input_City VARCHAR(100),
     input_Date_of_construction DATE,
     input_Door_no VARCHAR(50),
     input_Building_name VARCHAR(100),
@@ -211,7 +241,19 @@ LANGUAGE plpgsql
 AS $$
 DECLARE
     new_property_ID INT;
-BEGIN
+BEGIN  
+    INSERT INTO COUNTRY_STATE(State, Country) 
+    VALUES (input_State, input_Country)
+    ON CONFLICT (State) DO NOTHING;
+    
+    INSERT INTO CITY_STATE(City, State)
+    VALUES (input_City, input_State)
+    ON CONFLICT (City, State) DO NOTHING;
+    
+    INSERT INTO ZIP_CITY(Zip_code, City, State, Country)
+    VALUES (input_Zip_code, input_City, input_State, input_Country)
+    ON CONFLICT (Zip_code, Country) DO NOTHING;
+
     INSERT INTO Property (
         Owner_ID,
         Zip_code,
@@ -341,7 +383,7 @@ RETURNS TRIGGER AS $$
 BEGIN
     IF NOT EXISTS (
         SELECT 1 FROM Roles
-        WHERE User_ID = NEW.User_ID AND Role = 'staff'
+        WHERE User_ID = NEW.User_ID AND Role = 'Staff'
     ) THEN
         RAISE EXCEPTION 'User must have staff role';
     END IF;
@@ -563,5 +605,41 @@ CREATE TRIGGER trigger_update_staff_availability
 AFTER INSERT OR UPDATE ON Maintenance
 FOR EACH ROW
 EXECUTE FUNCTION update_staff_availability();
+
+
+--trigger to add the data based on respective roles and also checking the duplicate roles of a particular user.
+CREATE OR REPLACE FUNCTION check_unique_email_role_fn()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    v_email VARCHAR(100);
+    v_count INT;
+BEGIN
+    -- Retrieve the email for the given user from Users table
+    SELECT Email INTO v_email
+      FROM Users
+     WHERE User_ID = NEW.User_ID;
+     
+    -- Count any Roles rows (joined with Users) that already have the same email and role.
+    SELECT COUNT(*) INTO v_count
+      FROM Roles r
+      JOIN Users u ON r.User_ID = u.User_ID
+     WHERE u.Email = v_email
+       AND r.Role = NEW.Role;
+       
+    IF v_count > 0 THEN
+        RAISE EXCEPTION 'User with email "%" and role "%" already exists.', v_email, NEW.Role;
+    END IF;
+    
+    RETURN NEW;
+END;
+$$;
+
+CREATE TRIGGER check_unique_email_role_trg
+BEFORE INSERT ON Roles
+FOR EACH ROW
+EXECUTE FUNCTION check_unique_email_role_fn();
+
 
 

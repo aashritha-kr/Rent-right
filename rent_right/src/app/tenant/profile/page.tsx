@@ -1,11 +1,11 @@
 "use client"
-
 import Header from "../../../../layout/tenantHeader";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {jwtDecode} from "jwt-decode";
+import Image from "next/image";
 
 export default function tprofile() {
     const [editstatus, seteditstatus] = useState(false);
@@ -84,12 +84,20 @@ export default function tprofile() {
         settenantdetails({ ...tenantdetails, [e.target.name]: e.target.value });
     };
 
-    return (
-        <Header>
-            <div className="flex flex-col items-center justify-center min-h-screen p-6">
-                <Card className="w-full max-w-md shadow-lg">
+return (
+    <Header>
+        <div 
+            className="flex flex-col items-center justify-center w-full min-h-screen py-10 bg-cover bg-center bg-no-repeat"
+            style={{ backgroundImage: "url('/profilebg.svg')" }}
+        >
+            <div className="w-full max-w-md p-6">
+                <Card className="w-full shadow-lg">
                     <CardContent className="text-center space-y-4">
-                        <CardTitle className="text-2xl font-bold">{"Your profile"}</CardTitle>
+                        <CardTitle className="text-2xl font-bold">Your Profile</CardTitle>
+                        
+                        <div className="flex justify-center">
+                            <Image src="/profilepic.svg" alt="Profile Pic" width={80} height={80} className="rounded-full" />
+                        </div>
 
                         <p className="text-gray-600">
                             <strong>First Name:</strong>
@@ -110,7 +118,7 @@ export default function tprofile() {
                             {editstatus ? (
                                 <Input
                                     type="text"
-                                    name="middleName"
+                                    name="middle_name"
                                     value={tenantdetails.middle_name}
                                     onChange={handleEdit}
                                 />
@@ -154,7 +162,7 @@ export default function tprofile() {
 
                         <Button onClick={() => {
                             seteditstatus(!editstatus);
-                            if(editstatus){
+                            if (editstatus) {
                                 updateProfile();
                             }
                         }}>
@@ -163,6 +171,7 @@ export default function tprofile() {
                     </CardContent>
                 </Card>
             </div>
-        </Header>
-    );
+        </div>
+    </Header>
+);
 }

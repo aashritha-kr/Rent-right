@@ -38,21 +38,21 @@ export default function UserAuthForm({title, role, ...props}: React.HTMLAttribut
         <CardTitle>{title}</CardTitle>
       </CardHeader>
       <CardContent>
-        <Label>Email</Label>
+        <Label className="mb-3">Email</Label>
         <Input
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="Email"
         />
-        <Label>Password</Label>
+        <Label className="my-3">Password</Label>
         <Input
           type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           placeholder="Password"
         />
-        <Button onClick={handleLogin}>Login</Button>
+        <Button className="my-3" onClick={handleLogin}>Login</Button>
       </CardContent>
     </Card>
   );
