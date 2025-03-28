@@ -1,5 +1,8 @@
+--to add data to respected type (plot_lands)
 CREATE OR REPLACE PROCEDURE add_land(
     input_Owner_ID INT,
+    input_Zip_code VARCHAR(10),
+    input_Country VARCHAR(100),
     input_Date_of_construction DATE,
     input_Create_at DATETIME,
     input_Update_at DATETIME,
@@ -29,6 +32,8 @@ CREATE OR REPLACE PROCEDURE add_land(
     INSERT INTO Property(
         Property_ID ,
         Owner_ID ,
+        Zip_code,
+        Country,
         Date_of_construction,
         Create_at,
         Update_at,
@@ -44,6 +49,8 @@ CREATE OR REPLACE PROCEDURE add_land(
         Description
         ) VALUES (
         input_Owner_ID ,
+        input_Zip_code,
+        input_Country,
         input_Date_of_construction ,
         input_Create_at ,
         input_Update_at ,
@@ -81,9 +88,11 @@ CREATE OR REPLACE PROCEDURE add_land(
         END;
         $$;
 
-
+--to add data to respected type (residential_buildings)
 CREATE OR REPLACE PROCEDURE add_residential_building(
     input_Owner_ID INT,
+    input_Zip_code VARCHAR(10),
+    input_Country VARCHAR(100),
     input_Date_of_construction DATE,
     input_Door_no VARCHAR(50),
     input_Building_name VARCHAR(100),
@@ -113,6 +122,8 @@ DECLARE
 BEGIN
     INSERT INTO Property (
         Owner_ID,
+        Zip_code,
+        Country,
         Date_of_construction,
         Door_no,
         Building_name,
@@ -126,6 +137,8 @@ BEGIN
     )
     VALUES (
         input_Owner_ID,
+        input_Zip_code,
+        input_Country,
         input_Date_of_construction,
         input_Door_no,
         input_Building_name,
@@ -172,9 +185,11 @@ BEGIN
 END;
 $$;
 
-
+--to add data to respected type (commercial_buildings)
 CREATE OR REPLACE PROCEDURE add_commercial_building(
     input_Owner_ID INT,
+    input_Zip_code VARCHAR(10),
+    input_Country VARCHAR(100),
     input_Date_of_construction DATE,
     input_Door_no VARCHAR(50),
     input_Building_name VARCHAR(100),
@@ -202,6 +217,8 @@ DECLARE
 BEGIN
     INSERT INTO Property (
         Owner_ID,
+        Zip_code,
+        Country,
         Date_of_construction,
         Door_no,
         Building_name,
@@ -215,6 +232,8 @@ BEGIN
     )
     VALUES (
         input_Owner_ID,
+        input_Zip_code,
+        input_Country,
         input_Date_of_construction,
         input_Door_no,
         input_Building_name,
@@ -258,7 +277,7 @@ END;
 $$;
 
 
--- if renewed the lease_agreement
+--when the the tenant renewed the agreement,the old agreement will be expired and new agreement will be created with advance 0.00 
 CREATE OR REPLACE PROCEDURE if_renewed(in_lease_id INT,in_property_id INT,in_tenant_id INT,
 IN_end_date DATE,in_price DECIMAL(10,2))
 LANGUAGE plpgsql
@@ -267,7 +286,6 @@ DECLARE old_end_date DATE;
 BEGIN
 SELECT End_date INTO old_end_date
 FROM Lease_Agreement WHERE Lease_ID = in_lease_id;
-
 --UPDATE OLD Lease_Agreement status to 'expired' and update_at  now.
 UPDATE Lease_Agreement
 SET Status ='expired',
@@ -302,7 +320,7 @@ INSERT INTO Lease_Agreement (
 END;
 $$;
 
-
+--ensures that an user being inserted to into Admins table must have the role admin
 CREATE FUNCTION check_admin_role()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -320,7 +338,7 @@ BEFORE INSERT ON Admins
 FOR EACH ROW
 EXECUTE FUNCTION check_admin_role();
 
-
+--ensures that an user being inserted to into Staff table must have the role staff
 CREATE FUNCTION check_staff_role()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -334,13 +352,12 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-
 CREATE TRIGGER check_staff_role_trigger
 BEFORE INSERT ON Staff
 FOR EACH ROW
 EXECUTE FUNCTION check_staff_role();
 
-
+--This trigger ensures that only users with the Tenant role can be assigned as a Tenant_ID in the Lease and sale Agreement
 CREATE FUNCTION check_tenant_role()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -354,7 +371,6 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-
 CREATE TRIGGER check_tenant_role_in_lease_trigger
 BEFORE INSERT OR UPDATE ON Lease_Agreement
 FOR EACH ROW
@@ -365,7 +381,7 @@ BEFORE INSERT OR UPDATE ON Sale_Agreement
 FOR EACH ROW
 EXECUTE FUNCTION check_tenant_role();
 
-
+--adds the data based on respective roles and also checking the duplicate roles of a particular user.
 CREATE OR REPLACE PROCEDURE add_user_with_role(
     input_first_name VARCHAR(30),
     input_middle_name VARCHAR(30),
@@ -426,7 +442,7 @@ BEGIN
 END;
 $$;
 
-
+--The prevention of creating a new lease agreement on a property before the end date of past agreement.
 CREATE OR REPLACE FUNCTION prevent_overlapping_leases()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -449,7 +465,7 @@ BEFORE INSERT OR UPDATE ON Lease_Agreement
 FOR EACH ROW
 EXECUTE PROCEDURE prevent_overlapping_leases();
 
-
+--Updation of status of staff and the maintenance work .
 CREATE OR REPLACE PROCEDURE manage_maintenance(
     input_request_id INT,
     input_staff_id INT DEFAULT NULL,
@@ -476,7 +492,6 @@ BEGIN
         IF NOT EXISTS (SELECT 1 FROM Staff WHERE User_ID = input_staff_id AND Availability IS TRUE) THEN
             RAISE EXCEPTION 'Staff member with ID % is not available.', input_staff_id;
         END IF;
-
         -- Update maintenance record: set the staff and status to 'Assigned'
         UPDATE Maintenance
         SET Staff_ID   = input_staff_id,
@@ -508,7 +523,7 @@ BEGIN
 END;
 $$;
 
-
+--trigger to expire the lease agreement
 CREATE OR REPLACE FUNCTION expire_lease()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -526,7 +541,7 @@ BEFORE INSERT OR UPDATE ON Lease_Agreement
 FOR EACH ROW
 EXECUTE PROCEDURE expire_lease();
 
-
+--trigger to update the availability as true or false according to the work status
 CREATE OR REPLACE FUNCTION update_staff_availability()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -536,7 +551,6 @@ BEGIN
         SET Availability = TRUE
         WHERE User_ID = NEW.Staff_ID;
     END IF;
-
     -- Update staff availability to FALSE when maintenance is assigned
     IF NEW.Status = 'Assigned' THEN
         UPDATE Staff
