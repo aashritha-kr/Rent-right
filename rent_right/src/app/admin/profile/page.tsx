@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {jwtDecode} from "jwt-decode";
 import Header from "../../../../layout/adminHeader"; 
-
+import Image from "next/image";
 export default function sprofile() {
     const [editstatus, seteditstatus] = useState(false);
     const [admindetails, setadmindetails] = useState({
@@ -95,12 +95,20 @@ export default function sprofile() {
         setadmindetails({ ...admindetails, [e.target.name]: e.target.value });
     };
 
-    return (
-        <Header>
-            <div className="flex flex-col items-center justify-center min-h-screen p-6">
-                <Card className="w-full max-w-md shadow-lg">
+return (
+    <Header>
+        <div 
+            className="flex flex-col items-center justify-center w-full min-h-screen py-10 bg-cover bg-center bg-no-repeat"
+            style={{ backgroundImage: "url('/profilebg.svg')" }}
+        >
+            <div className="w-full max-w-md p-6">
+                <Card className="w-full shadow-lg">
                     <CardContent className="text-center space-y-4">
-                        <CardTitle className="text-2xl font-bold">{"Your profile"}</CardTitle>
+                        <CardTitle className="text-2xl font-bold">Your Profile</CardTitle>
+                        
+                        <div className="flex justify-center">
+                            <Image src="/profilepic.svg" alt="Profile Pic" width={80} height={80} className="rounded-full" />
+                        </div>
 
                         <p className="text-gray-600">
                             <strong>First Name:</strong>
@@ -206,7 +214,7 @@ export default function sprofile() {
                         </p>
 
                         <p className="text-gray-600">
-                            <strong>Bank Branch :</strong>
+                            <strong>Bank Branch:</strong>
                             {editstatus ? (
                                 <Input
                                     type="text"
@@ -247,10 +255,9 @@ export default function sprofile() {
                             )}
                         </p>
 
-
                         <Button onClick={() => {
                             seteditstatus(!editstatus);
-                            if(editstatus){
+                            if (editstatus) {
                                 updateProfile();
                             }
                         }}>
@@ -259,6 +266,7 @@ export default function sprofile() {
                     </CardContent>
                 </Card>
             </div>
-        </Header>
-    );
+        </div>
+    </Header>
+);
 }
