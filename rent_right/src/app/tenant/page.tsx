@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { jwtDecode } from "jwt-decode";
-
+import Image from "next/image";
 import {
   Sheet,
   SheetContent,
@@ -94,6 +94,11 @@ export default function TenantHome() {
           <VisuallyHidden>
             <SheetTitle>Navigation Menu</SheetTitle>
           </VisuallyHidden>
+
+                   
+ <div className="flex justify-center">
+ <Image src="/logo.svg" alt="Profile Pic" width={80} height={80} className="rounded-full" />
+</div>
           <nav className="flex flex-col gap-3">
             <Button
               variant="ghost"
@@ -122,6 +127,13 @@ export default function TenantHome() {
               className="text-2xl bg-blue-100 my-4"
             >
               Profile
+            </Button>
+            <Button
+              variant="ghost"
+              onClick={() => router.push("/logout")}
+              className="text-2xl bg-blue-100 my-4"
+            >
+              Logout
             </Button>
           </nav>
         </SheetContent>
@@ -161,7 +173,7 @@ export default function TenantHome() {
             <h2 className="text-md font-semibold mt-4 text-center">Upcoming Reminders</h2>
             <div className="mt-2 text-blue-950">
               {upcomingReminders.map((reminder,index) => (
-                <Card key={index} className="mb-4 bg-blue-100">
+                <Card key={index} className="mb-4 ">
                 <CardContent>
                   <p>Address: {reminder.address}</p>
                   <p>Due Date: {reminder.due_date}</p>
