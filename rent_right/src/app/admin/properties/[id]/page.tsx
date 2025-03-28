@@ -40,10 +40,11 @@ export default function ViewPropAdmin() {
             "User_ID": userId,
           },
         });
-
+    
         const data = await response.json();
         if (response.ok) {
           setProperty(data);
+          console.log("Fetched Property:", data);
           setLoading(false);
         } else {
           console.error("Property not found");
@@ -54,11 +55,16 @@ export default function ViewPropAdmin() {
         setLoading(false);
       }
     };
+    
 
     if (id.id) {
       fetchPropertyDetails();
     }
-  }, [id.id]);
+  }, []);
+
+  useEffect(()=>{
+    console.log(property)
+  }, [property])
 
   const handleEdit = (e: React.ChangeEvent<HTMLInputElement>, propertyKey: string) => {
     const updatedProperty = { ...property, [propertyKey]: e.target.value };
@@ -68,7 +74,7 @@ export default function ViewPropAdmin() {
   const handleTenantChange = (value: string) => {
     setFinalTenant((prev) => ({
       ...prev,
-      [property.Property_ID]: value,
+      [property.property_id]: value,
     }));
   };
 
@@ -81,16 +87,16 @@ export default function ViewPropAdmin() {
   };
 
   useEffect(() => {
-    if (property && !finalTenant[property.Property_ID]) {
+    if (property && !finalTenant[property.property_id]) {
       setFinalTenant((prev) => ({
         ...prev,
-        [property.Property_ID]: property.defaultTenantId || "",
+        [property.property_id]: property.defaultTenantId || "",
       }));
     }
   }, [property]);
 
   const handleAllotTenant = async () => {
-    const tenantId = finalTenant[property.Property_ID];
+    const tenantId = finalTenant[property.property_id];
     if (!tenantId || tenantId === "none") {
       alert("Please select a tenant.");
       return;
@@ -117,10 +123,11 @@ export default function ViewPropAdmin() {
           "User_ID": userId,
         },
         body: JSON.stringify({
-          propertyId: property.Property_ID,
-          tenantId,
-          startDate,
-          endDate,
+          property_id: property.property_id,
+          tenant_id:tenantId,
+          start_date:startDate,
+          end_date:endDate,
+          price: 100
         }),
       });
 
@@ -237,20 +244,12 @@ export default function ViewPropAdmin() {
               )}
             </p>
 
-            <div className="flex flex-col items-start gap-2 mt-4">
-              <Button
-                onClick={() => {
-                  setEditStatus(editStatus ? null : 1);
-                }}
-              >
-                {editStatus ? "Save" : "Edit property"}
-              </Button>
-            </div>
-
+            {(property.sale_type==='Lease' && property.availability==='Available')?
+            <div>
             <div className="mt-4">
               <label className="font-semibold">Select a Tenant:</label>
               <Select
-                value={finalTenant[property.Property_ID] || ""}
+                value={finalTenant[property.property_id] || ""}
                 onValueChange={handleTenantChange}
               >
                 <SelectTrigger className="p-2 border rounded-md w-full mt-2">
@@ -271,8 +270,7 @@ export default function ViewPropAdmin() {
                 </SelectContent>
               </Select>
             </div>
-
-            {finalTenant[property.Property_ID] && finalTenant[property.Property_ID] !== "none" && (
+            {finalTenant[property.property_id] && finalTenant[property.property_id] !== "none" && (
               <div className="mt-4">
                 <label className="font-semibold">Start Date:</label>
                 <input
@@ -284,7 +282,7 @@ export default function ViewPropAdmin() {
               </div>
             )}
 
-            {finalTenant[property.Property_ID] && finalTenant[property.Property_ID] !== "none" && (
+            {finalTenant[property.property_id] && finalTenant[property.property_id] !== "none" && (
               <div className="mt-4">
                 <label className="font-semibold">End Date:</label>
                 <input
@@ -298,6 +296,22 @@ export default function ViewPropAdmin() {
 
             <div className="mt-4">
               <Button onClick={handleAllotTenant}>Allot Tenant</Button>
+            </div>
+            </div>
+            : <p className="text-blue-950">
+              <strong>Status: </strong>
+              {
+                property.availability
+              }
+            </p>}
+            <div className="flex flex-col items-start gap-2 mt-4">
+              <Button
+                onClick={() => {
+                  setEditStatus(editStatus ? null : 1);
+                }}
+              >
+                {editStatus ? "Save" : "Edit property"}
+              </Button>
             </div>
           </CardContent>
         </Card>

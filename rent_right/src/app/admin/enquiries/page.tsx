@@ -119,7 +119,7 @@ export default function AdminEnquiriesPage() {
                 <CardContent>
                   <Button
                     className="w-fit px-4 py-2 text-sm my-4 bg-blue-900"
-                    onClick={() => router.push(`admin/properties/${enquiry.property_id}`)}
+                    onClick={() => router.push(`/admin/properties/${enquiry.property_id}`)}
                   >
                     View Property
                   </Button>
@@ -137,7 +137,7 @@ export default function AdminEnquiriesPage() {
                     </Button>
                     <Button
                       className="px-4 py-2 bg-red-800"
-                      onClick={() => handleApproval(index, "Rejected")}
+                      onClick={() => handleApproval(index, "Declined")}
                     >
                       Reject
                     </Button>

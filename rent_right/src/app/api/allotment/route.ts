@@ -3,8 +3,9 @@ import pool from '@/lib/db';
 
 export async function POST(request: Request) {
     const req = await request.json();
+    console.log(req)
 
-    if (!req.property_id || !req.service || !req.description || !req.tenant_id || !req.start_date || !req.end_date || !req.price || !req.advance_amount || !req.status) {
+    if (!req.property_id || !req.tenant_id || !req.start_date || !req.end_date || !req.price) {
         return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
@@ -48,8 +49,8 @@ export async function POST(request: Request) {
                 req.end_date,
                 req.renewed || 'NO',
                 req.price,
-                req.advance_amount,
-                req.status
+                req.advance_amount || 0,
+                req.status || 'active'
             ]
         );
         
@@ -57,7 +58,7 @@ export async function POST(request: Request) {
 
         const updatePropertyQuery = `
             UPDATE Property
-            SET Status = $1
+            SET Availability = $1
             WHERE Property_ID = $2
             RETURNING *
         `;

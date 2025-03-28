@@ -106,8 +106,7 @@ export default function YourRentalsPage() {
         throw new Error("Failed to update property");
       }
   
-      const data = await response.json(); // Optionally handle the response data
-  
+      const data = await response.json();
       console.log("Property updated successfully:", data);
     } catch (error) {
       console.error("Error updating property:", error);
@@ -120,91 +119,125 @@ export default function YourRentalsPage() {
   };
 
   return (
-      <div className="p-8">
-        <h1 className="text-3xl font-bold text-blue-750 text-center p-6">
-          YOUR PROPERTIES
-        </h1>
-        <div className="flex flex-col gap-6">
-          {propdetails.map((prop, index) => (
-            <Card key={prop.property_id} className="p-4 shadow-md rounded-lg">
-              <CardContent>
-                <CardTitle className="text-lg">Address: {prop.door_no}, {prop.building_name}, {prop.street_name}, {prop.area}</CardTitle>
-
-                <p className="text-blue-950">
-                  <strong>Type: </strong>
-                  {editStatus === index ? (
-                    <Input
-                      type="text"
-                      name="type"
-                      value={prop.type}
-                      onChange={(e) => handleEdit(e, index)}
-                    />
-                  ) : (
-                    prop.type
-                  )}
-                </p>
-
-                <p className="text-blue-950">
-                  <strong>Availability: </strong>
-                  {editStatus === index ? (
-                    <Input
-                      type="text"
-                      name="availability"
-                      value={prop.availability}
-                      onChange={(e) => handleEdit(e, index)}
-                    />
-                  ) : (
-                    prop.availability
-                  )}
-                </p>
-
-                <p className="text-blue-950">
-                  <strong>Description: </strong>
-                  {editStatus === index ? (
-                    <Input
-                      type="text"
-                      name="description"
-                      value={prop.description}
-                      onChange={(e) => handleEdit(e, index)}
-                    />
-                  ) : (
-                    prop.description
-                  )}
-                </p>
-
-                <p className="text-blue-950">
-                  <strong>Area (sqft): </strong>
-                  {prop.area_in_sqft}
-                </p>
-
-                <div className="flex flex-col items-start gap-2 mt-4">
-                  <Button
-                    onClick={() => {
-                      setEditStatus(editStatus === index ? null : index);
-                      if(editStatus === index) {
-                        updateProperty(prop.property_id, prop);
-                      }
-                    }}
-                  >
-                    {editStatus === index ? "Save" : "Edit Property"}
-                  </Button>
-                  <Button className="w-fit px-4 py-2 text-sm my-4 bg-green-700">
-                    View Property
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-
-        <div className="fixed bottom-8 right-8">
+    <div className="flex">
+       
+    <Sheet>
+      <SheetTrigger className="p-4 fixed z-50 top-4 left-4">
+        <Menu size={30} />
+      </SheetTrigger>
+      <SheetContent side="left" className="p-6 w-70 bg-gray-100">
+        <VisuallyHidden>
+          <SheetTitle>Navigation Menu</SheetTitle>
+        </VisuallyHidden>
+        <nav className="flex flex-col gap-3">
           <Button
-            className="bg-blue-600 text-white rounded-md p-8"
-            onClick={handleAddProperty}
+            variant="ghost"
+            onClick={() => router.push("/admin/properties")}
+            className="text-2xl bg-blue-100 mb-4 mt-8 hover:bg-blue-700:tsx"
           >
-            + Add Property
+            Properties
           </Button>
-        </div>
+          <Button
+            variant="ghost"
+            onClick={() => router.push("/admin/maintenance")}
+            className="text-2xl bg-blue-100 my-4"
+          >
+            Maintenance Requests
+          </Button>
+          <Button
+            variant="ghost"
+            onClick={() => router.push("/admin/enquiries")}
+            className="text-2xl bg-blue-100 my-4"
+          >
+            Approval Requests
+          </Button>
+          <Button
+            variant="ghost"
+            onClick={() => router.push("/admin/profile")}
+            className="text-2xl bg-blue-100 my-4"
+          >
+            Profile
+          </Button>
+        </nav>
+      </SheetContent>
+    </Sheet>
+
+    <div className="p-8 flex-1">
+      <h1 className="text-3xl font-bold text-blue-750 text-center p-6">
+        Your Properties
+      </h1>
+      <div className="flex flex-col gap-6">
+        {propdetails.map((prop, index) => (
+          <Card key={prop.property_id} className="p-4 shadow-md rounded-lg">
+            <CardContent>
+              <CardTitle className="text-lg">
+                Address: {prop.door_no}, {prop.building_name},{" "}
+                {prop.street_name}, {prop.area}
+              </CardTitle>
+              <p className="text-blue-950">
+                <strong>Type: </strong>
+                {editStatus === index ? (
+                  <Input
+                    type="text"
+                    name="type"
+                    value={prop.type}
+                    onChange={(e) => handleEdit(e, index)}
+                  />
+                ) : (
+                  prop.type
+                )}
+              </p>
+              <p className="text-blue-950">
+                <strong>Availability: </strong>
+                {editStatus === index ? (
+                  <Input
+                    type="text"
+                    name="availability"
+                    value={prop.availability}
+                    onChange={(e) => handleEdit(e, index)}
+                  />
+                ) : (
+                  prop.availability
+                )}
+              </p>
+              <p className="text-blue-950">
+                <strong>Description: </strong>
+                {editStatus === index ? (
+                  <Input
+                    type="text"
+                    name="description"
+                    value={prop.description}
+                    onChange={(e) => handleEdit(e, index)}
+                  />
+                ) : (
+                  prop.description
+                )}
+              </p>
+              <p className="text-blue-950">
+                <strong>Area (sqft): </strong>
+                {prop.area_in_sqft}
+              </p>
+              <div className="flex flex-col items-start gap-2 mt-4">
+                <Button
+                  onClick={() => {
+                    setEditStatus(editStatus === index ? null : index);
+                    if(editStatus === index) {
+                      updateProperty(prop.property_id, prop);
+                    }
+                  }}
+                >
+                  {editStatus === index ? "Save" : "Edit Property"}
+                </Button>
+                <Button className="w-fit px-4 py-2 text-sm my-4 bg-green-700" onClick={() => router.push(`/admin/properties/${prop.property_id}`)}>
+                  View Property
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
       </div>
+    </div>
+  </div>
+
   );
 }

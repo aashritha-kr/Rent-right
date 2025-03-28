@@ -65,6 +65,7 @@ export async function GET(request: Request) {
                     Enquiry.Enquiry_ID,
                     Enquiry.Description,
                     Enquiry.Approval,
+                    Enquiry.Tenant_ID,
                     Property.Property_ID,
                     Property.Building_name
                 FROM Enquiry
@@ -72,7 +73,7 @@ export async function GET(request: Request) {
                 WHERE Property.Owner_ID = $1;
             `;
 
-            const enquiriesResult = await pool.query(enquiriesQuery, [userId]);  // Pass userId to filter based on the logged-in admin
+            const enquiriesResult = await pool.query(enquiriesQuery, [userId]);
             const enquiries = enquiriesResult.rows;
 
             return new Response(

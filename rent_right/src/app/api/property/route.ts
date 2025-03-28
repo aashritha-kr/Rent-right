@@ -119,8 +119,9 @@ export async function GET(request: NextRequest) {
         SELECT Approval
         FROM Enquiry
         WHERE Property_ID = $1
+        AND Tenant_ID=$2
       `;
-      const { rows: enquiryRows } = await pool.query(enquiryQuery, [id]);
+      const { rows: enquiryRows } = await pool.query(enquiryQuery, [id, userId]);
       const enquiries = enquiryRows[0] || "";
 
       const combinedDetails = { ...property, ...propertyDetails, enquiries };
@@ -183,7 +184,7 @@ export async function GET(request: NextRequest) {
           AND Enquiry.Approval = 'Approved';
       `;
       const { rows: enquiryRows } = await pool.query(enquiryQuery, [id]);
-      const enquiries = enquiryRows[0] || "";
+      const enquiries = enquiryRows || "";
 
       const combinedDetails = { ...property, ...propertyDetails, enquiries };
 

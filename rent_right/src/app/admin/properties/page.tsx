@@ -102,7 +102,7 @@ export default function YourRentalsPage() {
         throw new Error("Failed to update property");
       }
   
-      const data = await response.json(); // Optionally handle the response data
+      const data = await response.json();
   
       console.log("Property updated successfully:", data);
     } catch (error) {
