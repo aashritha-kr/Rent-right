@@ -96,7 +96,7 @@ export default function TenantHome() {
                 </p>
 
                 <div className="flex flex-col items-start gap-2 mt-4">
-                  <Button className="w-fit px-4 py-2 text-sm my-4 bg-green-700" onClick={() => router.push(`/properties/${prop.property_id}`)}>
+                  <Button className="w-fit px-4 py-2 text-sm my-4 bg-green-700" onClick={() => router.push(`/tenant/properties/${prop.property_id}`)}>
                     View Property
                   </Button>
                 </div>

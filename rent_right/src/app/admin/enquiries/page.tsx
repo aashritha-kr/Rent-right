@@ -119,7 +119,7 @@ export default function AdminEnquiriesPage() {
                 <CardContent>
                   <Button
                     className="w-fit px-4 py-2 text-sm my-4 bg-blue-900"
-                    onClick={() => router.push(`/properties/${enquiry.property_id}`)}
+                    onClick={() => router.push(`admin/properties/${enquiry.property_id}`)}
                   >
                     View Property
                   </Button>

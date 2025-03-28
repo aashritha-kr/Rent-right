@@ -102,7 +102,7 @@ export default function YourRentalsPage() {
         throw new Error("Failed to update property");
       }
   
-      const data = await response.json(); // Optionally handle the response data
+      const data = await response.json();
   
       console.log("Property updated successfully:", data);
     } catch (error) {
@@ -134,7 +134,7 @@ export default function YourRentalsPage() {
                     <Input
                       type="text"
                       name="type"
-                      value={prop.type}
+                      value={prop.type || ""}
                       onChange={(e) => handleEdit(e, index)}
                     />
                   ) : (
@@ -148,7 +148,7 @@ export default function YourRentalsPage() {
                     <Input
                       type="text"
                       name="availability"
-                      value={prop.availability}
+                      value={prop.availability  || ""}
                       onChange={(e) => handleEdit(e, index)}
                     />
                   ) : (
@@ -162,7 +162,7 @@ export default function YourRentalsPage() {
                     <Input
                       type="text"
                       name="description"
-                      value={prop.description}
+                      value={prop.description || ""}
                       onChange={(e) => handleEdit(e, index)}
                     />
                   ) : (
@@ -172,7 +172,16 @@ export default function YourRentalsPage() {
 
                 <p className="text-blue-950">
                   <strong>Area (sqft): </strong>
-                  {prop.area_in_sqft}
+                  {editStatus === index ? (
+                    <Input
+                      type="text"
+                      name="area_in_sqft"
+                      value={prop.area_in_sqft || ""}
+                      onChange={(e) => handleEdit(e, index)}
+                    />
+                  ) : (
+                    prop.area_in_sqft
+                  )}
                 </p>
 
                 <div className="flex flex-col items-start gap-2 mt-4">
@@ -186,7 +195,7 @@ export default function YourRentalsPage() {
                   >
                     {editStatus === index ? "Save" : "Edit Property"}
                   </Button>
-                  <Button className="w-fit px-4 py-2 text-sm my-4 bg-green-700">
+                  <Button className="w-fit px-4 py-2 text-sm my-4 bg-green-700" onClick={() => router.push(`admin/properties/${prop.property_id}`)}>
                     View Property
                   </Button>
                 </div>

@@ -127,7 +127,7 @@ export default function TenantHome() {
                   <div className="flex flex-col items-start gap-2 mt-4">
                     <Button
                       className="w-fit px-4 py-2 text-sm my-4 bg-green-700"
-                      onClick={() => router.push(`/properties/${prop.property_id}`)}
+                      onClick={() => router.push(`/tenant/properties/${prop.property_id}`)}
                     >
                       View Property
                     </Button>
@@ -145,7 +145,7 @@ export default function TenantHome() {
               <h2 className="text-md font-semibold mt-4 text-center">Upcoming Reminders</h2>
               <div className="mt-2 text-blue-950">
                 {upcomingReminders.map((reminder,index) => (
-                  <Card key={index} className="mb-4" bg-blue-100>
+                  <Card key={index} className="mb-4 bg-blue-100">
                   <CardContent>
                     <p>Address: {reminder.address}</p>
                     <p>Due Date: {reminder.due_date}</p>

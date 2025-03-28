@@ -57,7 +57,7 @@ export default function TenantEnquiriesPage() {
                 Building name: {enquiry.building_name}
               </CardTitle>
               <CardContent>
-                <Button className="w-fit px-4 py-2 text-sm my-4 bg-green-700" onClick={() => router.push(`/properties/${enquiry.property_id}`)}>
+                <Button className="w-fit px-4 py-2 text-sm my-4 bg-green-700" onClick={() => router.push(`/tenant/properties/${enquiry.property_id}`)}>
                   View Property
                 </Button>
                 <p>Approval status: {enquiry.approval}</p>

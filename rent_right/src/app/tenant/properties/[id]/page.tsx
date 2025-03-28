@@ -3,6 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import React, { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import Header from "../../../../../layout/tenantHeader";
 import { useParams } from 'next/navigation';
 import {jwtDecode} from 'jwt-decode';
 
@@ -17,10 +18,21 @@ export default function ViewPropTenant() {
     useEffect(() => {
         const fetchPropertyDetails = async () => {
             try {
+                const token = localStorage.getItem('token');
+                if (token) {
+                try {
+                    const decodedToken = jwtDecode(token);
+                    var userId = decodedToken.userId;
+                    console.log("User ID:", userId);
+                } catch (error) {
+                    console.error("Invalid token", error);
+                }
+                }
                 const response = await fetch(`/api/property?id=${id.id}`, {
                     method: "GET",
                     headers: {
                         "Content-Type": "application/json",
+                        'User_ID': userId,
                     },
                 });
                 const data = await response.json();
@@ -99,6 +111,7 @@ export default function ViewPropTenant() {
     }
 
     return (
+        <Header>
             <div className="p-8">
                 <h1 className="text-3xl font-bold text-blue-850 text-center p-6">
                     Property Details
@@ -161,5 +174,6 @@ export default function ViewPropTenant() {
                     </Card>
                 </div>
             </div>
+        </Header>
     );
 }
