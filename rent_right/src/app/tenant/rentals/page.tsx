@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation";
 
 interface Rental {
   property_id: number;
+  lease_id:number;
   building_name: string;
   type: string;
   start_date: string;
@@ -61,6 +62,10 @@ export default function YourRentalsPage() {
     fetchRentals();
   }, []);
 
+  useEffect(()=>{
+    console.log(currentRentals);
+  }, [currentRentals]);
+
   const sendRequest = async (e: React.FormEvent) => {
     e.preventDefault();
     try{
@@ -74,6 +79,11 @@ export default function YourRentalsPage() {
             console.error("Invalid token", error);
         }
       }
+      const leaseId = current_index !== null ? currentRentals[current_index]?.lease_id : undefined;
+      if(!leaseId){
+        throw new Error("No lease ID provided");
+      }
+      setLoading(true);
       const response = await fetch("/api/maintenance", {
         method: "POST",
         headers: {
@@ -83,11 +93,14 @@ export default function YourRentalsPage() {
         body: JSON.stringify({
           description,
           service: currentservice,
+          lease_id:leaseId
         }),
       });
       if (!response.ok) {
         throw new Error("Failed to raise maintenance ticket");
       }
+      setLoading(false);
+      router.push("/tenant/maintenance");
     }
     catch(error){
       console.error("Error raising maintenance ticket:", error);
@@ -102,12 +115,12 @@ export default function YourRentalsPage() {
     <Header>
       <div className="p-8">
         <h1 className="text-3xl font-bold text-blue-750 text-center p-6">
-          YOUR RENTALS
+          Your Rentals
         </h1>
         <h2 className="text-2xl font-semibold text-blue-750 p-4">Current Rentals</h2>
         <div className="flex flex-col gap-6">
           {currentRentals?.length?currentRentals.map((rental, index) => (
-            <Card key={rental.property_id} className="p-4 shadow-md rounded-lg">
+            <Card key={rental.lease_id} className="p-4 shadow-md rounded-lg">
               <CardContent>
                 <CardTitle className="text-lg">Name: {rental.building_name}</CardTitle>
                 <p className="text-blue-950">Type: {rental.type}</p>

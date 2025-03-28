@@ -26,11 +26,8 @@ export async function GET(request: Request) {
   
       const role = roleResult.rows.length > 0 ? roleResult.rows[0].role : null;
 
-      if(role !== 'Staff'){
-        return new Response( JSON.stringify({ message: 'User is not a Staff' }),
-        { status: 403, headers: { 'Content-Type': 'application/json' } });
-      }
-      const currentRequestsQuery = `
+      if(role === 'Staff'){
+        const currentRequestsQuery = `
             SELECT
                 Maintenance.Request_ID,
                 Property.Building_name,
@@ -80,6 +77,30 @@ export async function GET(request: Request) {
         return new Response(JSON.stringify({ currStaffRequests, pastStaffRequests }), {
             headers: { 'Content-Type': 'application/json' },
         });
+      }
+      else if(role==='Admin'){
+        const service = request.headers.get('Service');
+        const staffRes=await pool.query(
+            `SELECT u.User_ID, u.First_name|| ' '|| u.Last_name as Name, u.Email, u.Phone, s.Service
+                FROM Users u
+                JOIN Roles r ON u.User_ID = r.User_ID
+                JOIN Staff s ON u.User_ID = s.User_ID
+                WHERE r.Role = 'Staff' 
+                    AND s.Service = $1
+                    AND s.Availability = TRUE`,
+            [service]
+        );
+        const staffRows=staffRes.rows;
+        return new Response(
+            JSON.stringify({ staffRows }),
+            { status: 200, headers: { 'Content-Type': 'application/json' } }
+        );
+      }
+      else{
+        return new Response( JSON.stringify({ message: 'User is not a Staff' }),
+        { status: 403, headers: { 'Content-Type': 'application/json' } });
+      }
+      
     } catch (error) {
         console.error('Error fetching maintenance requests:', error);
         return new Response('Error fetching  maintenance requests', { status: 500 });
@@ -88,29 +109,49 @@ export async function GET(request: Request) {
 
 export async function PATCH(request: Request) {
     try {
-        const { requestId, newStatus } = await request.json();
-        
-        if (!requestId || !newStatus) {
-            return new Response('Missing parameters', { status: 400 });
+      const userId = request.headers.get('User_ID');
+  
+      if (!userId) {
+        return new Response('User ID is required', { status: 400 });
+      }
+  
+      const userResult = await pool.query(
+        'SELECT * FROM Users WHERE User_ID = $1',
+        [userId]
+      );
+  
+      if (userResult.rowCount === 0) {
+        return new Response('User not found', { status: 404 });
+      }
+  
+      const user = userResult.rows[0];
+  
+      const roleResult = await pool.query(
+        'SELECT Role FROM Roles WHERE User_ID = $1',
+        [userId]
+      );
+  
+      const role = roleResult.rows.length > 0 ? roleResult.rows[0].role : null;
+      if(role==='Admin'){
+        const {  staffId ,requestId} = await request.json();
+        if (!requestId || !staffId) {
+          return new Response('Missing parameters', { status: 400 });
         }
-
         const updateQuery = `
             UPDATE Maintenance
-            SET Status = $1
+            SET Staff_ID = $1, Status=$3
             WHERE Request_ID = $2
             RETURNING *;
         `;
-
-        const result = await pool.query(updateQuery, [newStatus, requestId]);
+        const result = await pool.query(updateQuery, [staffId, requestId, 'Assigned']);
 
         if (result.rowCount === 0) {
             return new Response('Request not found', { status: 404 });
         }
-
         return new Response(JSON.stringify(result.rows[0]), {
             headers: { 'Content-Type': 'application/json' },
         });
-
+      }
     } catch (error) {
         console.error('Error updating maintenance request status:', error);
         return new Response('Error updating status', { status: 500 });

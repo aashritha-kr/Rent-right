@@ -4,7 +4,8 @@ import pool from '@/lib/db';
 
 export async function POST(request: Request) {
     const req = await request.json();
-    if (!req.property_id || !req.service || !req.description) {
+    console.log(req)
+    if (!req.lease_id || !req.service || !req.description) {
         return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
     
@@ -33,7 +34,7 @@ export async function POST(request: Request) {
     
     const role = roleResult.rows.length > 0 ? roleResult.rows[0].role : null;
     
-    if (role != 'Tenant') {
+    if (role !== 'Tenant') {
         return new Response( JSON.stringify({ message: 'User is not a Tenant' }),
         { status: 403, headers: { 'Content-Type': 'application/json' } });
     }
@@ -42,7 +43,7 @@ export async function POST(request: Request) {
         await pool.query('BEGIN');
     
         const result = await pool.query(
-            'INSERT INTO Maintenance (Lease_ID, Service, Description) VALUES ($1, $2, $3, $4) RETURNING Request_ID',
+            'INSERT INTO Maintenance (Lease_ID, Service, Description) VALUES ($1, $2, $3) RETURNING Request_ID',
             [req.lease_id, req.service, req.description]
         );
     
@@ -161,6 +162,7 @@ export async function GET(request: Request) {
                 Maintenance.Status,
                 Maintenance.Created_at,
                 Maintenance.Status,
+                Maintenance.Service, 
                 Staff.First_name || ' ' || Staff.Last_name AS StaffName,
                 Staff.Phone AS StaffNumber,
                 Users.First_name || ' ' || Users.Last_name AS OwnerName,

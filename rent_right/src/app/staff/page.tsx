@@ -73,37 +73,34 @@ export default function StaffRequestsPage() {
 
   return (
     <>
-              <Sheet>
-                <SheetTrigger className="p-4">
-                  <Menu size={30} />
-                </SheetTrigger>
-                <SheetContent side="left" className="p-6 w-70 bg-gray-100">
-                  <VisuallyHidden>
-                    <SheetTitle>Navigation Menu</SheetTitle>
-                  </VisuallyHidden>
-                  <nav className="flex flex-col gap-3">
-                    <Button
-                      variant="ghost"
-                      onClick={() => router.push("/staff/allRequests")}
-                      className="text-2xl bg-blue-100 mb-4 mt-8 hover:bg-blue-700:tsx
-      Copy
-      Edit
-      "
-                    >
-                      All Requests
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      onClick={() => router.push("/staff/profile")}
-                      className="text-2xl bg-blue-100 my-4"
-                    >
-                      Profile
-                    </Button>
-                    
-                    
-                  </nav>
-                </SheetContent>
-              </Sheet>
+      <Sheet>
+        <SheetTrigger className="p-4">
+          <Menu size={30} />
+        </SheetTrigger>
+        <SheetContent side="left" className="p-6 w-70 bg-gray-100">
+          <VisuallyHidden>
+            <SheetTitle>Navigation Menu</SheetTitle>
+          </VisuallyHidden>
+          <nav className="flex flex-col gap-3">
+            <Button
+              variant="ghost"
+              onClick={() => router.push("/staff/maintenance")}
+              className="text-2xl bg-blue-100 mb-4 mt-8 hover:bg-blue-700:tsx"
+            >
+              All Requests
+            </Button>
+            <Button
+              variant="ghost"
+              onClick={() => router.push("/staff/profile")}
+              className="text-2xl bg-blue-100 my-4"
+            >
+              Profile
+            </Button>
+            
+            
+          </nav>
+        </SheetContent>
+      </Sheet>
       
     <div className="p-8">
       <h1 className="text-3xl font-bold text-blue-900 text-center p-6">

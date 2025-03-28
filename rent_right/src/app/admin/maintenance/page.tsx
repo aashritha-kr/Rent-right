@@ -2,35 +2,41 @@
 import { Card, CardContent } from "@/components/ui/card";
 import React, { useState, useEffect } from "react";
 import Header from "../../../../layout/adminHeader";
-import {jwtDecode} from "jwt-decode";
+import { jwtDecode } from "jwt-decode";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"; // Import Shadcn Select
 
 export default function ViewMaintenanceRequests() {
   const [Requests, setRequests] = useState<Request[]>([]);
+  const [staffMembers, setStaffMembers] = useState<{ user_id: number; name: string; email: string; phone: string; service: string }[]>([]);
+  const [selectedStaffIds, setSelectedStaffIds] = useState<{ [key: number]: string }>({}); // Track selected staff by request_id
+  const [showDropdowns, setShowDropdowns] = useState<{ [key: number]: boolean }>({}); // Track dropdown visibility by request_id
+
   interface Request {
     request_id: number;
-    Service: string;
-    Description: string;
+    service: string;
+    description: string;
     created_at: string;
-    Tenantname: string;
-    Tenantnumber: string;
-    Status: string;
-    staffMember: string;
+    tenantname: string;
+    tenantnumber: string;
+    status: string;
+    staffMember: string | number;
   }
 
   useEffect(() => {
-    const fetchRequests = async () => {
+    const fetchRequestsAndStaff = async () => {
       try {
         const token = localStorage.getItem("token");
         if (!token) {
           throw new Error("No token found");
         }
         try {
-            const decodedToken = jwtDecode(token);
-            var userId = decodedToken.userId;
-            console.log("User ID:", userId);
+          const decodedToken = jwtDecode(token);
+          var userId = decodedToken.userId;
+          console.log("User ID:", userId);
         } catch (error) {
-            console.error("Invalid token", error);
+          console.error("Invalid token", error);
         }
+
         const response = await fetch("/api/maintenance", {
           method: "GET",
           headers: {
@@ -44,81 +50,178 @@ export default function ViewMaintenanceRequests() {
       }
     };
 
-    fetchRequests();
+    fetchRequestsAndStaff();
   }, []);
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLSelectElement>,
-    propertyIndex: number
-  ) => {
-    setRequests((prev) =>
-      prev.map((request, idx) =>
-        idx === propertyIndex
-          ? { ...request, staffMember: e.target.value, Status: "Assigned" }
-          : request
-      )
-    );
+  useEffect(() => {
+    console.log(staffMembers);
+  }, [staffMembers]);
+
+  const handleServiceChange = async (service: string, requestId: number) => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        throw new Error("No token found");
+      }
+      const decodedToken = jwtDecode(token);
+      const userId = decodedToken.userId;
+
+      const staffResponse = await fetch("/api/staff", {
+        method: "GET",
+        headers: {
+          "User_ID": userId,
+          "Service": service,
+        },
+      });
+      const staffData = await staffResponse.json();
+      setStaffMembers(staffData.staffRows);
+    } catch (error) {
+      console.error("Error fetching staff members:", error);
+    }
+  };
+
+  const handleAssignStaff = async (requestId: number) => {
+    try {
+      const selectedStaffId = selectedStaffIds[requestId];
+      if (!selectedStaffId) {
+        alert("Please select a staff member first.");
+        return;
+      }
+
+      const token = localStorage.getItem("token");
+      if (!token) {
+        throw new Error("No token found");
+      }
+      const decodedToken = jwtDecode(token);
+      const userId = decodedToken.userId;
+
+      const response = await fetch(`/api/staff`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          "User_ID": userId,
+        },
+        body: JSON.stringify({ staffId:selectedStaffId, requestId }),
+      });
+
+      const result = await response.json();
+      setRequests((prevRequests) =>
+        prevRequests.map((request) =>
+          request.request_id === requestId
+            ? { ...request, staffMember: selectedStaffId, status: "Assigned" }
+            : request
+        )
+      );
+      setSelectedStaffIds((prev) => {
+        const updated = { ...prev };
+        delete updated[requestId];
+        return updated;
+      });
+      setShowDropdowns((prev) => {
+        const updated = { ...prev };
+        delete updated[requestId];
+        return updated;
+      });
+    } catch (error) {
+      console.error("Error assigning staff:", error);
+    }
   };
 
   return (
     <Header>
-    <div className="p-8">
-      <h1 className="text-3xl font-bold text-blue-750 text-center p-6">
-        Your Maintenance Requests
-      </h1>
+      <div className="p-8">
+        <h1 className="text-3xl font-bold text-blue-750 text-center p-6">
+          Your Maintenance Requests
+        </h1>
 
-      <div className="flex flex-col gap-6">
-        {Requests.map((request, index) => (
-          <Card key={request.request_id} className="p-4 shadow-md rounded-lg">
-            <CardContent>
-              <p className="text-black-950">Service: {request.Service}</p>
-              <p className="text-black-950">
-                Description: {request.Description}
-              </p>
-              <p className="text-black-950">
-                Request created at: {request.created_at}
-              </p>
+        <div className="flex flex-col gap-6">
+          {Requests.map((request) => (
+            <Card key={request.request_id} className="p-4 shadow-md rounded-lg">
+              <CardContent>
+                <p className="text-black-950">Service: {request.service}</p>
+                <p className="text-black-950">
+                  Description: {request.description}
+                </p>
+                <p className="text-black-950">
+                  Request created at: {request.created_at}
+                </p>
 
-              <p className="text-black-950">
-                Tenant Name: {request.Tenantname}
-              </p>
-              <p className="text-black-950">
-                Tenant Phone Number: {request.Tenantnumber}
-              </p>
+                <p className="text-black-950">
+                  Tenant Name: {request.tenantname}
+                </p>
+                <p className="text-black-950">
+                  Tenant Phone Number: {request.tenantnumber}
+                </p>
 
-              {request.Status === "Pending" ? (
-                <div>
-                  <p className="text-green-950 font-semibold bg-green-50">
-                    Status: Pending
-                  </p>
-                  <div className="mt-4">
-                    <label className="font-semibold">
-                      Select a Staff Member:
-                    </label>
-                    <select
-                      value={request.staffMember}
-                      onChange={(e) => handleChange(e, index)}
-                      className="p-2 border rounded-md w-full mt-2"
-                    >
-                      <option value="">-</option>
-                      <option value="Raj">Raj</option>
-                      <option value="Ram">Ram</option>
-                    </select>
+                {request.status === "Pending" ? (
+                  <div>
+                    <p className="text-green-950 font-semibold bg-green-50">
+                      Status: Pending
+                    </p>
+                    <div className="mt-4">
+                      {!showDropdowns[request.request_id] &&(<button
+                        onClick={() => {
+                          setShowDropdowns((prev) => ({
+                            ...prev,
+                            [request.request_id]: true,
+                          }));
+                          handleServiceChange(request.service, request.request_id);
+                        }}
+                        className="p-2 bg-blue-500 text-white rounded-md w-full"
+                      >
+                        Select Staff Member
+                      </button>)}
+
+                      {showDropdowns[request.request_id] && (
+                        <div className="mt-4">
+                          <div className="w-full">
+                            <Select
+                              value={selectedStaffIds[request.request_id] || ""}
+                              onValueChange={(value) => {
+                                setSelectedStaffIds((prev) => ({
+                                  ...prev,
+                                  [request.request_id]: value,
+                                }));
+                              }}
+                            >
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select Staff Member" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {staffMembers.map((staff) => (
+                                  <SelectItem key={staff.user_id} value={staff.user_id.toString()}>
+                                    {staff.name} - {staff.service}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    {selectedStaffIds[request.request_id] && (
+                      <button
+                        onClick={() => handleAssignStaff(request.request_id)}
+                        className="mt-4 p-2 bg-green-500 text-white rounded-md w-full"
+                      >
+                        Assign Staff
+                      </button>
+                    )}
                   </div>
-                </div>
-              ) : (
-                <div>
-                  <p className="text-green-950 font-semibold bg-green-50">
-                    Status: {request.Status}
-                  </p>
-                  <p>Staff Member: {request.staffMember}</p>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        ))}
+                ) : (
+                  <div>
+                    <p className="text-green-950 font-semibold bg-green-50">
+                      Status: {request.status}
+                    </p>
+                    <p>Staff Member: {request.staffMember}</p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          ))}
+        </div>
       </div>
-    </div>
     </Header>
   );
 }
