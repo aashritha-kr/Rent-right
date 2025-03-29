@@ -214,7 +214,8 @@ export default function YourRentalsPage() {
         </SheetContent>
       </Sheet>
 
-      <div className="p-8 flex-1">
+      <div className="p-8 flex-1  bg-gradient-to-b from-blue-50 to-blue-300 min-h-screen">
+
         <h1 className="text-3xl font-bold text-blue-750 text-center p-6">
           Your Properties
         </h1>
