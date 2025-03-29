@@ -642,4 +642,317 @@ FOR EACH ROW
 EXECUTE FUNCTION check_unique_email_role_fn();
 
 
+--selecting the ones before 7 days
+CREATE OR REPLACE FUNCTION get_due_leases_with_admins()
+RETURNS TABLE (
+    Lease_ID INT,
+    Property_ID INT,
+    Tenant_ID INT,
+    Tenant_Email VARCHAR(100),
+    Tenant_Phone VARCHAR(15),
+    Admin_ID INT,
+    Admin_Email VARCHAR(100),
+    Admin_Phone VARCHAR(15),
+    End_date DATE
+) AS $$
+BEGIN
+    RETURN QUERY
+    SELECT 
+        l.Lease_ID,
+        l.Property_ID,
+        l.Tenant_ID,
+        t.Email AS Tenant_Email,
+        t.Phone AS Tenant_Phone,
+        a.User_ID AS Admin_ID,
+        a.Email AS Admin_Email,
+        a.Phone AS Admin_Phone,
+        l.End_date
+    FROM Lease_Agreement l
+    JOIN Users t ON l.Tenant_ID = t.User_ID
+    JOIN Property p ON l.Property_ID = p.Property_ID
+    JOIN Admins ad ON p.Owner_ID = ad.User_ID
+    JOIN Users a ON ad.User_ID = a.User_ID
+    WHERE l.End_date = CURRENT_DATE + INTERVAL '7 days';
+END;
+$$ LANGUAGE plpgsql;
+
+SELECT * FROM get_due_leases_with_admins();
+
+
+--select all property characteristics based on type
+CREATE OR REPLACE FUNCTION get_complete_property_details(p_property_id INT)
+RETURNS TABLE (
+    -- Common property details
+    Property_ID INT,
+    Owner_ID INT,
+    Property_Type VARCHAR(20),
+    
+    -- Location details
+    Zip_code VARCHAR(10),
+    Country VARCHAR(100),
+    State VARCHAR(100),
+    City VARCHAR(100),
+    Door_no VARCHAR(50),
+    Building_name VARCHAR(100),
+    Street_name VARCHAR(100),
+    Area VARCHAR(100),
+    
+    -- Common property attributes
+    Date_of_construction DATE,
+    Area_in_sqft FLOAT,
+    Facing VARCHAR(15),
+    Availability VARCHAR(15),
+    Past_tenant_count INT,
+    Description VARCHAR(500),
+    
+    -- Type-specific details with nullable columns for all types
+    -- Land details
+    Land_Type VARCHAR(10),
+    Boundary_wall VARCHAR(3),
+    Land_Sale_type VARCHAR(4),
+    Price_per_sqft DECIMAL(10, 2),
+    Land_Advance_Amount DECIMAL(10, 2),
+    Land_Negotiability VARCHAR(3),
+    
+    -- Residential details
+    Residential_Sale_type VARCHAR(4),
+    Building_Type VARCHAR(20),
+    BHK_Type VARCHAR(1),
+    Residential_Furnishing VARCHAR(15),
+    Residential_Price DECIMAL(10, 2),
+    Residential_Advance_amount DECIMAL(10, 2),
+    Residential_Negotiability VARCHAR(3),
+    Two_wheeler_parking VARCHAR(3),
+    Four_wheeler_parking VARCHAR(3),
+    Bathrooms INT,
+    Floor INT,
+    Residential_Lift_service VARCHAR(3),
+    
+    -- Commercial details
+    Commercial_Sale_type VARCHAR(4),
+    Commercial_Building_Type VARCHAR(15),
+    Parking VARCHAR(7),
+    Commercial_Furnishing VARCHAR(15),
+    Commercial_Price DECIMAL(10, 2),
+    Commercial_Advance_amount DECIMAL(10, 2),
+    Commercial_Negotiability VARCHAR(3),
+    Start_floor INT,
+    End_floor INT,
+    Commercial_Lift_service VARCHAR(3)
+) 
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    v_property_type VARCHAR(20);
+BEGIN
+    -- First get the property type
+    SELECT Type INTO v_property_type 
+    FROM Property 
+    WHERE Property.Property_ID = p_property_id;
+    
+    IF v_property_type IS NULL THEN
+        RAISE EXCEPTION 'Property with ID % not found', p_property_id;
+    END IF;
+    
+    -- Get base property details with location for any property type
+    IF v_property_type = 'Land' THEN
+        RETURN QUERY
+        SELECT 
+            p.Property_ID,
+            p.Owner_ID,
+            p.Type AS Property_Type,
+            
+            p.Zip_code,
+            p.Country,
+            zc.State,
+            zc.City,
+            p.Door_no,
+            p.Building_name,
+            p.Street_name,
+            p.Area,
+            
+            p.Date_of_construction,
+            p.Area_in_sqft,
+            p.Facing,
+            p.Availability,
+            p.Past_tenant_count,
+            p.Description,
+            
+            -- Land-specific details
+            pl.Type AS Land_Type,
+            pl.Boundary_wall,
+            pl.Sale_type AS Land_Sale_type,
+            pl.Price_per_sqft,
+            pl.Advance_Amount AS Land_Advance_Amount,
+            pl.Negotiability AS Land_Negotiability,
+            
+            -- Residential fields (NULL)
+            NULL::VARCHAR(4) AS Residential_Sale_type,
+            NULL::VARCHAR(20) AS Building_Type,
+            NULL::VARCHAR(1) AS BHK_Type,
+            NULL::VARCHAR(15) AS Residential_Furnishing,
+            NULL::DECIMAL(10,2) AS Residential_Price,
+            NULL::DECIMAL(10,2) AS Residential_Advance_amount,
+            NULL::VARCHAR(3) AS Residential_Negotiability,
+            NULL::VARCHAR(3) AS Two_wheeler_parking,
+            NULL::VARCHAR(3) AS Four_wheeler_parking,
+            NULL::INT AS Bathrooms,
+            NULL::INT AS Floor,
+            NULL::VARCHAR(3) AS Residential_Lift_service,
+            
+            -- Commercial fields (NULL)
+            NULL::VARCHAR(4) AS Commercial_Sale_type,
+            NULL::VARCHAR(15) AS Commercial_Building_Type,
+            NULL::VARCHAR(7) AS Parking,
+            NULL::VARCHAR(15) AS Commercial_Furnishing,
+            NULL::DECIMAL(10,2) AS Commercial_Price,
+            NULL::DECIMAL(10,2) AS Commercial_Advance_amount,
+            NULL::VARCHAR(3) AS Commercial_Negotiability,
+            NULL::INT AS Start_floor,
+            NULL::INT AS End_floor,
+            NULL::VARCHAR(3) AS Commercial_Lift_service
+        FROM 
+            Property p
+        JOIN 
+            Plot_lands pl ON p.Property_ID = pl.Property_ID
+        JOIN 
+            ZIP_CITY zc ON p.Zip_code = zc.Zip_code AND p.Country = zc.Country
+        WHERE 
+            p.Property_ID = p_property_id;
+            
+    ELSIF v_property_type = 'Residential Building' THEN
+        RETURN QUERY
+        SELECT 
+            p.Property_ID,
+            p.Owner_ID,
+            p.Type AS Property_Type,
+            
+            p.Zip_code,
+            p.Country,
+            zc.State,
+            zc.City,
+            p.Door_no,
+            p.Building_name,
+            p.Street_name,
+            p.Area,
+            
+            p.Date_of_construction,
+            p.Area_in_sqft,
+            p.Facing,
+            p.Availability,
+            p.Past_tenant_count,
+            p.Description,
+            
+            -- Land fields (NULL)
+            NULL::VARCHAR(10) AS Land_Type,
+            NULL::VARCHAR(3) AS Boundary_wall,
+            NULL::VARCHAR(4) AS Land_Sale_type,
+            NULL::DECIMAL(10,2) AS Price_per_sqft,
+            NULL::DECIMAL(10,2) AS Land_Advance_Amount,
+            NULL::VARCHAR(3) AS Land_Negotiability,
+            
+            -- Residential-specific details
+            rb.Sale_type AS Residential_Sale_type,
+            rb.Type AS Building_Type,
+            rb.BHK_Type,
+            rb.Furnishing AS Residential_Furnishing,
+            rb.Price AS Residential_Price,
+            rb.Advance_amount AS Residential_Advance_amount,
+            rb.Negotiability AS Residential_Negotiability,
+            rb.Two_wheeler_parking,
+            rb.Four_wheeler_parking,
+            rb.Bathrooms,
+            rb.Floor,
+            rb.Lift_service AS Residential_Lift_service,
+            
+            -- Commercial fields (NULL)
+            NULL::VARCHAR(4) AS Commercial_Sale_type,
+            NULL::VARCHAR(15) AS Commercial_Building_Type,
+            NULL::VARCHAR(7) AS Parking,
+            NULL::VARCHAR(15) AS Commercial_Furnishing,
+            NULL::DECIMAL(10,2) AS Commercial_Price,
+            NULL::DECIMAL(10,2) AS Commercial_Advance_amount,
+            NULL::VARCHAR(3) AS Commercial_Negotiability,
+            NULL::INT AS Start_floor,
+            NULL::INT AS End_floor,
+            NULL::VARCHAR(3) AS Commercial_Lift_service
+        FROM 
+            Property p
+        JOIN 
+            Residential_buildings rb ON p.Property_ID = rb.Property_ID
+        JOIN 
+            ZIP_CITY zc ON p.Zip_code = zc.Zip_code AND p.Country = zc.Country
+        WHERE 
+            p.Property_ID = p_property_id;
+            
+    ELSIF v_property_type = 'Commercial Building' THEN
+        RETURN QUERY
+        SELECT 
+            p.Property_ID,
+            p.Owner_ID,
+            p.Type AS Property_Type,
+            
+            p.Zip_code,
+            p.Country,
+            zc.State,
+            zc.City,
+            p.Door_no,
+            p.Building_name,
+            p.Street_name,
+            p.Area,
+            
+            p.Date_of_construction,
+            p.Area_in_sqft,
+            p.Facing,
+            p.Availability,
+            p.Past_tenant_count,
+            p.Description,
+            
+            -- Land fields (NULL)
+            NULL::VARCHAR(10) AS Land_Type,
+            NULL::VARCHAR(3) AS Boundary_wall,
+            NULL::VARCHAR(4) AS Land_Sale_type,
+            NULL::DECIMAL(10,2) AS Price_per_sqft,
+            NULL::DECIMAL(10,2) AS Land_Advance_Amount,
+            NULL::VARCHAR(3) AS Land_Negotiability,
+            
+            -- Residential fields (NULL)
+            NULL::VARCHAR(4) AS Residential_Sale_type,
+            NULL::VARCHAR(20) AS Building_Type,
+            NULL::VARCHAR(1) AS BHK_Type,
+            NULL::VARCHAR(15) AS Residential_Furnishing,
+            NULL::DECIMAL(10,2) AS Residential_Price,
+            NULL::DECIMAL(10,2) AS Residential_Advance_amount,
+            NULL::VARCHAR(3) AS Residential_Negotiability,
+            NULL::VARCHAR(3) AS Two_wheeler_parking,
+            NULL::VARCHAR(3) AS Four_wheeler_parking,
+            NULL::INT AS Bathrooms,
+            NULL::INT AS Floor,
+            NULL::VARCHAR(3) AS Residential_Lift_service,
+            
+            -- Commercial-specific details
+            cb.Sale_type AS Commercial_Sale_type,
+            cb.Type AS Commercial_Building_Type,
+            cb.Parking,
+            cb.Furnishing AS Commercial_Furnishing,
+            cb.Price AS Commercial_Price,
+            cb.Advance_amount AS Commercial_Advance_amount,
+            cb.Negotiability AS Commercial_Negotiability,
+            cb.Start_floor,
+            cb.End_floor,
+            cb.Lift_service AS Commercial_Lift_service
+        FROM 
+            Property p
+        JOIN 
+            Commercial_buildings cb ON p.Property_ID = cb.Property_ID
+        JOIN 
+            ZIP_CITY zc ON p.Zip_code = zc.Zip_code AND p.Country = zc.Country
+        WHERE 
+            p.Property_ID = p_property_id;
+    ELSE
+        RAISE EXCEPTION 'Unknown property type: %', v_property_type;
+    END IF;
+END;
+$$;
+
 
