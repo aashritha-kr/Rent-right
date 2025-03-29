@@ -174,7 +174,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Step 1: Check if the user is an Admin
     const userResult = await pool.query('SELECT * FROM Users WHERE User_ID = $1', [userId]);
     if (userResult.rowCount === 0) {
       return new Response(
@@ -193,7 +192,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Step 2: Collect and Validate the Required Fields
     const requiredFields = [
       'Door_no', 'Date_of_construction', 'Building_name', 'Street_name',
       'Area', 'Area_in_sqft', 'Facing', 'Type', 'Description'
@@ -223,28 +221,22 @@ export async function POST(request: NextRequest) {
       State: formData.get('State')?.toString() || ''
     };
 
-    // Step 3: Begin a Transaction
     await client.query('BEGIN');
 
-    // Step 4: Insert Property into Property Table
-    const insertPropertyQuery = `
-      INSERT INTO Property (
-        Owner_ID, Date_of_construction, Door_no, Building_name, Street_name,
-        Area, Area_in_sqft, Facing, Type, Description, Zip_code, Country, City, State
-      )
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
-      RETURNING Property_ID;
-    `;
     const propertyValues = [
-      userId, propertyData.Date_of_construction, propertyData.Door_no,
-      propertyData.Building_name, propertyData.Street_name, propertyData.Area,
-      propertyData.Area_in_sqft, propertyData.Facing, propertyData.Type,
-      propertyData.Description, propertyData.Zip_code, propertyData.Country,
-      propertyData.City, propertyData.State
+      userId, propertyData.Zip_code, propertyData.Country,
+      propertyData.State, propertyData.City, propertyData.Date_of_construction,
+      new Date(), new Date(), propertyData.Door_no, propertyData.Building_name,
+      propertyData.Street_name, propertyData.Area, propertyData.Type,
+      parseFloat(propertyData.Area_in_sqft), propertyData.Facing, propertyData.Description
     ];
-    
-    const propertyResult = await client.query(insertPropertyQuery, propertyValues);
-    const propertyId = propertyResult.rows[0]?.property_id;
+    console.log(propertyValues)
+
+    const propertyResult = await client.query(
+      'SELECT insert_property($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)',
+      propertyValues
+    );
+    const propertyId = propertyResult.rows[0]?.insert_property;
 
     if (!propertyId) {
       return new Response(
@@ -253,30 +245,29 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Step 5: Insert Type-specific Data (Land, Residential, Commercial)
+    // Step 5: Call respective stored procedures for Land, Residential, or Commercial
     if (propertyData.Type === 'Land') {
       const landData = {
+        Type: formData.get('Usage')?.toString() || '',
         Sale_type: formData.get('Sale_type')?.toString() || '',
         Boundary_wall: formData.get('Boundary_wall')?.toString() || '',
         Price_per_sqft: formData.get('Price_per_sqft')?.toString() || '',
-        Negotiability: formData.get('Negotiability')?.toString() || ''
+        Negotiability: formData.get('Negotiability')?.toString() || '',
+        Advance:  parseFloat(formData.get('Advance')?.toString() || '')
       };
 
-      const insertLandQuery = `
-        INSERT INTO Land (Property_ID, Sale_type, Boundary_wall, Price_per_sqft, Negotiability)
-        VALUES ($1, $2, $3, $4, $5);
-      `;
-      await client.query(insertLandQuery, [
-        propertyId, landData.Sale_type, landData.Boundary_wall,
-        landData.Price_per_sqft, landData.Negotiability
-      ]);
+      await client.query(
+        'CALL add_land($1, $2, $3, $4, $5, $6, $7)',
+        [propertyId, landData.Type, landData.Boundary_wall, landData.Sale_type, landData.Price_per_sqft,landData.Advance, landData.Negotiability]
+      );
 
     } else if (propertyData.Type === 'Residential Building') {
       const residentialData = {
         Sale_type: formData.get('Sale_type')?.toString() || '',
-        BHK_Type: formData.get('BHK_Type')?.toString() || '',
+        House_type: formData.get('House_Type')?.toString() || '',        BHK_Type: formData.get('BHK_Type')?.toString() || '',
         Furnishing: formData.get('Furnishing')?.toString() || '',
-        Price_per_sqft: formData.get('Price_per_sqft')?.toString() || '',
+        Price: formData.get('Price')?.toString() || '',
+        Advance: formData.get('Advance')?.toString() || '',
         Negotiability: formData.get('Negotiability')?.toString() || '',
         Two_wheeler_parking: formData.get('Two_wheeler_parking')?.toString() || '',
         Four_wheeler_parking: formData.get('Four_wheeler_parking')?.toString() || '',
@@ -285,19 +276,16 @@ export async function POST(request: NextRequest) {
         Lift_service: formData.get('Lift_service')?.toString() || ''
       };
 
-      const insertResidentialQuery = `
-        INSERT INTO Residential_Building (
-          Property_ID, Sale_type, BHK_Type, Furnishing, Price_per_sqft, Negotiability,
-          Two_wheeler_parking, Four_wheeler_parking, Bathrooms, Floor, Lift_service
-        )
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11);
-      `;
-      await client.query(insertResidentialQuery, [
-        propertyId, residentialData.Sale_type, residentialData.BHK_Type,
-        residentialData.Furnishing, residentialData.Price_per_sqft, residentialData.Negotiability,
-        residentialData.Two_wheeler_parking, residentialData.Four_wheeler_parking,
-        residentialData.Bathrooms, residentialData.Floor, residentialData.Lift_service
-      ]);
+      await client.query(
+        'CALL add_residential_building($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)',
+        [
+          propertyId, residentialData.Sale_type, residentialData.House_type, residentialData.BHK_Type,
+          residentialData.Furnishing, parseFloat(residentialData.Price),parseFloat(residentialData.Advance),
+          residentialData.Negotiability, residentialData.Two_wheeler_parking,
+          residentialData.Four_wheeler_parking, residentialData.Bathrooms,
+          residentialData.Floor, residentialData.Lift_service
+        ]
+      );
 
     } else if (propertyData.Type === 'Commercial Building') {
       const commercialData = {
@@ -308,39 +296,22 @@ export async function POST(request: NextRequest) {
         Negotiability: formData.get('Negotiability')?.toString() || '',
         Start_floor: formData.get('Start_floor')?.toString() || '',
         End_floor: formData.get('End_floor')?.toString() || '',
-        Lift_service: formData.get('Lift_service')?.toString() || ''
+        Lift_service: formData.get('Lift_service')?.toString() || '',
+        Advance: formData.get('Advance')?.toString() || '',
+        House_type: formData.get('House_Type')?.toString() || '',
       };
 
-      const insertCommercialQuery = `
-        INSERT INTO Commercial_Building (
-          Property_ID, Sale_type, Parking, Furnishing, Price_per_sqft, Negotiability,
-          Start_floor, End_floor, Lift_service
-        )
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9);
-      `;
-      await client.query(insertCommercialQuery, [
-        propertyId, commercialData.Sale_type, commercialData.Parking,
-        commercialData.Furnishing, commercialData.Price_per_sqft, commercialData.Negotiability,
-        commercialData.Start_floor, commercialData.End_floor, commercialData.Lift_service
-      ]);
+      await client.query(
+        'CALL add_commercial_building($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)',
+        [
+          propertyId, commercialData.Sale_type, commercialData.House_type, commercialData.Parking,
+          commercialData.Furnishing, parseFloat(commercialData.Price_per_sqft),
+          commercialData.Advance ,commercialData.Negotiability, commercialData.Start_floor,
+          commercialData.End_floor, commercialData.Lift_service
+        ]
+      );
     }
 
-    // Step 6: Handle File Uploads
-    const files = formData.getAll('images') as File[];
-    if (files.length > 0) {
-      const uploadsDir = path.join(process.cwd(), 'uploads');
-      if (!fs.existsSync(uploadsDir)) {
-        fs.mkdirSync(uploadsDir);
-      }
-
-      for (const file of files) {
-        const filePath = path.join(uploadsDir, file.name);
-        const fileBuffer = Buffer.from(await file.arrayBuffer());
-        await writeFile(filePath, fileBuffer);
-      }
-    }
-
-    // Step 7: Commit the Transaction
     await client.query('COMMIT');
 
     return new Response(
@@ -356,7 +327,7 @@ export async function POST(request: NextRequest) {
       { status: 500, headers: { 'Content-Type': 'application/json' } }
     );
   } finally {
-    client.release(); // Release the client back to the pool
+    client.release();
   }
 }
 

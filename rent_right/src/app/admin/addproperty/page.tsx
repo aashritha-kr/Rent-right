@@ -40,7 +40,10 @@ export default function AddProp() {
     End_floor: "",
     Parking: "",
     Advance_amount:"",
-    Price:""
+    Price:"",
+    Advance:"",
+    Usage:"",
+    House_Type:""
   });
 
   const [propertyType, setPropertyType] = useState("");
@@ -77,6 +80,7 @@ export default function AddProp() {
         return false;
       }
     } else if (property.Type === "Residential Building") {
+      console.log(property.BHK_Type, property.Furnishing,property.Price_per_sqft ,property.Negotiability)
       if (!property.BHK_Type || !property.Furnishing || !property.Price_per_sqft || !property.Negotiability) {
         setError("BHK Type, Furnishing, Price per sqft, and Negotiability are required for Residential Building.");
         return false;
@@ -134,10 +138,12 @@ export default function AddProp() {
       });
 
       if (property.Type === "Land") {
+        formData.append("Usage", property.Usage);
         formData.append("Sale_type", property.Sale_type);
         formData.append("Boundary_wall", property.Boundary_wall);
         formData.append("Price_per_sqft", property.Price_per_sqft);
         formData.append("Negotiability", property.Negotiability);
+        formData.append("Advance", property.Advance);
       } else if (property.Type === "Residential Building") {
         formData.append("Sale_type", property.Sale_type);
         formData.append("BHK_Type", property.BHK_Type);
@@ -149,6 +155,8 @@ export default function AddProp() {
         formData.append("Bathrooms", property.Bathrooms);
         formData.append("Floor", property.Floor);
         formData.append("Lift_service", property.Lift_service);
+        formData.append("Advance", property.Advance);
+        formData.append("House_Type", property.House_Type);
       } else if (property.Type === "Commercial Building") {
         formData.append("Sale_type", property.Sale_type);
         formData.append("Parking", property.Parking);
@@ -158,6 +166,8 @@ export default function AddProp() {
         formData.append("Start_floor", property.Start_floor);
         formData.append("End_floor", property.End_floor);
         formData.append("Lift_service", property.Lift_service);
+        formData.append("Advance", property.Advance);
+        formData.append("House_Type", property.House_Type);
       }
 
       console.log("hiiiiiiii")
@@ -175,7 +185,7 @@ export default function AddProp() {
       if (!res.ok) {
         console.error("Error adding property");
       }
-      router.push("/admin/properties");
+      // router.push("/admin/properties");
     } catch (error) {
       console.error("Error adding property:", error);
     }
@@ -263,7 +273,7 @@ export default function AddProp() {
       <div className="mb-4">
         <label className="font-semibold">Area in Sqft</label>
         <Input
-          type="text"
+          type="number"
           name="Area_in_sqft"
           value={property.Area_in_sqft}
           onChange={handleChange}
@@ -363,6 +373,19 @@ export default function AddProp() {
                   </div>
 
                   <div className="mb-4">
+                    <label className="font-semibold">Usage</label>
+                    <Select name="Usage" value={property.Usage} onValueChange={(value) => handleChange({ name: "Usage", value })}>
+                      <SelectTrigger className="border p-2 w-full md:w-auto">
+                        <SelectValue placeholder="Type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value='commercial'>Commercial</SelectItem>
+                        <SelectItem value='Residential'>Residential</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="mb-4">
                     <label className="font-semibold">Boundary Wall</label>
                     <Select name="Boundary_wall" value={property.Boundary_wall} onValueChange={(value) => handleChange({ name: "Boundary_wall", value })}>
                       <SelectTrigger className="border p-2 w-full md:w-auto">
@@ -381,6 +404,17 @@ export default function AddProp() {
                       type="number"
                       name="Price_per_sqft"
                       value={property.Price_per_sqft}
+                      onChange={handleChange}
+                      className="border p-2 w-full"
+                    />
+                  </div>
+
+                  <div className="mb-4">
+                    <label className="font-semibold">Advance Amount</label>
+                    <Input
+                      type="number"
+                      name="Advance"
+                      value={property.Advance}
                       onChange={handleChange}
                       className="border p-2 w-full"
                     />
@@ -419,6 +453,43 @@ export default function AddProp() {
                     </SelectContent>
                   </Select>
                 </div>
+
+                <div className="mb-4">
+                    <label className="font-semibold">Sale Type</label>
+                    <Select name="Sale_type" value={property.Sale_type} onValueChange={(value) => handleChange({ name: "Sale_type", value })}>
+                      <SelectTrigger className="border p-2 w-full md:w-auto">
+                        <SelectValue placeholder="Sale Type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Rent">Rent</SelectItem>
+                        <SelectItem value="Buy">Buy</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                <div className="mb-4">
+                    <label className="font-semibold">Building Type</label>
+                    <Select name="House_Type" value={property.House_Type} onValueChange={(value) => handleChange({ name: "House_Type", value })}>
+                      <SelectTrigger className="border p-2 w-full md:w-auto">
+                        <SelectValue placeholder="House Type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value='Apartment/flat'>Apartment/flat</SelectItem>
+                        <SelectItem value='Independent house/Villa'>Independent house/Villa</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                <div className="mb-4">
+                    <label className="font-semibold">Advance Amount</label>
+                    <Input
+                      type="number"
+                      name="Advance"
+                      value={property.Advance}
+                      onChange={handleChange}
+                      className="border p-2 w-full"
+                    />
+                  </div>
 
                 <div className="mb-4">
                   <label className="font-semibold">Furnishing</label>
@@ -496,6 +567,17 @@ export default function AddProp() {
                 </div>
 
                 <div className="mb-4">
+                  <label className="font-semibold">Price</label>
+                  <Input
+                    type="number"
+                    name="Price_per_sqft"
+                    value={property.Price_per_sqft}
+                    onChange={handleChange}
+                    className="border p-2 w-full"
+                  />
+                </div>
+
+                <div className="mb-4">
                   <label className="font-semibold">Advance Amount</label>
                   <Input
                     type="number"
@@ -559,6 +641,20 @@ export default function AddProp() {
               </div>
 
               <div className="mb-4">
+                    <label className="font-semibold">Building Type</label>
+                    <Select name="House_Type" value={property.House_Type} onValueChange={(value) => handleChange({ name: "House_Type", value })}>
+                      <SelectTrigger className="border p-2 w-full md:w-auto">
+                        <SelectValue placeholder="House Type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value='Office space'>Office space</SelectItem>
+                        <SelectItem value='Warehouse'>Warehouse</SelectItem>
+                        <SelectItem value= 'Retail shop'>Retail shop</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+              <div className="mb-4">
                 <label className="font-semibold">Furnishing</label>
                 <Select name="Furnishing" value={property.Furnishing} onValueChange={(value) => handleChange({ name: "Furnishing", value })}>
                   <SelectTrigger className="border p-2 w-full md:w-auto">
@@ -595,6 +691,17 @@ export default function AddProp() {
                   className="border p-2 w-full"
                 />
               </div>
+
+              <div className="mb-4">
+                    <label className="font-semibold">Advance Amount</label>
+                    <Input
+                      type="number"
+                      name="Advance"
+                      value={property.Advance}
+                      onChange={handleChange}
+                      className="border p-2 w-full"
+                    />
+                  </div>
 
               <div className="mb-4">
                 <label className="font-semibold">Negotiability</label>
