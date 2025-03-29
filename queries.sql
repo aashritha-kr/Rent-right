@@ -96,7 +96,7 @@ CREATE TABLE Plot_lands (
     Sale_type VARCHAR(10) CHECK(Sale_type IN ('Rent', 'Buy')),
     Price_per_sqft DECIMAL(10, 2),
     Advance_Amount DECIMAL(10, 2),
-    Negotiability VARCHAR(3) CHECK(Negotiability IN ('Yes', 'No')),
+    Negotiability VARCHAR(10) CHECK(Negotiability IN ('Yes', 'No')),
     PRIMARY KEY (Property_ID, Sale_type),
     FOREIGN KEY (Property_ID) REFERENCES Property(Property_ID) ON DELETE CASCADE,
     CONSTRAINT Check_rental_residential CHECK(NOT(Sale_type = 'Rent' AND Type = 'Residential'))
