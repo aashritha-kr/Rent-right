@@ -189,7 +189,7 @@ CREATE TABLE Sale_Agreement (
     Request_ID SERIAL PRIMARY KEY,
     Lease_ID INT NOT NULL,
     Staff_ID INT,
-    Service VARCHAR(15) CHECK(Category IN ('Plumbing', 'Electrical', 'Carpentry', 'Pest Control')) NOT NULL,
+    Service VARCHAR(15) CHECK(Service IN ('Plumbing', 'Electrical', 'Carpentry', 'Pest Control')) NOT NULL,
     Description VARCHAR(300),
     Status VARCHAR(10) CHECK(Status IN ('Pending', 'Assigned', 'Resolved', 'In progress', 'cancelled')) NOT NULL DEFAULT 'Pending',
     Created_at TIMESTAMP DEFAULT NOW(),
