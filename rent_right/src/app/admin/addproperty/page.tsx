@@ -193,7 +193,8 @@ export default function AddProp() {
 
   return (
     <Header>
-      <div className="p-6">
+            <div className="p-8 bg-gradient-to-b from-blue-50 to-blue-300 min-h-screen">
+
         <h1 className="text-3xl text-center font-semibold my-3">Add property details</h1>
         <form onSubmit={handleSubmit}>
           <Card>

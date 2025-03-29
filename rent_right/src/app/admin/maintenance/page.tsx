@@ -138,8 +138,9 @@ export default function ViewMaintenanceRequests() {
 
   return (
     <Header>
-      <div className="p-8">
-        <h1 className="text-3xl font-bold text-blue-750 text-center p-6">
+            <div className="p-8 bg-gradient-to-b from-blue-50 to-blue-300 min-h-screen">
+
+        <h1 className="text-3xl font-bold text-blue-900 text-center p-6">
           Your Maintenance Requests
         </h1>
 
