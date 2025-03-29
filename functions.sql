@@ -22,7 +22,7 @@ CREATE OR REPLACE PROCEDURE add_land(
     input_Sale_type VARCHAR(10),
     input_Price_per_sqft DECIMAL(10, 2),
     input_Advance_Amount DECIMAL(10, 2),
-    input_Negotiability VARCHAR(3)
+    input_Negotiability VARCHAR(10)
 )
 LANGUAGE plpgsql
 AS $$
@@ -712,7 +712,7 @@ RETURNS TABLE (
     Land_Sale_type VARCHAR(10),
     Price_per_sqft DECIMAL(10, 2),
     Land_Advance_Amount DECIMAL(10, 2),
-    Land_Negotiability VARCHAR(3),
+    Land_Negotiability VARCHAR(10),
     
     -- Residential details
     Residential_Sale_type VARCHAR(4),
