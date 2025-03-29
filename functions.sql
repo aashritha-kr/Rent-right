@@ -18,8 +18,8 @@ CREATE OR REPLACE PROCEDURE add_land(
     input_Past_tenant_count INT,
     input_Description VARCHAR(500),
     input_Land_Type VARCHAR(11),
-    input_Boundary_wall VARCHAR(3),
-    input_Sale_type VARCHAR(4),
+    input_Boundary_wall VARCHAR(10),
+    input_Sale_type VARCHAR(10),
     input_Price_per_sqft DECIMAL(10, 2),
     input_Advance_Amount DECIMAL(10, 2),
     input_Negotiability VARCHAR(3)
@@ -117,7 +117,7 @@ CREATE OR REPLACE PROCEDURE add_residential_building(
     input_Description VARCHAR(500),
     input_Sale_type VARCHAR(4),
     input_Type VARCHAR(20),
-    input_BHK_Type VARCHAR(1),
+    input_BHK_Type VARCHAR(2),
     input_Furnishing VARCHAR(20),
     input_Price DECIMAL(10, 2),
     input_Advance_amount DECIMAL(10, 2),
@@ -708,8 +708,8 @@ RETURNS TABLE (
     -- Type-specific details with nullable columns for all types
     -- Land details
     Land_Type VARCHAR(10),
-    Boundary_wall VARCHAR(3),
-    Land_Sale_type VARCHAR(4),
+    Boundary_wall VARCHAR(10),
+    Land_Sale_type VARCHAR(10),
     Price_per_sqft DECIMAL(10, 2),
     Land_Advance_Amount DECIMAL(10, 2),
     Land_Negotiability VARCHAR(3),
@@ -717,7 +717,7 @@ RETURNS TABLE (
     -- Residential details
     Residential_Sale_type VARCHAR(4),
     Building_Type VARCHAR(20),
-    BHK_Type VARCHAR(1),
+    BHK_Type VARCHAR(2),
     Residential_Furnishing VARCHAR(15),
     Residential_Price DECIMAL(10, 2),
     Residential_Advance_amount DECIMAL(10, 2),
@@ -789,7 +789,7 @@ BEGIN
             -- Residential fields (NULL)
             NULL::VARCHAR(4) AS Residential_Sale_type,
             NULL::VARCHAR(20) AS Building_Type,
-            NULL::VARCHAR(1) AS BHK_Type,
+            NULL::VARCHAR(2) AS BHK_Type,
             NULL::VARCHAR(15) AS Residential_Furnishing,
             NULL::DECIMAL(10,2) AS Residential_Price,
             NULL::DECIMAL(10,2) AS Residential_Advance_amount,
@@ -845,8 +845,8 @@ BEGIN
             
             -- Land fields (NULL)
             NULL::VARCHAR(10) AS Land_Type,
-            NULL::VARCHAR(3) AS Boundary_wall,
-            NULL::VARCHAR(4) AS Land_Sale_type,
+            NULL::VARCHAR(10) AS Boundary_wall,
+            NULL::VARCHAR(10) AS Land_Sale_type,
             NULL::DECIMAL(10,2) AS Price_per_sqft,
             NULL::DECIMAL(10,2) AS Land_Advance_Amount,
             NULL::VARCHAR(3) AS Land_Negotiability,
@@ -910,8 +910,8 @@ BEGIN
             
             -- Land fields (NULL)
             NULL::VARCHAR(10) AS Land_Type,
-            NULL::VARCHAR(3) AS Boundary_wall,
-            NULL::VARCHAR(4) AS Land_Sale_type,
+            NULL::VARCHAR(10) AS Boundary_wall,
+            NULL::VARCHAR(10) AS Land_Sale_type,
             NULL::DECIMAL(10,2) AS Price_per_sqft,
             NULL::DECIMAL(10,2) AS Land_Advance_Amount,
             NULL::VARCHAR(3) AS Land_Negotiability,
@@ -919,7 +919,7 @@ BEGIN
             -- Residential fields (NULL)
             NULL::VARCHAR(4) AS Residential_Sale_type,
             NULL::VARCHAR(20) AS Building_Type,
-            NULL::VARCHAR(1) AS BHK_Type,
+            NULL::VARCHAR(2) AS BHK_Type,
             NULL::VARCHAR(15) AS Residential_Furnishing,
             NULL::DECIMAL(10,2) AS Residential_Price,
             NULL::DECIMAL(10,2) AS Residential_Advance_amount,
