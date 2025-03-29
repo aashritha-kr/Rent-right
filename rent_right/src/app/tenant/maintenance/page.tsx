@@ -75,13 +75,14 @@ export default function YourRequestsPage() {
 
   return (
     <Header>
-    <div className="p-8">
-      <h1 className="text-xl font-bold text-blue-750 text-center p-6">
+    <div className="p-8 bg-gradient-to-b from-blue-50 to-blue-300 min-h-screen">
+
+      <h1 className="text-3xl font-bold text-blue-900 text-center p-6">
         Maintenance Requests
       </h1>
 
 
-      <h2 className="text-2xl font-semibold text-blue-750 p-4 bg-blue-100">Current Maintenance Requests</h2>
+      <h2 className="text-2xl font-semibold text-white p-4 bg-blue-800">Current Maintenance Requests</h2>
       <div className="flex flex-col gap-6">
         {currentRequests.map((request) => (
           <Card key={request.request_id} className="p-4 shadow-md rounded-lg">
@@ -102,7 +103,7 @@ export default function YourRequestsPage() {
       </div>
 
 
-      <h2 className="text-2xl font-semibold text-blue-750 p-4 bg-blue-100 mt-4">Past Maintenance Requests</h2>
+      <h2 className="text-2xl font-semibold text-white p-4 bg-blue-800 mt-4">Past Maintenance Requests</h2>
       <div className="flex flex-col gap-6">
         {pastRequests.map((request) => (
           <Card key={request.request_id} className="p-4 shadow-md rounded-lg">

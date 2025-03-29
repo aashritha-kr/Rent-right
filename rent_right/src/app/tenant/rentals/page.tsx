@@ -113,11 +113,11 @@ export default function YourRentalsPage() {
 
   return (
     <Header>
-      <div className="p-8">
-        <h1 className="text-3xl font-bold text-blue-750 text-center p-6">
+      <div className="p-8 bg-gradient-to-b from-blue-50 to-blue-300 min-h-screen">
+        <h1 className="text-3xl font-bold text-blue-900 text-center p-6">
           Your Rentals
         </h1>
-        <h2 className="text-2xl font-semibold text-blue-750 p-4">Current Rentals</h2>
+        <h2 className="text-2xl font-semibold text-blue-900 p-4">Current Rentals</h2>
         <div className="flex flex-col gap-6">
           {currentRentals?.length?currentRentals.map((rental, index) => (
             <Card key={rental.lease_id} className="p-4 shadow-md rounded-lg">
@@ -185,7 +185,7 @@ export default function YourRentalsPage() {
             </Card>
           )):<Card>No ongoing rentals</Card>}
         </div>
-        <h2 className="text-2xl font-semibold text-blue-750 p-4">Past Rentals</h2>
+        <h2 className="text-2xl font-semibold text-blue-900 p-4">Past Rentals</h2>
         <div className="flex flex-col gap-6">
           {pastRentals.length?pastRentals.map((rental) => (
             <Card key={rental.building_name} className="p-4 shadow-md rounded-lg">
