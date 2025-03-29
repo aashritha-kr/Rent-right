@@ -1,11 +1,11 @@
 "use client";
 
 import React, { useState } from "react";
-import { useRouter } from "next/navigation"; // For navigation
-import { Button } from "@/components/ui/button"; // Shadcn button
-import { Input } from "@/components/ui/input"; // Shadcn input
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"; // Shadcn card
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"; 
 
 export default function UserAuthForm({title, role, ...props}: React.HTMLAttributes<HTMLDivElement>) {
   const [email, setEmail] = useState("");
@@ -18,9 +18,11 @@ export default function UserAuthForm({title, role, ...props}: React.HTMLAttribut
   const router = useRouter();
 
   const handleSignUp = async () => {
+    try{
     console.log("Sign Up as " + role);
     if (!first_name || !last_name || !email || !password || !phone || !role) {
         console.error("All fields are required");
+        alert("Error: " + "All fields are required");
         return;  // Don't proceed if any field is missing
     }
     setLoading(true);
@@ -33,6 +35,8 @@ export default function UserAuthForm({title, role, ...props}: React.HTMLAttribut
       const data = await res.json();
       if (data.error) {
         console.error(data.error);
+        alert("Error: " + data.error);
+        window.location.reload();
       } else {
         console.log('Signup successful', data);
       }
@@ -42,6 +46,9 @@ export default function UserAuthForm({title, role, ...props}: React.HTMLAttribut
         localStorage.setItem('token', data.token);
         router.push("/" + role.toLowerCase());
       }
+    }catch(e){
+      alert("Error: " + e);
+    }
   };
 
   return (
@@ -98,7 +105,7 @@ export default function UserAuthForm({title, role, ...props}: React.HTMLAttribut
           onChange={(e) => setPassword(e.target.value)}
           placeholder="Password"
         />
-        <Button className="my-4" onClick={handleSignUp}>Sign Up</Button>
+        <Button className="my-4" onClick={handleSignUp}>{loading ? "Signing Up..." : "Sign Up"}</Button>
       </CardContent>
     </Card>
   );
