@@ -50,45 +50,11 @@ type Reminder = {
   address: string;
 };
 
-// const upcomingReminders = [
-//   {
-//     address: "flat-342,has apt",
-//     due_date: "23-2-21",
-//     Amount: "231",
-//     OwnerName: "Aashritha",
-//     OwnerNumber: "23812830",
-//   },
-//   {
-//     address: "flat-2,has apt",
-//     due_date: "23-2-25",
-//     Amount: "21",
-//     OwnerName: "Anusha",
-//     OwnerNumber: "34232",
-//   },
-// ];
-
-// const pastReminders = [
-//   {
-//     address: "flat-2,has apt",
-//     due_date: "23-2-18",
-//     Amount: "1",
-//     OwnerName: "Aadqritha",
-//     OwnerNumber: "812830",
-//   },
-//   {
-//     address: "flat-2,has apt",
-//     due_date: "23-11-25",
-//     Amount: "21",
-//     OwnerName: "Anushdqa",
-//     OwnerNumber: "34232432",
-//   },
-// ];
-
 export default function TenantHome() {
   const [propdetails, setpropdetails] = useState<PropertyDetails[]>([]);
   const [reminders, setReminders] = useState<Reminder[]>([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("null");
+  const [error, setError] = useState("");
   const router = useRouter();
 
   useEffect(() => {

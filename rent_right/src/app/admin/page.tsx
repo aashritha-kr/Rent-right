@@ -34,43 +34,27 @@ type PropertyDetails = {
   description: string;
 };
 
-const upcomingReminders = [
-  {
-    address: "flat-342,has apt",
-    due_date: "23-2-21",
-    Amount: "231",
-    OwnerName: "Aashritha",
-    OwnerNumber: "23812830",
-  },
-  {
-    address: "flat-2,has apt",
-    due_date: "23-2-25",
-    Amount: "21",
-    OwnerName: "Anusha",
-    OwnerNumber: "34232",
-  },
-];
-
-const pastReminders = [
-  {
-    address: "flat-2,has apt",
-    due_date: "23-2-18",
-    Amount: "1",
-    OwnerName: "Aadqritha",
-    OwnerNumber: "812830",
-  },
-  {
-    address: "flat-2,has apt",
-    due_date: "23-11-25",
-    Amount: "21",
-    OwnerName: "Anushdqa",
-    OwnerNumber: "34232432",
-  },
-];
+type Reminder = {
+  lease_id: number;
+  property_id: number;
+  request_id:number;
+  tenant_id: number;
+  payment_status: string;
+  reminder_type: string;
+  building_name: string;
+  street_name: string;
+  area: string;
+  address: string;
+  request_description:string;
+  service:string;
+};
 
 export default function YourRentalsPage() {
   const [editStatus, setEditStatus] = useState<number | null>(null);
   const [propdetails, setpropdetails] = useState<PropertyDetails[]>([]);
+  const [reminders, setReminders] = useState<Reminder[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const router = useRouter();
 
   useEffect(() => {
@@ -81,7 +65,7 @@ export default function YourRentalsPage() {
           try {
             const decodedToken = jwtDecode<any>(token);
             const userId = decodedToken.userId;
-
+            setLoading(true)
             const response = await fetch("/api/properties", {
               method: "GET",
               headers: { User_ID: userId },
@@ -93,8 +77,19 @@ export default function YourRentalsPage() {
             } else {
               console.error("No properties found in the response.");
             }
+            const remindersResponse = await fetch(`/api/reminder`,{method: "GET",
+              headers: {"Content-Type": "application/json", User_ID: userId },}
+            );
+            const remindersData = await remindersResponse.json();
+            console.log(remindersData)
+            if (remindersData.reminders) {
+              setReminders(remindersData.reminders);
+            } else {
+              console.error('No reminders found');
+            }
+            setLoading(false)
           } catch (error) {
-            console.error("Invalid token", error);
+            console.error("Error:", error);
           }
         } else {
           console.error("Token not found in localStorage.");
@@ -150,6 +145,10 @@ export default function YourRentalsPage() {
     }
   };
 
+  useEffect(()=>{
+    console.log(reminders[0]?.building_name)
+  }, [reminders])
+
   const handleAddProperty = () => {
     router.push("/admin/addproperty");
   };
@@ -161,9 +160,7 @@ export default function YourRentalsPage() {
           <Menu size={30} />
         </SheetTrigger>
         <SheetContent side="left" className="p-6 w-70 bg-gray-100">
-          {/* <VisuallyHidden> */}
           <SheetTitle className="text-center">Rent Right</SheetTitle>
-          {/* </VisuallyHidden> */}
 
           <div className="flex justify-center">
             <Image
@@ -232,7 +229,7 @@ export default function YourRentalsPage() {
                     <Input
                       type="text"
                       name="type"
-                      value={prop.type}
+                      value={prop.type || ""}
                       onChange={(e) => handleEdit(e, index)}
                     />
                   ) : (
@@ -245,7 +242,7 @@ export default function YourRentalsPage() {
                     <Input
                       type="text"
                       name="availability"
-                      value={prop.availability}
+                      value={prop.availability || ""}
                       onChange={(e) => handleEdit(e, index)}
                     />
                   ) : (
@@ -258,7 +255,7 @@ export default function YourRentalsPage() {
                     <Input
                       type="text"
                       name="description"
-                      value={prop.description}
+                      value={prop.description || ""}
                       onChange={(e) => handleEdit(e, index)}
                     />
                   ) : (
@@ -301,35 +298,18 @@ export default function YourRentalsPage() {
             <CardTitle className="text-lg text-center">
               Your Reminders
             </CardTitle>
-            <h2 className="text-md font-semibold mt-4 text-center">
-              Upcoming Reminders
-            </h2>
             <div className="mt-2 text-blue-950">
-              {upcomingReminders.map((reminder, index) => (
-                <Card key={index} className="mb-4 ">
+              {reminders.map((reminder, index) => (
+                <Card key={index} className="mb-4 bg-white">
                   <CardContent>
-                    <p>Address: {reminder.address}</p>
-                    <p>Due Date: {reminder.due_date}</p>
-                    <p>Amount: {reminder.Amount}</p>
-                    <p>Owner Name: {reminder.OwnerName}</p>
-                    <p>Owner Number: {reminder.OwnerNumber}</p>
+                    <p>Building name: {reminder.building_name}</p>
+                    <p>Description: {reminder.request_description}</p>
+                    <p>Service: {reminder.service}</p>
                   </CardContent>
-                </Card>
-              ))}
-            </div>
-            <h2 className="text-md font-semibold mt-4 text-center">
-              Past Due Reminders
-            </h2>
-            <div className="mt-2 text-blue-950">
-              {pastReminders.map((reminder, index) => (
-                <Card key={index} className="mb-4 bg-pink-50">
-                  <CardContent>
-                    <p>Address: {reminder.address}</p>
-                    <p>Due Date: {reminder.due_date}</p>
-                    <p>Amount: {reminder.Amount}</p>
-                    <p>Owner Name: {reminder.OwnerName}</p>
-                    <p>Owner Number: {reminder.OwnerNumber}</p>
-                  </CardContent>
+                  {(<>
+                  <Button className="w-fit px-4 py-2 text-sm" onClick={()=>{router.push(`/admin/properties/${reminder.property_id}`)}}>View Property</Button>
+                  <Button className="w-fit px-4 py-2 text-sm" onClick={()=>{router.push(`/admin/payment/${reminder.request_id}`)}}>Pay</Button>
+                  </>)}
                 </Card>
               ))}
             </div>

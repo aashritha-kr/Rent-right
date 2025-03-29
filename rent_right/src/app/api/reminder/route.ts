@@ -30,6 +30,14 @@ export async function GET(request: Request) {
             );
         }
         else if(role === 'Admin'){
+            const result = await pool.query('SELECT * FROM get_admin_pending_maintenance_payments($1)', [userId]);
+
+            const reminders = result.rows;
+            return new Response(
+                JSON.stringify({ reminders }),
+                { status: 200, headers: { 'Content-Type': 'application/json' } }
+            );
+
         }
     }
     catch (error) {

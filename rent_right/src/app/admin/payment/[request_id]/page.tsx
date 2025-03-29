@@ -17,7 +17,6 @@ export default function PaymentPage() {
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState<string | null>(null);
   const [propertyName, setPropertyName] = useState("");
-  const [address, setAddress] = useState("");
 
   const id = useParams();
   const router=useRouter();
@@ -30,21 +29,20 @@ export default function PaymentPage() {
           const decodedToken = jwtDecode(token);
           const userId = decodedToken.userId;
           const leaseId = id.request_id?.toString() || "";
+          console.log(userId)
 
           const response = await fetch(`/api/payment`, {
             method: "GET",
             headers: {
               "Content-Type": "application/json",
               'User_ID': userId,
-              'Lease_ID': leaseId
+              'Request_ID': leaseId
             },
           });
 
           if (response.ok) {
             const data = await response.json();
-            setAmount(data.amount);
-            setPropertyName(data.property_name);
-            setAddress(data.address);
+            setPropertyName(data.maintenance_requests.building_name);
           } else {
             console.error("Error fetching lease details");
           }
@@ -62,11 +60,10 @@ export default function PaymentPage() {
     e.preventDefault();
     try {
       const token = localStorage.getItem('token');
-      let userId = '';
       if (token) {
         try {
           const decodedToken = jwtDecode(token);
-          userId = decodedToken.userId;
+          var userId = decodedToken.userId;
           console.log("User ID:", userId);
         } catch (error) {
           console.error("Invalid token", error);
@@ -80,11 +77,13 @@ export default function PaymentPage() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          'User_ID': userId
+          'User_ID': userId,
         },
         body: JSON.stringify({
           request_id: id.request_id,
-          description: 'Payment for maintenance'
+          description: 'Payment for maintenance',
+          amount:amount,
+          payment_mode:'credit'
         }),
       });
 
@@ -134,7 +133,7 @@ export default function PaymentPage() {
               type="text" 
               placeholder="₹0.00"
               value={amount || ""}
-              disabled
+              onChange={(e)=>setAmount(e.target.value)}
             />
           </div>
           <div className="mb-4">
@@ -142,14 +141,6 @@ export default function PaymentPage() {
             <Input 
               type="text" 
               value={propertyName || ""}
-              disabled
-            />
-          </div>
-          <div className="mb-4">
-            <Label>Address</Label>
-            <Input 
-              type="text" 
-              value={address || ""}
               disabled
             />
           </div>

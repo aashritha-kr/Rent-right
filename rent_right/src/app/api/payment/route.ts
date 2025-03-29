@@ -3,13 +3,6 @@ import { NextResponse } from 'next/server';
 import pool from '@/lib/db';
 
 export async function POST(request: Request) {
-  const req = await request.json();
-  console.log(req);
-
-  if (!req.lease_id) {
-    return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
-  }
-
   const userId = request.headers.get('User_ID');
   if (!userId) {
     return new Response(JSON.stringify({ message: 'User ID is required' }),
@@ -26,8 +19,15 @@ export async function POST(request: Request) {
 
   const roleResult = await pool.query('SELECT Role FROM Roles WHERE User_ID = $1', [userId]);
   const role = roleResult.rows.length > 0 ? roleResult.rows[0].role : null;
+  console.log(role)
 
   if (role === 'Tenant') {
+    const req = await request.json();
+
+      if (!req.lease_id) {
+        return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+      }
+
     const propertyResult = await pool.query(
     `SELECT p.Property_ID, p.Type, p.Area_in_sqft, p.Area, p.Building_name, 
       CASE 
@@ -72,50 +72,31 @@ export async function POST(request: Request) {
   }
   }
   else if(role==='Admin'){
-    const requestId = request.headers.get('Request_ID');
-  if (!requestId) {
+    const req = await request.json();
+    console.log(req)
+    console.log("jhj")
+    const requestId = req.request_id;
+    const paymentAmount = req.amount;
+    const paymentMode = req.payment_mode;
+  if (!requestId || !paymentAmount || !paymentMode) {
     return NextResponse.json({ error: 'Request ID is required' }, { status: 400 });
   }
-
-  const maintenanceResult = await pool.query(
-    'SELECT * FROM Maintenance WHERE Request_ID = $1 AND Status IN ($2, $3)',
-    [requestId, 'Pending', 'In progress']
-  );
-
-  if (maintenanceResult.rowCount === 0) {
-    return NextResponse.json({ error: 'Invalid or completed maintenance request' }, { status: 404 });
-  }
-
-  const maintenanceRequest = maintenanceResult.rows[0];
-
-  const servicePriceResult = await pool.query(
-    `SELECT Price FROM Services WHERE Service = $1`, [req.service]
-  );
-
-  if (servicePriceResult.rowCount === 0) {
-    return NextResponse.json({ error: 'Invalid service type' }, { status: 400 });
-  }
-
-  const servicePrice = servicePriceResult.rows[0].price;
-  const paymentAmount = servicePrice;
-
-  try {
-    await pool.query('BEGIN');
-
-    const paymentResult = await pool.query(
+  try{
+  await pool.query('BEGIN');
+  const paymentResult = await pool.query(
       'INSERT INTO Maintenance_Payment (Request_ID, Amount, Mode, Status) VALUES ($1, $2, $3, $4) RETURNING Payment_ID',
-      [requestId, paymentAmount, req.service, 'pending']
-    );
+      [requestId, paymentAmount, paymentMode, 'completed']
+  );
 
-    const paymentId = paymentResult.rows[0].payment_id;
-    await pool.query(
-      'UPDATE Maintenance SET Status = $1 WHERE Request_ID = $2',
-      ['Assigned', requestId]
-    );
+  const paymentId = paymentResult.rows[0].payment_id;
+  await pool.query('COMMIT');
 
-    await pool.query('COMMIT');
-
-    return NextResponse.json({ message: 'Payment successful', paymentId, amount: paymentAmount }, { status: 201 });
+  return NextResponse.json({
+      message: 'Payment record created successfully',
+      paymentId,
+      amount: paymentAmount,
+      paymentMode
+  }, { status: 201 });
   } catch (err) {
     await pool.query('ROLLBACK');
     console.error(err);
@@ -123,12 +104,11 @@ export async function POST(request: Request) {
   }
   }
   return new Response(
-      JSON.stringify({ message: 'User is not a Tenant' }),
+      JSON.stringify({ message: 'User is not a Tenant or Admin' }),
       { status: 403, headers: { 'Content-Type': 'application/json' } }
     );
-
-  
 }
+
 
 export async function GET(request: Request) {
   const userId = request.headers.get('User_ID');
@@ -200,10 +180,40 @@ export async function GET(request: Request) {
     }
   }
   else if(role==='Admin'){
-    const requestId = request.headers.get('Request_ID');
-    if (!requestId) {
-      return NextResponse.json({ error: 'Request ID is required' }, { status: 400 });
-    }
+      const requestId = request.headers.get('Request_ID');
+      if (!requestId) {
+        return NextResponse.json({ error: 'Request ID is required' }, { status: 400 });
+      }
+  
+      try {
+        const result = await pool.query(
+          `SELECT 
+            m.Request_ID, 
+            m.Lease_ID, 
+            m.Service, 
+            m.Description AS request_description, 
+            p.building_name, 
+            p.property_id
+        FROM Maintenance m
+        LEFT JOIN Maintenance_Payment mp ON m.Request_ID = mp.Request_ID
+        JOIN Property p ON m.Lease_ID = p.Property_ID
+        WHERE m.Request_ID = $1
+          AND (mp.Request_ID IS NULL OR mp.Status != 'completed');`,
+          [requestId]
+        );
+  
+        if (result.rowCount === 0) {
+          return NextResponse.json({ message: 'No pending maintenance payments found for this admin' }, { status: 404 });
+        }
+        console.log(result.rows[0])
+        return NextResponse.json({
+          message: 'Pending maintenance payments found',
+          maintenance_requests: result.rows[0]
+        }, { status: 200 });
+      }catch (error) {
+        console.error(error);
+        return NextResponse.json({ error: 'Failed to fetch maintenance payment details' }, { status: 500 });
+      }
 
   }
 }

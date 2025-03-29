@@ -218,11 +218,11 @@ RETURNS TABLE (
     payment_amount DECIMAL(10, 2),
     payment_date TIMESTAMP,
     payment_status VARCHAR(15),
-    reminder_type VARCHAR(50),  -- Explicitly setting reminder_type as VARCHAR
+    reminder_type VARCHAR(50),
     building_name VARCHAR(100),
     street_name VARCHAR(100),
     area VARCHAR(100),
-    address VARCHAR(255)  -- Full address to be returned
+    address VARCHAR(255)
 ) AS $$
 BEGIN
     RETURN QUERY
@@ -254,9 +254,39 @@ BEGIN
     LEFT JOIN 
         Lease_Payment lp ON la.Lease_ID = lp.Lease_ID
     LEFT JOIN 
-        Property p ON la.Property_ID = p.Property_ID  -- Joining Property table to get the details
+        Property p ON la.Property_ID = p.Property_ID
     WHERE 
-        la.Tenant_ID = user_id;  -- Filter by User (Tenant)
+        la.Tenant_ID = user_id;
 END;
 $$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION get_admin_pending_maintenance_payments(adminId INT)
+RETURNS TABLE (
+    Request_ID INT,
+    Lease_ID INT,
+    Service VARCHAR,
+    request_description VARCHAR,
+    Building_name VARCHAR,
+    Property_ID INT
+)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    RETURN QUERY
+    SELECT 
+        m.Request_ID, 
+        m.Lease_ID, 
+        m.Service, 
+        m.Description AS request_description, 
+        p.building_name, 
+        p.property_id
+    FROM Maintenance m
+    LEFT JOIN Maintenance_Payment mp ON m.Request_ID = mp.Request_ID
+    JOIN Property p ON m.Lease_ID = p.Property_ID
+    WHERE p.Owner_ID = adminId
+      AND m.Status = 'Resolved' 
+      AND (mp.Request_ID IS NULL OR mp.Status != 'completed');
+END;
+$$;
+
 
