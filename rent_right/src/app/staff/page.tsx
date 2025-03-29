@@ -12,7 +12,7 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { Menu } from "lucide-react";
-import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
+import Image from "next/image";
 
 export default function StaffRequestsPage() {
   const [requests, setRequests] = useState<any[]>([]);  // Store the fetched staff requests
@@ -110,9 +110,10 @@ export default function StaffRequestsPage() {
           <Menu size={30} />
         </SheetTrigger>
         <SheetContent side="left" className="p-6 w-70 bg-gray-100">
-          <VisuallyHidden>
-            <SheetTitle>Navigation Menu</SheetTitle>
-          </VisuallyHidden>
+         <SheetTitle className="text-center">Rent Right</SheetTitle>
+                 <div className="flex justify-center">
+                   <Image src="/logo.svg" alt="Profile Pic" width={80} height={80} className="rounded-full" />
+                 </div>
           <nav className="flex flex-col gap-3">
             <Button
               variant="ghost"
@@ -128,11 +129,19 @@ export default function StaffRequestsPage() {
             >
               Profile
             </Button>
+            <Button
+              variant="ghost"
+              onClick={() => router.push("/staff/profile")}
+              className="text-2xl bg-blue-100 my-4"
+            >
+              Logout
+            </Button>
           </nav>
         </SheetContent>
       </Sheet>
       
-    <div className="p-8">
+      <div className="p-8 bg-gradient-to-b from-blue-50 to-blue-300 min-h-screen">
+
       <h1 className="text-3xl font-bold text-blue-900 text-center p-6">
         Maintenance Requests
       </h1>
