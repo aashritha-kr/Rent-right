@@ -245,7 +245,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Step 5: Call respective stored procedures for Land, Residential, or Commercial
     if (propertyData.Type === 'Land') {
       const landData = {
         Type: formData.get('Usage')?.toString() || '',
