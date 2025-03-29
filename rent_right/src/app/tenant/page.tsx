@@ -32,42 +32,63 @@ type PropertyDetails = {
   description: string;
 };
 
-const upcomingReminders = [
-  {
-    address: "flat-342,has apt",
-    due_date: "23-2-21",
-    Amount: "231",
-    OwnerName: "Aashritha",
-    OwnerNumber: "23812830",
-  },
-  {
-    address: "flat-2,has apt",
-    due_date: "23-2-25",
-    Amount: "21",
-    OwnerName: "Anusha",
-    OwnerNumber: "34232",
-  },
-];
+type Reminder = {
+  lease_id: number;
+  property_id: number;
+  tenant_id: number;
+  start_date: string;
+  end_date: string;
+  price: string;
+  advance_amount: string;
+  payment_amount: string;
+  payment_date: string;
+  payment_status: string;
+  reminder_type: string;
+  building_name: string;
+  street_name: string;
+  area: string;
+  address: string;
+};
 
-const pastReminders = [
-  {
-    address: "flat-2,has apt",
-    due_date: "23-2-18",
-    Amount: "1",
-    OwnerName: "Aadqritha",
-    OwnerNumber: "812830",
-  },
-  {
-    address: "flat-2,has apt",
-    due_date: "23-11-25",
-    Amount: "21",
-    OwnerName: "Anushdqa",
-    OwnerNumber: "34232432",
-  },
-];
+// const upcomingReminders = [
+//   {
+//     address: "flat-342,has apt",
+//     due_date: "23-2-21",
+//     Amount: "231",
+//     OwnerName: "Aashritha",
+//     OwnerNumber: "23812830",
+//   },
+//   {
+//     address: "flat-2,has apt",
+//     due_date: "23-2-25",
+//     Amount: "21",
+//     OwnerName: "Anusha",
+//     OwnerNumber: "34232",
+//   },
+// ];
+
+// const pastReminders = [
+//   {
+//     address: "flat-2,has apt",
+//     due_date: "23-2-18",
+//     Amount: "1",
+//     OwnerName: "Aadqritha",
+//     OwnerNumber: "812830",
+//   },
+//   {
+//     address: "flat-2,has apt",
+//     due_date: "23-11-25",
+//     Amount: "21",
+//     OwnerName: "Anushdqa",
+//     OwnerNumber: "34232432",
+//   },
+// ];
 
 export default function TenantHome() {
   const [propdetails, setpropdetails] = useState<PropertyDetails[]>([]);
+  const [reminders, setReminders] = useState<Reminder[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("null");
   const router = useRouter();
 
   useEffect(() => {
@@ -84,6 +105,7 @@ export default function TenantHome() {
             console.error("Invalid token", error);
           }
         }
+        setLoading(true)
         const response = await fetch("/api/properties", {
           method: "GET",
           headers: {
@@ -98,13 +120,40 @@ export default function TenantHome() {
         } else {
           console.error("No properties found in the response.");
         }
+        const remindersResponse = await fetch(`/api/reminder`,{method: "GET",
+          headers: {"Content-Type": "application/json", User_ID: userId },}
+        );
+        const remindersData = await remindersResponse.json();
+        if (remindersData.reminders) {
+          setReminders(remindersData.reminders);
+        } else {
+          console.error('No reminders found');
+        }
       } catch (error) {
-        console.error("Error fetching properties", error);
+        console.error('Error fetching data', error);
+        setError('Failed to load data.');
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchProperties();
   }, []);
+
+  useEffect(()=>{
+    console.log(reminders)
+  }, [reminders])
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  const upcomingReminders = reminders.filter(
+    (reminder) => reminder.reminder_type === 'Upcoming'
+  );
+  const pastReminders = reminders.filter(
+    (reminder) => reminder.reminder_type === 'Past Due'
+  );
 
 return (
   <div className="flex h-screen">
@@ -130,7 +179,7 @@ return (
           <Button variant="ghost" onClick={() => router.push("/tenant/profile")} className="text-lg bg-blue-100 my-2">
             Profile
           </Button>
-          <Button variant="ghost" onClick={() => router.push("/logout")} className="text-lg bg-blue-100 my-2">
+          <Button variant="ghost" onClick={() => router.push("/")} className="text-lg bg-blue-100 my-2">
             Logout
           </Button>
         </nav>
@@ -163,36 +212,38 @@ return (
     </div>
 
     <div className="w-80 bg-gray-50 shadow-lg p-6 overflow-y-auto h-full">
-      <Card className="p-4 shadow-md bg-pink-100">
-        <CardContent>
-          <CardTitle className="text-lg text-center">Your Reminders</CardTitle>
-          <h2 className="text-md font-semibold mt-4 text-center">Upcoming Reminders</h2>
-          {upcomingReminders.map((reminder, index) => (
-            <Card key={index} className="mb-4 bg-white">
-              <CardContent>
-                <p>Address: {reminder.address}</p>
-                <p>Due Date: {reminder.due_date}</p>
-                <p>Amount: {reminder.Amount}</p>
-                <p>Owner Name: {reminder.OwnerName}</p>
-                <p>Owner Number: {reminder.OwnerNumber}</p>
-              </CardContent>
-            </Card>
-          ))}
-          <h2 className="text-md font-semibold mt-4 text-center">Past Due Reminders</h2>
-          {pastReminders.map((reminder, index) => (
-            <Card key={index} className="mb-4 bg-pink-50">
-              <CardContent>
-                <p>Address: {reminder.address}</p>
-                <p>Due Date: {reminder.due_date}</p>
-                <p>Amount: {reminder.Amount}</p>
-                <p>Owner Name: {reminder.OwnerName}</p>
-                <p>Owner Number: {reminder.OwnerNumber}</p>
-              </CardContent>
-            </Card>
-          ))}
-        </CardContent>
-      </Card>
-    </div>
+        <Card className="p-4 shadow-md bg-pink-100">
+          <CardContent>
+            <CardTitle className="text-lg text-center">Your Reminders</CardTitle>
+            <h2 className="text-md font-semibold mt-4 text-center">Upcoming Reminders</h2>
+            {upcomingReminders.map((reminder, index) => (
+              <Card key={index} className="mb-4 bg-white">
+                <CardContent>
+                  <p>Building name: {reminder.building_name}</p>
+                  <p>Due Date: {new Date(reminder.end_date).toLocaleDateString()}</p>
+                  <p>Amount: {reminder.payment_amount || reminder.advance_amount}</p>
+                  <p>Status: {reminder.payment_status}</p>
+                </CardContent>
+                {reminder.payment_status === 'pending' && (<>
+                <Button className="w-fit px-4 py-2 text-sm" onClick={()=>{router.push(`/tenant/properties/${reminder.property_id}`)}}>View Property</Button>
+                <Button className="w-fit px-4 py-2 text-sm" onClick={()=>{router.push(`/tenant/payment/${reminder.lease_id}`)}}>Pay Rent</Button>
+                </>)}
+              </Card>
+            ))}
+            <h2 className="text-md font-semibold mt-4 text-center">Past Due Reminders</h2>
+            {pastReminders.map((reminder, index) => (
+              <Card key={index} className="mb-4 bg-pink-50">
+                <CardContent>
+                <p>Building name: {reminder.building_name}</p>
+                  <p>Due Date: {new Date(reminder.end_date).toLocaleDateString()}</p>
+                  <p>Amount: {reminder.payment_amount || reminder.advance_amount}</p>
+                  <p>Status: {reminder.payment_status}</p>
+                </CardContent>
+              </Card>
+            ))}
+          </CardContent>
+        </Card>
+      </div>
   </div>
 );
 }

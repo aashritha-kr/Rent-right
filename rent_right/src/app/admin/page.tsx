@@ -205,7 +205,7 @@ export default function YourRentalsPage() {
             </Button>
             <Button
               variant="ghost"
-              onClick={() => router.push("/logout")}
+              onClick={() => router.push("/")}
               className="text-2xl bg-blue-100 my-4"
             >
               Logout

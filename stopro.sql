@@ -204,3 +204,59 @@ BEGIN
     );
 END;
 $$;
+
+CREATE OR REPLACE FUNCTION get_lease_payment_reminders(user_id INT)
+RETURNS TABLE (
+    lease_id INT,
+    property_id INT,
+    tenant_id INT,
+    start_date DATE,
+    end_date DATE,
+    price DECIMAL(10, 2),
+    advance_amount DECIMAL(10, 2),
+    payment_id INT,
+    payment_amount DECIMAL(10, 2),
+    payment_date TIMESTAMP,
+    payment_status VARCHAR(15),
+    reminder_type VARCHAR(50),  -- Explicitly setting reminder_type as VARCHAR
+    building_name VARCHAR(100),
+    street_name VARCHAR(100),
+    area VARCHAR(100),
+    address VARCHAR(255)  -- Full address to be returned
+) AS $$
+BEGIN
+    RETURN QUERY
+    SELECT 
+        la.Lease_ID,
+        la.Property_ID,
+        la.Tenant_ID,
+        la.Start_date,
+        la.End_date,
+        la.Price,
+        la.Advance_amount,
+        lp.Payment_ID,
+        lp.Amount AS payment_amount,
+        lp.Date AS payment_date,
+        lp.Status AS payment_status,
+        CASE
+            WHEN la.End_date > CURRENT_DATE AND lp.Status = 'pending' 
+                THEN 'Upcoming'
+            WHEN la.End_date < CURRENT_DATE AND lp.Status = 'pending' 
+                THEN 'Past Due'
+            ELSE 'Paid'
+        END::VARCHAR(50) AS reminder_type,
+        p.Building_name,
+        p.Street_name,
+        p.Area,
+        CONCAT(p.Door_no, ', ', p.Building_name, ', ', p.Street_name, ', ', p.Area)::VARCHAR(255) AS address
+    FROM 
+        Lease_Agreement la
+    LEFT JOIN 
+        Lease_Payment lp ON la.Lease_ID = lp.Lease_ID
+    LEFT JOIN 
+        Property p ON la.Property_ID = p.Property_ID  -- Joining Property table to get the details
+    WHERE 
+        la.Tenant_ID = user_id;  -- Filter by User (Tenant)
+END;
+$$ LANGUAGE plpgsql;
+
